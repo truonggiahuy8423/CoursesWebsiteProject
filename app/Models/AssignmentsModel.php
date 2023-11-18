@@ -3,45 +3,48 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-class StudentModel
+class AssignmentModel
 {
-    public $studentId;
-    public $hoTen;
-    public $ngaySinh;
-    public $gioiTinh;
-    public $email;
+    public $assignmentId;
+    public $trangThai;
+    public $ten;
+    public $noiDung;
+    public $thoiHan;
+    public $idGiangVien;
+    public $idMuc;
 
     private $conn;
     function __construct(){}
 
-    function getStudentById($studentId)
+
+    function getAssignmentById($id)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM hoc_vien WHERE id_hoc_vien = $studentId";
+        $sql = "SELECT * FROM hoc_vien WHERE id_bai_tap = $id";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $user = new StudentModel();
-            $this->studentId = $row["id_hoc_vien"];
-            $this->hoTen = $row["ho_ten"];
-            $this->ngaySinh = $row["ngay_sinh"];
-            $this->gioiTinh = $row["gioi_tinh"];
-            $this->email = $row["email"];
+            $user = new AssignmentModel();
+            $this->assignmentId = $row["id_bai_tap"];
+            $this->trangThai = $row["trang_thai"];
+            $this->ten = $row["ten"];
+            $this->noiDung = $row["noi_dung"];
+            $this->thoiHan = $row["thoi_han "];
+            $this->idGiangVien = $row["id_giang_vien"];
+            $this->idMuc = $row["id_muc"];
             $this->conn->close();
             return $user;
         }
-        else{
-            $this->conn->close();
-            return null;
-        }
+        $this->conn->close();
+        return null;
     }
 
-    function getAllStudents()
+    function getAllAssignments()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -54,12 +57,15 @@ class StudentModel
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $user = new StudentModel();
-                $this->studentId = $row["id_hoc_vien"];
-                $this->hoTen = $row["ho_ten"];
-                $this->ngaySinh = $row["ngay_sinh"];
-                $this->gioiTinh = $row["gioi_tinh"];
-                $this->email = $row["email"];
+                $user = new AssignmentModel();
+                $this->assignmentId = $row["id_bai_tap"];
+                $this->trangThai = $row["trang_thai"];
+                $this->ten = $row["ten"];
+                $this->noiDung = $row["noi_dung"];
+                $this->thoiHan = $row["thoi_han "];
+                $this->idGiangVien = $row["id_giang_vien"];
+                $this->idMuc = $row["id_muc"];
+                $this->conn->close();                
                 $users[] = $user;
             }
         }
@@ -86,19 +92,20 @@ class StudentModel
         return $rows;
     }
 
-    function insertStudent($user)
+    function insertAssignment($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
-        $email = $this->conn->real_escape_string($user->email);
-
-        $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$hoTen', '$ngaySinh', '$gioiTinh', '$email')";
+        $trangThai = $this->conn->real_escape_string($user->trangThai);
+        $ten = $this->conn->real_escape_string($user->ten);
+        $noiDung = $this->conn->real_escape_string($user->noiDung);
+        $thoiHan = $this->conn->real_escape_string($user->thoiHan);
+        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
+        $idMuc = $this->conn->real_escape_string($user->idMuc);
+        $sql = "INSERT INTO hoc_vien (trang_thai, ten, noi_dung, thoi_han, id_giang_vien, id_muc) VALUES ('$trangThai', '$ten', '$noiDung', '$thoiHan', '$idGiangVien', '$idMuc')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
             return ['state' => true, 'message' => ''];
@@ -108,15 +115,15 @@ class StudentModel
         }
     }
 
-    function deleteStudent($user)
+    function deleteAssignment($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $studentId = $this->conn->real_escape_string($user->studentId);
-        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = $studentId";
+        $assignmentId = $this->conn->real_escape_string($user->assignmentId);
+        $sql = "DELETE FROM hoc_vien WHERE id_bai_tap = $assignmentId";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -127,20 +134,22 @@ class StudentModel
         }
     }
 
-    function updateStudent($user)
+    function updateAssignment($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $studentId = $this->conn->real_escape_string($user->studentId);
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
-        $email = $this->conn->real_escape_string($user->email);
+        $assignmentId = $this->conn->real_escape_string($user->assignmentId);
+        $trangThai = $this->conn->real_escape_string($user->trangThai);
+        $ten = $this->conn->real_escape_string($user->ten);
+        $noiDung = $this->conn->real_escape_string($user->noiDung);
+        $thoiHan = $this->conn->real_escape_string($user->thoiHan);
+        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
+        $idMuc = $this->conn->real_escape_string($user->idMuc);
 
-        $sql = "UPDATE hoc_vien SET ho_ten = '$hoTen', ngay_sinh = '$ngaySinh', gioi_tinh = '$gioiTinh', email = '$email' WHERE id_hoc_vien = $studentId";
+        $sql = "UPDATE hoc_vien SET trang_thai = '$trangThai', ten = '$ten', noi_dung = '$noiDung', thoi_han = '$thoiHan', id_giang_vien  = '$idGiangVien', id_muc = '$idMuc' WHERE id_bai_tap = $assignmentId";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
