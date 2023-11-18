@@ -3,69 +3,168 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use mysqli;
+include 'DatabaseConnect.php';
 
 class CaModel extends Model
 {
-    protected $table      = 'ca'; // Tên bảng trong CSDL
-    protected $primaryKey = 'id_ca'; // Tên trường khoá chính
+    public $id_ca;
+    public $thoi_gian_bat_dau;
+    public $thoi_gian_ket_thuc;
 
-    protected $allowedFields = ['thoi_gian_bat_dau', 'thoi_gian_ket_thuc']; // Các trường có thể được thêm hoặc cập nhật
+    private $conn;
 
-    // Nếu bạn muốn sử dụng timestamps, bạn có thể đặt các thuộc tính sau:
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    public function __construct()
+    {
 
-    // Hàm trả về đối tượng Ca dựa trên ID
+    }
+
     public function getCaById($caId)
     {
-        return $this->find($caId);
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM ca WHERE id_ca = ?";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bind_param("i", $caId);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $ca = $result->fetch_assoc();
+
+            $this->id_ca = $ca['id_ca'];
+            $this->thoi_gian_bat_dau = $ca['thoi_gian_bat_dau'];
+            $this->thoi_gian_ket_thuc = $ca['thoi_gian_ket_thuc'];
+
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
     }
 
-    // Hàm trả về mảng đối tượng Ca từ bảng ca
     public function getAllCa()
     {
-        return $this->findAll();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM ca";
+        $result = $this->conn->query($sql);
+
+        $cas = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $ca = new CaModel();
+                $ca->id_ca = $row['id_ca'];
+                $ca->thoi_gian_bat_dau = $row['thoi_gian_bat_dau'];
+                $ca->thoi_gian_ket_thuc = $row['thoi_gian_ket_thuc'];
+
+                $cas[] = $ca;
+            }
+        }
+        $this->conn->close();
+        return $cas;
     }
 
-    // Hàm trả về mảng 2 chiều của các dòng sau khi thực hiện truy vấn SQL
-    public function queryDatabase($sql)
+    public function executeCustomQuery($sql)
     {
-        $query = $this->query($sql);
-        return $query->getResultArray();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $result = $this->conn->query($sql);
+
+        $rows = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
     }
 
-    // Hàm thêm mới đối tượng Ca vào bảng
     public function insertCa($ca)
     {
-        try {
-            $this->insert($ca);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "INSERT INTO ca (thoi_gian_bat_dau, thoi_gian_ket_thuc) VALUES (?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $ca->thoi_gian_bat_dau, $ca->thoi_gian_ket_thuc);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Insert thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm cập nhật thông tin Ca trong bảng dựa trên ID
-    public function updateCa($caId, $caData)
+    public function updateCa($ca)
     {
-        try {
-            $this->update($caId, $caData);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "UPDATE ca SET thoi_gian_bat_dau = ?, thoi_gian_ket_thuc = ? WHERE id_ca = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssi", $ca->thoi_gian_bat_dau, $ca->thoi_gian_ket_thuc, $ca->id_ca);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Update thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
-
-    // Hàm xóa đối tượng Ca từ bảng dựa trên ID
+    
     public function deleteCa($caId)
     {
-        try {
-            $this->delete($caId);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "DELETE FROM ca WHERE id_ca = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $caId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Delete thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
+
+    public function __destruct()
+    {
+    }
 }
+
 ?>

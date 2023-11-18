@@ -3,69 +3,170 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use mysqli;
+include 'DatabaseConnect.php';
 
 class AdModel extends Model
 {
-    protected $table      = 'ad'; // Tên bảng trong CSDL
-    protected $primaryKey = 'id_ad'; // Tên trường khoá chính
+    public $id_ad;
+    public $ho_ten;
+    public $id_user;
 
-    protected $allowedFields = ['ho_ten', 'id_user']; // Các trường có thể được thêm hoặc cập nhật
+    private $conn;
 
-    // Nếu bạn muốn sử dụng timestamps, bạn có thể đặt các thuộc tính sau:
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    public function __construct()
+    {
 
-    // Hàm trả về đối tượng Ad dựa trên ID
+    }
+
     public function getAdById($adId)
     {
-        return $this->find($adId);
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM ad WHERE id_ad = ?";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bind_param("i", $adId);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $ad = $result->fetch_assoc();
+
+            $this->id_ad = $ad['id_ad'];
+            $this->ho_ten = $ad['ho_ten'];
+            $this->id_user = $ad['id_user'];
+
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
     }
 
-    // Hàm trả về mảng đối tượng Ad từ bảng ad
     public function getAllAd()
     {
-        return $this->findAll();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM ad";
+        $result = $this->conn->query($sql);
+
+        $ads = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $ad = new AdModel();
+                $ad->id_ad = $row['id_ad'];
+                $ad->ho_ten = $row['ho_ten'];
+                $ad->id_user = $row['id_user'];
+
+                $ads[] = $ad;
+            }
+        }
+        $this->conn->close();
+        return $ads;
     }
 
-    // Hàm trả về mảng 2 chiều của các dòng sau khi thực hiện truy vấn SQL
-    public function queryDatabase($sql)
+    public function executeCustomQuery($sql)
     {
-        $query = $this->query($sql);
-        return $query->getResultArray();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $result = $this->conn->query($sql);
+
+        $rows = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
     }
 
-    // Hàm thêm mới đối tượng Ad vào bảng
     public function insertAd($ad)
     {
-        try {
-            $this->insert($ad);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "INSERT INTO ad (ho_ten, id_user) VALUES (?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $ad->ho_ten, $ad->id_user);
+
+        if ($stmt->execute()) {
+            $this->id_ad = $this->conn->insert_id;
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Insert thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm cập nhật thông tin Ad trong bảng dựa trên ID
     public function updateAd($adId, $adData)
     {
-        try {
-            $this->update($adId, $adData);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "UPDATE ad SET ho_ten = ?, id_user = ? WHERE id_ad = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sii", $adData->ho_ten, $adData->id_user, $adId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Update thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm xóa đối tượng Ad từ bảng dựa trên ID
     public function deleteAd($adId)
     {
-        try {
-            $this->delete($adId);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "DELETE FROM ad WHERE id_ad = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $adId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Delete thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
+
+    public function __destruct()
+    {
+
+    }
 }
+
 ?>

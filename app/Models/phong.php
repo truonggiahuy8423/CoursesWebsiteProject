@@ -3,69 +3,135 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use mysqli;
+include 'DatabaseConnect.php';
 
 class PhongModel extends Model
 {
-    protected $table      = 'phong'; // Tên bảng trong CSDL
-    protected $primaryKey = 'id_phong'; // Tên trường khoá chính
+    public $id_phong;
 
-    //protected $allowedFields = ['id_phong']; // Chỉ có một trường ID, vì đây là bảng chỉ chứa ID và sử dụng AUTO_INCREMENT
+    private $conn;
 
-    // Nếu bạn muốn sử dụng timestamps, bạn có thể đặt các thuộc tính sau:
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    public function __construct()
+    {
 
-    // Hàm trả về đối tượng Phong dựa trên ID
+    }
+
     public function getPhongById($phongId)
     {
-        return $this->find($phongId);
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM phong WHERE id_phong = ?";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bind_param("i", $phongId);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $phong = $result->fetch_assoc();
+
+            $this->id_phong = $phong['id_phong'];
+
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
     }
 
-    // Hàm trả về mảng đối tượng Phong từ bảng phong
     public function getAllPhong()
     {
-        return $this->findAll();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM phong";
+        $result = $this->conn->query($sql);
+
+        $phongs = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $phong = new PhongModel();
+                $phong->id_phong = $row['id_phong'];
+
+                $phongs[] = $phong;
+            }
+        }
+        $this->conn->close();
+        return $phongs;
     }
 
-    // Hàm trả về mảng 2 chiều của các dòng sau khi thực hiện truy vấn SQL
-    public function queryDatabase($sql)
+    public function executeCustomQuery($sql)
     {
-        $query = $this->query($sql);
-        return $query->getResultArray();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $result = $this->conn->query($sql);
+
+        $rows = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
     }
 
-    // Hàm thêm mới đối tượng Phong vào bảng
     public function insertPhong($phong)
     {
-        try {
-            $this->insert($phong);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "INSERT INTO phong () VALUES ()";
+
+        $stmt = $this->conn->prepare($sql);
+
+        if ($stmt->execute()) {
+            $this->id_phong = $this->conn->insert_id;
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Insert thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm cập nhật thông tin Phong trong bảng dựa trên ID
     public function updatePhong($phongId, $phongData)
     {
-        try {
-            $this->update($phongId, $phongData);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
-        }
+        // Update operation for Phong might not be applicable in your case, 
+        // as you have not specified the fields to be updated.
+        // If needed, you can add the specific fields and update logic.
+        return ['state' => false, 'message' => 'Update không được hỗ trợ cho PhongModel'];
     }
 
-    // Hàm xóa đối tượng Phong từ bảng dựa trên ID
     public function deletePhong($phongId)
     {
-        try {
-            $this->delete($phongId);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
-        }
+        // Delete operation for Phong might not be applicable in your case,
+        // as you have not specified the fields for deletion condition.
+        // If needed, you can add the specific condition for deletion.
+        return ['state' => false, 'message' => 'Delete không được hỗ trợ cho PhongModel'];
+    }
+
+    public function __destruct()
+    {
+
     }
 }
+
 ?>

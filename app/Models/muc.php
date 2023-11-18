@@ -3,69 +3,172 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use mysqli;
+include 'DatabaseConnect.php';
 
 class MucModel extends Model
 {
-    protected $table      = 'muc'; // Tên bảng trong CSDL
-    protected $primaryKey = 'id_muc'; // Tên trường khoá chính
+    public $id_muc;
+    public $ten_muc;
+    public $id_lop_hoc;
+    public $id_muc_cha;
 
-    protected $allowedFields = ['ten_muc', 'id_lop_hoc', 'id_muc_cha']; // Các trường có thể được thêm hoặc cập nhật
+    private $conn;
 
-    // Nếu bạn muốn sử dụng timestamps, bạn có thể đặt các thuộc tính sau:
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    public function __construct()
+    {
 
-    // Hàm trả về đối tượng Muc dựa trên ID
+    }
+
     public function getMucById($mucId)
     {
-        return $this->find($mucId);
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM muc WHERE id_muc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bind_param("i", $mucId);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $muc = $result->fetch_assoc();
+
+            $this->id_muc = $muc['id_muc'];
+            $this->ten_muc = $muc['ten_muc'];
+            $this->id_lop_hoc = $muc['id_lop_hoc'];
+            $this->id_muc_cha = $muc['id_muc_cha'];
+
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
     }
 
-    // Hàm trả về mảng đối tượng Muc từ bảng muc
     public function getAllMuc()
     {
-        return $this->findAll();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM muc";
+        $result = $this->conn->query($sql);
+
+        $mucs = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $muc = new MucModel();
+                $muc->id_muc = $row['id_muc'];
+                $muc->ten_muc = $row['ten_muc'];
+                $muc->id_lop_hoc = $row['id_lop_hoc'];
+                $muc->id_muc_cha = $row['id_muc_cha'];
+
+                $mucs[] = $muc;
+            }
+        }
+        $this->conn->close();
+        return $mucs;
     }
 
-    // Hàm trả về mảng 2 chiều của các dòng sau khi thực hiện truy vấn SQL
-    public function queryDatabase($sql)
+    public function executeCustomQuery($sql)
     {
-        $query = $this->query($sql);
-        return $query->getResultArray();
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $result = $this->conn->query($sql);
+
+        $rows = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
     }
 
-    // Hàm thêm mới đối tượng Muc vào bảng
     public function insertMuc($muc)
     {
-        try {
-            $this->insert($muc);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "INSERT INTO muc (ten_muc, id_lop_hoc, id_muc_cha) VALUES (?, ?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sii", $muc->ten_muc, $muc->id_lop_hoc, $muc->id_muc_cha);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Insert thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm cập nhật thông tin Muc trong bảng dựa trên ID
-    public function updateMuc($mucId, $mucData)
+    public function updateMuc($muc)
     {
-        try {
-            $this->update($mucId, $mucData);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "UPDATE muc SET ten_muc = ?, id_lop_hoc = ?, id_muc_cha = ? WHERE id_muc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("siii", $muc->ten_muc, $muc->id_lop_hoc, $muc->id_muc_cha, $muc->id_muc);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Update thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm xóa đối tượng Muc từ bảng dựa trên ID
     public function deleteMuc($mucId)
     {
-        try {
-            $this->delete($mucId);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "DELETE FROM muc WHERE id_muc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $mucId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Delete thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
+
+    public function __destruct()
+    {
+
+    }
 }
+
 ?>

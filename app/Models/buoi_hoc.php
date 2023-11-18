@@ -3,73 +3,168 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use mysqli;
+include 'DatabaseConnect.php';
 
-class BuoiHocModel extends Model
-{
-    protected $table      = 'buoi_hoc'; // Tên bảng trong CSDL
-    protected $primaryKey = 'id_buoi_hoc'; // Tên trường khoá chính
+class BuoiHocModel {
 
-    protected $allowedFields = [
-        'trang_thai', 'ngay', 'ma_lop_hoc',
-        'so_phong', 'ma_ca', 'id_lop_hoc',
-        'id_ca', 'id_phong'
-    ]; // Các trường có thể được thêm hoặc cập nhật
+    public $id_buoi_hoc;
+    public $trang_thai;
+    public $ngay;
+    public $ma_lop_hoc;
+    public $so_phong;
+    public $ma_ca;
+    public $id_lop_hoc;
+    public $id_ca;
+    public $id_phong;
 
-    // Nếu bạn muốn sử dụng timestamps, bạn có thể đặt các thuộc tính sau:
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    private $conn;
 
-    // Hàm trả về đối tượng BuoiHoc dựa trên ID
-    public function getBuoiHocById($buoiHocId)
-    {
-        return $this->find($buoiHocId);
+    public function __construct() {
+
     }
 
-    // Hàm trả về mảng đối tượng BuoiHoc từ bảng buoi_hoc
-    public function getAllBuoiHoc()
-    {
-        return $this->findAll();
-    }
+    public function getBuoiHocById($buoiHocId) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM buoi_hoc WHERE id_buoi_hoc = ?";
 
-    // Hàm trả về mảng 2 chiều của các dòng sau khi thực hiện truy vấn SQL
-    public function queryDatabase($sql)
-    {
-        $query = $this->query($sql);
-        return $query->getResultArray();
-    }
+        $stmt = $this->conn->prepare($sql);
 
-    // Hàm thêm mới đối tượng BuoiHoc vào bảng
-    public function insertBuoiHoc($buoiHoc)
-    {
-        try {
-            $this->insert($buoiHoc);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+        $stmt->bind_param("i", $buoiHocId);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $buoiHoc = $result->fetch_assoc();
+
+            $this->id_buoi_hoc = $buoiHoc['id_buoi_hoc'];
+            $this->trang_thai = $buoiHoc['trang_thai'];
+            $this->ngay = $buoiHoc['ngay'];
+            $this->ma_lop_hoc = $buoiHoc['ma_lop_hoc'];
+            $this->so_phong = $buoiHoc['so_phong'];
+            $this->ma_ca = $buoiHoc['ma_ca'];
+            $this->id_lop_hoc = $buoiHoc['id_lop_hoc'];
+            $this->id_ca = $buoiHoc['id_ca'];
+            $this->id_phong = $buoiHoc['id_phong'];
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
         }
     }
 
-    // Hàm cập nhật thông tin BuoiHoc trong bảng dựa trên ID
-    public function updateBuoiHoc($buoiHocId, $buoiHocData)
-    {
-        try {
-            $this->update($buoiHocId, $buoiHocData);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+    public function getAllBuoiHoc() {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM buoi_hoc";
+        $result = $this->conn->query($sql);
+
+        $buoiHocs = array();
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $buoiHoc = new BuoiHocModel();
+                $buoiHoc->id_buoi_hoc = $row['id_buoi_hoc'];
+                $buoiHoc->trang_thai = $row['trang_thai'];
+                $buoiHoc->ngay = $row['ngay'];
+                $buoiHoc->ma_lop_hoc = $row['ma_lop_hoc'];
+                $buoiHoc->so_phong = $row['so_phong'];
+                $buoiHoc->ma_ca = $row['ma_ca'];
+                $buoiHoc->id_lop_hoc = $row['id_lop_hoc'];
+                $buoiHoc->id_ca = $row['id_ca'];
+                $buoiHoc->id_phong = $row['id_phong'];
+
+                $buoiHocs[] = $buoiHoc;
+            }
+        }
+        $this->conn->close();
+        return $buoiHocs;
+    }
+
+    public function queryDatabase($sql) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $query = $this->conn->query($sql);
+        return $query->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function insertBuoiHoc($buoiHoc) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "INSERT INTO buoi_hoc (trang_thai, ngay, ma_lop_hoc, so_phong, ma_ca, id_lop_hoc, id_ca, id_phong) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("isssiiii", $buoiHoc->trang_thai, $buoiHoc->ngay, $buoiHoc->ma_lop_hoc, $buoiHoc->so_phong, $buoiHoc->ma_ca, $buoiHoc->id_lop_hoc, $buoiHoc->id_ca, $buoiHoc->id_phong);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Insert thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    // Hàm xóa đối tượng BuoiHoc từ bảng dựa trên ID
-    public function deleteBuoiHoc($buoiHocId)
-    {
-        try {
-            $this->delete($buoiHocId);
-            return ['state' => true, 'message' => ''];
-        } catch (\Exception $e) {
-            return ['state' => false, 'message' => $e->getMessage()];
+    public function updateBuoiHoc($buoiHocId, $buoiHocData) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
+        $sql = "UPDATE buoi_hoc SET trang_thai = ?, ngay = ?, ma_lop_hoc = ?, so_phong = ?, ma_ca = ?, id_lop_hoc = ?, id_ca = ?, id_phong = ? WHERE id_buoi_hoc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("isssiiiii", $buoiHocData->trang_thai, $buoiHocData->ngay, $buoiHocData->ma_lop_hoc, $buoiHocData->so_phong, $buoiHocData->ma_ca, $buoiHocData->id_lop_hoc, $buoiHocData->id_ca, $buoiHocData->id_phong, $buoiHocId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Update thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
+        }
+    }
+
+    public function deleteBuoiHoc($buoiHocId) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "DELETE FROM buoi_hoc WHERE id_buoi_hoc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $buoiHocId);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Delete thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
+        }
+    }
+
+    public function __destruct() {
     }
 }
+
 ?>
