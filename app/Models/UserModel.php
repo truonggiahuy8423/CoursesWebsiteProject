@@ -155,7 +155,7 @@ class UserModel {
         $sql = "INSERT INTO users (anh_dai_dien, tai_khoan, mat_khau, thoi_gian_dang_nhap_gan_nhat, id_ad, id_giang_vien, id_hoc_vien) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("bsssiis", $user->anh_dai_dien, $user->tai_khoan, $user->mat_khau, $user->thoi_gian_dang_nhap_gan_nhat, $user->id_ad, $user->id_giang_vien, $user->id_hoc_vien);
+        $stmt->bind_param("bsssiii", $user->anh_dai_dien, $user->tai_khoan, $user->mat_khau, $user->thoi_gian_dang_nhap_gan_nhat, $user->id_ad, $user->id_giang_vien, $user->id_hoc_vien);
 
         if ($stmt->execute()) {
             $stmt->close();

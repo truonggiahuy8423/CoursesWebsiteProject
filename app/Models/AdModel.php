@@ -10,7 +10,6 @@ class AdModel extends Model
 {
     public $id_ad;
     public $ho_ten;
-    public $id_user;
 
     private $conn;
 
@@ -40,7 +39,6 @@ class AdModel extends Model
 
             $this->id_ad = $ad['id_ad'];
             $this->ho_ten = $ad['ho_ten'];
-            $this->id_user = $ad['id_user'];
 
             $stmt->close();
             $this->conn->close();
@@ -68,7 +66,6 @@ class AdModel extends Model
                 $ad = new AdModel();
                 $ad->id_ad = $row['id_ad'];
                 $ad->ho_ten = $row['ho_ten'];
-                $ad->id_user = $row['id_user'];
 
                 $ads[] = $ad;
             }
@@ -102,13 +99,13 @@ class AdModel extends Model
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-        $sql = "INSERT INTO ad (ho_ten, id_user) VALUES (?, ?)";
+        $sql = "INSERT INTO ad (ho_ten) VALUES (?)";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("si", $ad->ho_ten, $ad->id_user);
+        $stmt->bind_param("s", $ad->ho_ten);
 
         if ($stmt->execute()) {
-            $this->id_ad = $this->conn->insert_id;
+            //$this->id_ad = $this->conn->insert_id;
             $stmt->close();
             $this->conn->close();
             return ['state' => true, 'message' => 'Insert thành công'];
@@ -119,16 +116,16 @@ class AdModel extends Model
         }
     }
 
-    public function updateAd($adId, $adData)
+    public function updateAd($ad)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-        $sql = "UPDATE ad SET ho_ten = ?, id_user = ? WHERE id_ad = ?";
+        $sql = "UPDATE ad SET ho_ten = ? WHERE id_ad = ?";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sii", $adData->ho_ten, $adData->id_user, $adId);
+        $stmt->bind_param("si", $ad->ho_ten, $ad->id_ad);
 
         if ($stmt->execute()) {
             $stmt->close();
