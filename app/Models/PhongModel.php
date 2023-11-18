@@ -99,9 +99,10 @@ class PhongModel extends Model
         $sql = "INSERT INTO phong () VALUES ()";
 
         $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $phong->id_phong);
 
         if ($stmt->execute()) {
-            $this->id_phong = $this->conn->insert_id;
+            //$this->id_phong = $this->conn->insert_id;
             $stmt->close();
             $this->conn->close();
             return ['state' => true, 'message' => 'Insert thành công'];
@@ -112,20 +113,50 @@ class PhongModel extends Model
         }
     }
 
-    public function updatePhong($phongId, $phongData)
+    public function updatePhong($phong)
     {
-        // Update operation for Phong might not be applicable in your case, 
-        // as you have not specified the fields to be updated.
-        // If needed, you can add the specific fields and update logic.
-        return ['state' => false, 'message' => 'Update không được hỗ trợ cho PhongModel'];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "UPDATE phong SET id_phong = ? WHERE id_phong = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $phong->id_phong);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Update thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
+        }
+        //return ['state' => false, 'message' => 'Update không được hỗ trợ cho PhongModel'];
     }
 
     public function deletePhong($phongId)
     {
-        // Delete operation for Phong might not be applicable in your case,
-        // as you have not specified the fields for deletion condition.
-        // If needed, you can add the specific condition for deletion.
-        return ['state' => false, 'message' => 'Delete không được hỗ trợ cho PhongModel'];
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "DELETE FROM phong WHERE id_phong = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $phong->id_phong);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Delete thành công'];
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $stmt->error];
+        }
+        //return ['state' => false, 'message' => 'Delete không được hỗ trợ cho PhongModel'];
     }
 
     public function __destruct()
