@@ -3,6 +3,13 @@ html {
   font-size: 16px;
 }
 
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
 *,
 *:before,
 *:after {
@@ -61,4 +68,14 @@ img {
 }
 .login-form__password-input {
   width: 100%;
+}
+
+.shadow-inset{
+  box-shadow: inset 0 0 4px #333;
+}
+.class__item--upcoming{
+  color: #FFA33C;
+}
+.class__item--inprocess{
+  color: #87c26b;
 }
