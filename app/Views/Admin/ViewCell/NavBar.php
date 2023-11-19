@@ -22,15 +22,20 @@
                 </div>
             </div>
             <div class="top-nav__drop-down">
-                <img id="avatar" src="<?php base_url() ?>/assets/img/ava.jpg" alt="">
-                <span id="name">Nguyễn Tấn Phát</span>
+                <img id="avatar" src="<?php             
+                        $base64Image = base64_encode($avatar_data);
+                        echo "data:image/jpg;base64," . $base64Image;?>" alt="">
+                <span id="name"><?php echo $username?></span>
                 <img id="drop-down-icon" src="<?php base_url() ?>/assets/img/caret_down.png" alt="">
             </div>
             <div style="position: relative;">
                 <div class="profile-pop-up">
-                    <img id="ava" src="<?php base_url() ?>/assets/img/ava.jpg" alt="">
-                    <p id="name">Nguyễn Tấn Phát</p>
-                    <p id="role">Adminstrator</p>
+                    <img id="ava" src="<?php             
+                        $base64Image = base64_encode($avatar_data);
+                        echo "data:image/png;base64," . $base64Image;?>
+                        " alt="">
+                    <p id="name"><?php echo $username?></p>
+                    <p id="role"><?php echo $role?></p>
                     <a href="">
                         <img src="" alt="">
                         Hồ sơ của tôi
@@ -39,7 +44,7 @@
                         <img src="" alt="">
                         Quản lý tài khoản
                     </a>
-                    <a href="">
+                    <a href="<?php base_url() ?>/LoginController/logout">
                         <img src="" alt="">
                         Đăng xuất 
                     </a>

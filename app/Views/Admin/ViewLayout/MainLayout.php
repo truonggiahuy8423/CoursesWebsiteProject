@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,22 +13,24 @@
 
 <body>
     <!-- top nav -->
-    <?php echo $navbar?>
-    <button class="okbut">OK</button>
-    <p class="label">Huy</p>
-    <button class="dis">disable</button>
-    <div class="a">
-        <div class="b"></div>
-    </div>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+   
     <!-- left nav -->
-
-    <div>
-
+    <div class="left-nav">
+        <img class="left-nav__logo" src="<?php echo base_url(); ?>/assets/img/logo_course.png" alt="">
+        <a class="item1" href="<?php echo base_url()."/courses";?>">
+            Danh sách lớp học</a>
+        <a class="item2"  href="<?php echo base_url()."/lecturers";?>" >
+            Giảng viên</a>
+        <a class="item3" href="<?php echo base_url()."/students";?>" >
+            Học viên</a>
+        <a class="item4" href="<?php echo base_url()."/users";?>">
+            User
+        </a>
     </div>
+    <?php echo $navbar?>
     <!-- main section  -->
-    <div>
-
+    <div class="main-content">
+        
     </div>
     <!-- header -->
     <div>
@@ -38,5 +41,9 @@
 
     </div>
     
-
+    <script>
+        $(document).ready(function(e) {
+                $('.left-nav .item<?php echo $left_nav_chosen_value;?>').addClass('highlight');
+        })
+    </script>
 </html>

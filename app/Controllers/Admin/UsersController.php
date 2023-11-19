@@ -1,13 +1,12 @@
 <?php
 namespace App\Controllers\Admin;
-use App\Controllers\BaseController;
-use App\Controllers\LoginController;
 use App\Models\UserModel;
-
-class CoursesController extends BaseController
+use App\Controllers\BaseController;
+class UsersController extends BaseController
 {
-    public function index()
+    public function index(): string
     {
+        
         // Verify login status
         if (!session()->has('id_user')) {
             return redirect()->to('/');
@@ -18,7 +17,7 @@ class CoursesController extends BaseController
         $main_layout_data = array();
 
         //left navigation chosen value
-        $main_layout_data['left_nav_chosen_value'] = 1;
+        $main_layout_data['left_nav_chosen_value'] = 4;
 
         if (session()->get('role') == 1) { // Admin
             $result = $model->executeCustomQuery(
@@ -40,8 +39,4 @@ class CoursesController extends BaseController
         $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
         return view('Admin\ViewLayout\MainLayout', $main_layout_data);
     }
-
-
-    public function getCoursesListSection()
-    {}
 }
