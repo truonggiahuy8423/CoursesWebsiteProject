@@ -296,6 +296,15 @@ img {
 .highlight {
     background-color: rgb(243, 243, 243);
 }
+.shadow-inset{
+    box-shadow: inset 0 0 4px #333;
+  }
+  .class__item--upcoming{
+    color: #FFA33C;
+  }
+  .class__item--inprocess{
+    color: #87c26b;
+  }
 /* .top-nav__drop-down:active #drop-down-icon {
     transform: rotate(0deg);
 } */

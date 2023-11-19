@@ -32,10 +32,6 @@
     <div class="main-content">
         
     </div>
-    <!-- header -->
-    <div>
-
-    </div>
     <!-- footer -->
     <div>
 
