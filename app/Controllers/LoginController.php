@@ -56,11 +56,35 @@ class LoginController extends BaseController
             return view('LoginPage', $data);
         } else { // Login successfully
             if ($user->id_ad != null)
-                return redirect()->to("admin/home/" . urlencode(json_encode($_POST)));
+               { 
+                $session = session();
+                $session->set('id_user', $model->id_user);
+                $session->set('role', 1);
+                //return view('LoginPage');
+
+                //f (isset($_SESSION['id_user']))
+                //echo "ok";
+                return redirect()->to("/courses");
+
+            }
             // else if ($user->id_giang_vien != null)
             //     return redirect()->to("teacher/home/" . urlencode(json_encode($_POST)));
             // else if ($user->id_hoc_vien != null)
             //     return redirect()->to("student/home/" . urlencode(json_encode($_POST)));
         }
+    }
+
+    
+
+    public function logout() {
+        // Start the session
+        $session = session();
+        $session->remove('id_user');
+        $session->remove('role');
+
+        // Unset all session variables
+        $session->destroy();
+        // Redirect to the login page or handle as needed
+        return redirect()->to('/');
     }
 }
