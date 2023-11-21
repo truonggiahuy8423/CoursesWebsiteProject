@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/assets/schedule.css"/ >
+    <link rel="stylesheet" href="<?php base_url()?>/assets/schedule.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" />
 </head>
 
@@ -15,7 +15,7 @@
             <div class="subject">Lập trình .NET - 008.008401</div>
             <div class="group-inner"></div>
             <div class="subject1">Lập trình .NET - 008.008401</div>
-            <img class="back-icon" alt="" src="component/back_icon.png" id="back_icon" />
+            <img class="back-icon" alt="" src="<?php base_url()?>/assets/component/back_icon.png" id="back_icon" />
 
             <div class="attendance">Thành viên: 15</div>
             <div class="status">
@@ -689,31 +689,31 @@
                         <div class="im-danh1">Điểm danh</div>
                         <div class="ghi-ch">Ghi chú</div>
                     </div>
-                    <img class="checked-icon" alt="" src="component/Vector.png" />
+                    <img class="checked-icon" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon1" alt="" src="component/Vector.png" />
+                    <img class="checked-icon1" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon2" alt="" src="component/Vector.png" />
+                    <img class="checked-icon2" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon3" alt="" src="component/Vector.png" />
+                    <img class="checked-icon3" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon4" alt="" src="component/Vector.png" />
+                    <img class="checked-icon4" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon5" alt="" src="component/Vector.png" />
+                    <img class="checked-icon5" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon6" alt="" src="component/Vector.png" />
+                    <img class="checked-icon6" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon7" alt="" src="component/Vector.png" />
+                    <img class="checked-icon7" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon8" alt="" src="component/Vector.png" />
+                    <img class="checked-icon8" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon9" alt="" src="component/Vector.png" />
+                    <img class="checked-icon9" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon10" alt="" src="component/Vector.png" />
+                    <img class="checked-icon10" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon11" alt="" src="component/Vector.png" />
+                    <img class="checked-icon11" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
-                    <img class="checked-icon12" alt="" src="component/Vector.png" />
+                    <img class="checked-icon12" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
 
                     <div class="unchecked">
                         <div class="unchecked-child"></div>

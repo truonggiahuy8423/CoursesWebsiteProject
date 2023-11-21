@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class ClassController extends BaseController
+class ScheduleController extends BaseController
 {
     public function index()
     {
