@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="logo p-4 m-2 border border-gray rounded-2 shadow-sm">
-        <img class="login-form__logo" src="<?php base_url()?>/assets/img/logocourse.png" alt="Logo">
+        <img class="login-form__logo" src="<?php base_url()?>/assets/img/logo_course.png" alt="Logo">
     </div>
 
     <div class="main">
