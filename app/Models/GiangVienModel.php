@@ -3,70 +3,74 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-class NotificationModel
+
+include 'DatabaseConnect.php';
+
+class GiangVienModel
 {
-    public $notiId;
-    public $noiDung;
-    public $ngayDang;
-    public $idGiangVien;
-    public $idMuc;
+    public $id_giang_vien;
+    public $ho_ten;
+    public $ngay_sinh;
+    public $gioi_tinh;
+    public $email;
 
     private $conn;
     function __construct(){}
 
-
-    function getNotificationModelById($notiId)
+    function getGiangVienById($id_giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM thong_bao WHERE id_thong_bao = $notiId";
+        $sql = "SELECT * FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $user = new NotificationModel();
-            $this->notiId = $row["id_thong_bao"];
-            $this->noiDung = $row["noi_dung "];
-            $this->ngayDang = $row["ngay_dang"];
-            $this->idGiangVien = $row["id_giang_vien"];
-            $this->idMuc = $row["id_muc"];
+            $giang_vien = new GiangVienModel();
+            $this->id_giang_vien = $row["id_giang_vien"];
+            $this->ho_ten = $row["ho_ten"];
+            $this->ngay_sinh = $row["ngay_sinh"];
+            $this->gioi_tinh = $row["gioi_tinh"];
+            $this->email = $row["email"];
             $this->conn->close();
-            return $user;
+            return $giang_vien;
         }
-        $this->conn->close();
-        return null;
+        else{
+            $this->conn->close();
+            return null;
+        }
     }
 
-    function getAllNotificationModels()
+    function getAllGiangViens()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM thong_bao";
+        $sql = "SELECT * FROM giang_vien";
         $result = $this->conn->query($sql);
-        $users = [];
+        $giang_viens = [];
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $user = new NotificationModel();
-                $this->notiId = $row["id_thong_bao"];
-                $this->noiDung = $row["noi_dung "];
-                $this->ngayDang = $row["ngay_dang"];
-                $this->idGiangVien = $row["id_giang_vien"];
-                $this->idMuc = $row["id_muc"];
-                $users[] = $user;
+                $giang_vien = new GiangVienModel();
+                $this->id_giang_vien = $row["id_giang_vien"];
+                $this->ho_ten = $row["ho_ten"];
+                $this->ngay_sinh = $row["ngay_sinh"];
+                $this->gioi_tinh = $row["gioi_tinh"];
+                $this->email = $row["email"];
+                $giang_viens[] = $giang_vien;
             }
         }
         $this->conn->close();
-        return $users;
+        return $giang_viens;
     }
 
-    function queryDatabase($sql)
+    function executeCustomQuery($sql)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -85,65 +89,65 @@ class NotificationModel
         return $rows;
     }
 
-    function insertNotificationModel($user)
+    function insertGiangVien($giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $noiDung = $this->conn->real_escape_string($user->noiDung);
-        $ngayDang = $this->conn->real_escape_string($user->ngayDang);
-        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
-        $idMuc = $this->conn->real_escape_string($user->idMuc);
+        $ho_ten = $this->conn->real_escape_string($giang_vien->ho_ten);
+        $ngay_sinh = $this->conn->real_escape_string($giang_vien->ngay_sinh);
+        $gioi_tinh = $this->conn->real_escape_string($giang_vien->gioi_tinh);
+        $email = $this->conn->real_escape_string($giang_vien->email);
 
-        $sql = "INSERT INTO thong_bao (noi_dung , ngay_dang, id_giang_vien, id_muc) VALUES ('$noiDung', '$ngayDang', '$idGiangVien', '$idMuc')";
+        $sql = "INSERT INTO giang_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Insert thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
         }
     }
 
-    function deleteNotificationModel($user)
+    function deleteGiangVien($giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $notiId = $this->conn->real_escape_string($user->notiId);
-        $sql = "DELETE FROM thong_bao WHERE id_thong_bao = $notiId";
+        $id_giang_vien = $this->conn->real_escape_string($giang_vien->id_giang_vien);
+        $sql = "DELETE FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Delete thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
         }
     }
 
-    function updateNotificationModel($user)
+    function updateGiangVien($giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $notiId = $this->conn->real_escape_string($user->notiId);
-        $noiDung = $this->conn->real_escape_string($user->noiDung);
-        $ngayDang = $this->conn->real_escape_string($user->ngayDang);
-        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
-        $idMuc = $this->conn->real_escape_string($user->idMuc);
+        $id_giang_vien = $this->conn->real_escape_string($giang_vien->id_giang_vien);
+        $ho_ten = $this->conn->real_escape_string($giang_vien->ho_ten);
+        $ngay_sinh = $this->conn->real_escape_string($giang_vien->ngay_sinh);
+        $gioi_tinh = $this->conn->real_escape_string($giang_vien->gioi_tinh);
+        $email = $this->conn->real_escape_string($giang_vien->email);
 
-        $sql = "UPDATE thong_bao SET noi_dung  = '$noiDung', ngay_dang = '$ngayDang', id_giang_vien = '$idGiangVien', id_muc = '$idMuc' WHERE id_thong_bao = $notiId";
+        $sql = "UPDATE giang_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_giang_vien = $id_giang_vien";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Update thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
