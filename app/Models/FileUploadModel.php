@@ -3,63 +3,57 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-class StudentModel
+class FileUploadModel
 {
-    public $studentId;
-    public $hoTen;
-    public $ngaySinh;
-    public $gioiTinh;
-    public $email;
+    public $fileId;
+    public $duLieu;
+    public $ngayTai;
+    public $idUser;
 
     private $conn;
-    function __construct(){}
+    function __construct($fileId, $duLieu, $ngayTai, $idUser)
+    {
+        $this->fileId = $fileId;
+        $this->duLieu = $duLieu;
+        $this->ngayTai = $ngayTai;
+        $this->idUser = $idUser;
+    }
 
-    function getStudentById($studentId)
+
+    function getFileUploadById($fileId)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM hoc_vien WHERE id_hoc_vien = $studentId";
+        $sql = "SELECT * FROM tep_tin_tai_len WHERE id_tep_tin_tai_len = $fileId";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $user = new StudentModel();
-            $this->studentId = $row["id_hoc_vien"];
-            $this->hoTen = $row["ho_ten"];
-            $this->ngaySinh = $row["ngay_sinh"];
-            $this->gioiTinh = $row["gioi_tinh"];
-            $this->email = $row["email"];
+            $user = new FileUploadModel($row["id_tep_tin_tai_len"], $row["du_lieu"], $row["ngay_tai_len"], $row["id_user"]);
             $this->conn->close();
             return $user;
         }
-        else{
-            $this->conn->close();
-            return null;
-        }
+        $this->conn->close();
+        return null;
     }
 
-    function getAllStudents()
+    function getAllFileUploads()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM hoc_vien";
+        $sql = "SELECT * FROM tep_tin_tai_len";
         $result = $this->conn->query($sql);
         $users = [];
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $user = new StudentModel();
-                $this->studentId = $row["id_hoc_vien"];
-                $this->hoTen = $row["ho_ten"];
-                $this->ngaySinh = $row["ngay_sinh"];
-                $this->gioiTinh = $row["gioi_tinh"];
-                $this->email = $row["email"];
+                $user = new FileUploadModel($row["id_tep_tin_tai_len"], $row["du_lieu"], $row["ngay_tai_len"], $row["id_user"]);
                 $users[] = $user;
             }
         }
@@ -86,19 +80,18 @@ class StudentModel
         return $rows;
     }
 
-    function insertStudent($user)
+    function insertFileUpload($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
-        $email = $this->conn->real_escape_string($user->email);
+        $duLieu = $this->conn->real_escape_string($user->duLieu);
+        $ngayTai = $this->conn->real_escape_string($user->ngayTai);
+        $idUser = $this->conn->real_escape_string($user->idUser);
 
-        $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$hoTen', '$ngaySinh', '$gioiTinh', '$email')";
+        $sql = "INSERT INTO tep_tin_tai_len (du_lieu, ngay_tai_len, id_user) VALUES ('$duLieu', '$ngayTai', '$idUser')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
             return ['state' => true, 'message' => ''];
@@ -108,15 +101,15 @@ class StudentModel
         }
     }
 
-    function deleteStudent($user)
+    function deleteFileUpload($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $studentId = $this->conn->real_escape_string($user->studentId);
-        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = $studentId";
+        $fileId = $this->conn->real_escape_string($user->fileId);
+        $sql = "DELETE FROM tep_tin_tai_len WHERE id_tep_tin_tai_len = $fileId";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -127,20 +120,19 @@ class StudentModel
         }
     }
 
-    function updateStudent($user)
+    function updateFileUpload($user)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $studentId = $this->conn->real_escape_string($user->studentId);
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
-        $email = $this->conn->real_escape_string($user->email);
+        $fileId = $this->conn->real_escape_string($user->fileId);
+        $duLieu = $this->conn->real_escape_string($user->duLieu);
+        $ngayTai = $this->conn->real_escape_string($user->ngayTai);
+        $idUser = $this->conn->real_escape_string($user->idUser);
 
-        $sql = "UPDATE hoc_vien SET ho_ten = '$hoTen', ngay_sinh = '$ngaySinh', gioi_tinh = '$gioiTinh', email = '$email' WHERE id_hoc_vien = $studentId";
+        $sql = "UPDATE tep_tin_tai_len SET du_lieu = '$duLieu', ngay_tai_len = '$ngayTai', id_user = '$idUser' WHERE id_tep_tin_tai_len = $fileId";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -151,7 +143,3 @@ class StudentModel
         }
     }
 }
-    
-
-
-
