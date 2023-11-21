@@ -16,6 +16,7 @@
         <div>
             <img class="logo" src="<?php base_url()?>/assets/img/logocourse.png" alt="Logo">
         </div>
+
     </div>
 
     <div class="main">
