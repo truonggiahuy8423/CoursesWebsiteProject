@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-4">
                     <div class="card-body">
-                        <div class="card-title text text-uppercase fs-1 fw-bold">Nguyễn Văn ABC</div>
+                        <div class="card-title text text-uppercase fs-2 fw-bold">Nguyễn Văn ABC</div>
                         <div class="card-subtitle mb-2 text-muted fs-3">ID: <span class="mssv">21520000</span></div>
                     </div>
                 </div>
@@ -31,19 +31,20 @@
                 </div>
                 <div class="col-2 border-start">
                     <div class="card-body">
-                        <button class="btn btn-info">
-                            <i class="fas fa-user-cog" style="color: #000000;"></i>
+                        <button class="btn btn-outline-dark">
+                            <i class="fas fa-user-cog"></i>
                             Chỉnh sửa thông tin
                         </button>
                         <div class="my-3"></div>
-                        <button class="btn btn-info">
-                            <i class="fas fa-undo-alt" style="color: #000000;"></i>
+                        <button class="btn btn-outline-dark">
+                            <i class="fas fa-undo-alt"></i>
                             Đặt lại mặc định
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="fs-3 ms-3">
             <div aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -52,45 +53,160 @@
                 </ol>
             </div>
         </div>
-        <div class="row">
+
+        <div class="row ">
             <div class="col-2">
                 <div class="card">
 
                 </div>
             </div>
             <div class="col-10">
-                <div class="card p-4">
-                    <div class="row mb-4">
-                        <div class="col-4">
-                            <div class="p-3 card shadow-sm">
-                                <div class="card-body">
-                                    <h3 class="card-title">Lập trình .NET</h3>
-                                    <h6 class="card-subtitle mb-2 text-muted">Giảng viên: Mai Xuân Hùng</h6>
-                                    <div class="my-5"></div>
-                                    <p class="card-text mb-1">Thời gian: 01/09/2023 - 10/12/2023</p>
-                                    <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                <div class="card p-4 mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card-title fs-3 fw-bold">Các khóa học đã tham gia</div>
+                            </div>
+                            <div class="col-6">
+                                <div class=" d-flex justify-content-end">
+                                    <div>
+                                        <select class="form-select" aria-label="Default select example">
+                                            <option selected>Tất cả</option>
+                                            <option value="1">Kết thúc</option>
+                                            <option value="2">Đang diễn ra</option>
+                                            <option value="3">Sắp diễn ra</option>
+                                        </select>
+                                    </div>
+                                    <div class="mx-2"></div>
+                                    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                        Mở rộng/Thu gọn
+                                    </button>
                                 </div>
+                               
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="p-3 card shadow-sm">
-                                <div class="card-body">
-                                    <h3 class="card-title">Công nghệ Java</h3>
-                                    <h6 class="card-subtitle mb-2 text-muted">Giảng viên: Vũ Minh Sang</h6>
-                                    <div class="my-5"></div>
-                                    <p class="card-text mb-1">Thời gian: 01/09/2023 - 10/12/2023</p>
-                                    <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Lập trình .NET</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Công nghệ Java</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
-                        <div class="col-4">
-                            <div class="p-3 card shadow-sm">
-                                <div class="card-body">
-                                    <h3 class="card-title">Cơ sở dữ liệu phân tán</h3>
-                                    <h6 class="card-subtitle mb-2 text-muted">Giảng viên: Nguyền Hồ Duy Tri</h6>
-                                    <div class="my-5"></div>
-                                    <p class="card-text mb-1">Thời gian: 01/09/2023 - 10/12/2023</p>
-                                    <p class="card-text">Trạng thái: <span class="class__item--upcoming">Sắp diễn ra</span></p>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Lập trình .NET</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Công nghệ Java</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Lập trình .NET</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 card shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title">Công nghệ Java</h3>
+                                        <div class="my-3"></div>
+                                        <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="collapse" id="collapseExample">
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Lập trình .NET</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Công nghệ Java</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Lập trình .NET</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Công nghệ Java</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Lập trình .NET</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Công nghệ Java</h3>
+                                            <div class="my-3"></div>
+                                            <p class="card-text">Trạng thái: <span class="class__item--inprocess">Đang diễn ra</span></p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -298,13 +298,23 @@ img {
 }
 .shadow-inset{
     box-shadow: inset 0 0 4px #333;
-  }
-  .class__item--upcoming{
+}
+.class__item--upcoming{
     color: #FFA33C;
-  }
-  .class__item--inprocess{
+}
+.class__item--inprocess{
     color: #87c26b;
-  }
+}
+
+.class__item--end{
+    color: #D71313;
+}
+i .fas{
+    color : #333;
+}
+i .fas:hover{
+    color: #ffffff;
+}
 /* .top-nav__drop-down:active #drop-down-icon {
     transform: rotate(0deg);
 } */
