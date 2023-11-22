@@ -78,23 +78,82 @@
                             $('.form-container').remove();
                         });
                         $(`.insert-class-form__save-btn`).click(function() {
+                            loadingEffect(true);
+                            $(`.insert-class-form .error-message`).html(``);
                             // Get data from html
-                            var selectedSubjectId = $('.insert-class-form__subject-cbb').val();
+                            var selectedSubjectId = $('.insert-class-form__subject-cbb option:selected').val();
                             var beginDate = $('.insert-class-form__begin-date-picker').val();
                             var endDate = $('.insert-class-form__end-date-picker').val();
-
+                            var selectedLecturers = {};
+                            $(`.insert-class-form__lecturers-table .lecturer-checkbox:checked`).each(function() {
+                                selectedLecturers[$(this).val() + ""] = $(this).parent().parent().find(`td`).eq(1).text();
+                            });
+                            // object -> json
+                            var obj = {
+                                id_mon_hoc: selectedSubjectId,
+                                ngay_bat_dau: beginDate,
+                                ngay_ket_thuc: endDate,
+                            }
+                            console.log($('.insert-class-form__subject-cbb').html());
+                            var jsonData = JSON.stringify(obj);
+                            console.log(jsonData);
                             // Send insert request with data(Converted to JSON)
                             $.ajax({
                                 url: '<?php echo base_url(); ?>/Admin/CoursesController/insertCourse', // Đường dẫn tới API hoặc resource bạn muốn gọi
                                 method: 'POST', // Phương thức HTTP (GET, POST, PUT, DELETE, vv.)
                                 dataType: 'json', // Kiểu dữ liệu bạn mong đợi từ phản hồi (json, html, text, vv.)
-                                data: { // Dữ liệu bạn muốn gửi đi (nếu có)
-                                    key1: 'value1',
-                                    key2: 'value2'
-                                },
+                                data:  // Dữ liệu bạn muốn gửi đi (nếu có)
+                                    jsonData
+                                ,
                                 success: function(response) {
-                                    // Xử lý kết quả thành công ở đây
+                                    console.log("here");
                                     console.log(response);
+                                    var processResult1 = (response);
+                                    console.log("huy");
+                                    if (processResult1.state) {
+                                        // Insert class succesfully
+                                        // Prepare data
+                                        var obj = {
+                                            id_lop_hoc: processResult1.auto_increment_id,
+                                            lecturer_id_list: selectedLecturers
+                                        }
+                                        var jsonData = JSON.stringify(obj);
+                                        // Insert list of lecturers's id into phanconggiangvien
+                                        $.ajax({
+                                            url: '<?php echo base_url(); ?>/Admin/CoursesController/insertLecturersIntoClass',
+                                            method: 'POST',
+                                            contentType: 'application/json', // Đặt kiểu dữ liệu của yêu cầu là JSON
+                                            data: jsonData,
+                                            success: function(response) {
+                                                // Xử lý in ra thông báo khi request thêm danh sách giảng viên vào lớp
+                                                var className = $(`.insert-class-form__subject-cbb`).find(':selected').text();
+                                                className = className.substring(6, className.length);
+                                                var processResult = (response);
+                                                loadingEffect(false);
+                                                $('.form-container').remove();
+                                                // Gọi hàm in thông báo, type: "succcess", title: "Thêm lớp thành công", content: "Lớp ${className} ${selectedSubjectId}.${processResult1.auto_increment_id} được thêm thành công"
+                                                for (var [lecturer, processState] of Object.entries(processResult)) {           // có vấn đề
+                                                    if (processState.state) {
+                                                        alert(`Lớp ${className} ${str_pad(selectedSubjectId, 3, '0', STR_PAD_LEFT)}.${str_pad(processResult1.auto_increment_id, 3, '0', STR_PAD_LEFT)} được thêm thành công`);
+                                                        // Gọi hàm in thông báo, type: "succcess", title: "Thêm lớp thành công", content: "Lớp ${className} ${selectedSubjectId}.${processResult1.auto_increment_id} được thêm thành công"
+                                                    } else {
+                                                        alert(`Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại", content: "processState.message`);
+                                                        // Gọi hàm in thông báo, type: "error", title: "Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại", content: "processState.message"
+                                                    }
+                                                }
+                                                // Xử lý phản hồi từ máy chủ khi thành công
+                                                console.log('Server response:', response);
+                                            },
+                                            error: function(xhr, status, error) {
+                                                // Xử lý lỗi khi gửi yêu cầu
+                                                console.error('Error:', status, error);
+                                            }
+                                        });
+                                    } else {
+                                        loadingEffect(false);
+                                        // Error
+                                        $(`.insert-class-form .error-message`).html(processState.message);
+                                    }
                                 },
                                 error: function(xhr, status, error) {
                                     // Xử lý lỗi ở đây

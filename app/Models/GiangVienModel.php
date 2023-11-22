@@ -58,13 +58,14 @@ class GiangVienModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $giang_vien = new GiangVienModel();
-                $this->id_giang_vien = $row["id_giang_vien"];
-                $this->ho_ten = $row["ho_ten"];
-                $this->ngay_sinh = $row["ngay_sinh"];
-                $this->gioi_tinh = $row["gioi_tinh"];
-                $this->email = $row["email"];
+                $giang_vien->id_giang_vien = $row["id_giang_vien"];
+                $giang_vien->ho_ten = $row["ho_ten"];
+                $giang_vien->ngay_sinh = $row["ngay_sinh"];
+                $giang_vien->gioi_tinh = $row["gioi_tinh"];
+                $giang_vien->email = $row["email"];
                 $giang_viens[] = $giang_vien;
             }
+            
         }
         $this->conn->close();
         return $giang_viens;

@@ -3,6 +3,8 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+include 'DatabaseConnect.php';
+
 Class LopModel
 {
     public $id_lop_hoc;
@@ -85,22 +87,67 @@ Class LopModel
     function insertLop($lop)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        
         if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+            return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
         }
-
-        $ngay_bat_dau = $this->conn->real_escape_string($lop->ngay_bat_dau);
-        $ngay_ket_thuc = $this->conn->real_escape_string($lop->ngay_ket_thuc);
-        $id_mon_hoc = $this->conn->real_escape_string($lop->id_mon_hoc);
-        $email = $this->conn->real_escape_string($lop->email);
-
-        $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES ('$ngay_bat_dau', '$ngay_ket_thuc', '$id_mon_hoc')";
-        if ($this->conn->query($sql) === TRUE) {
-            $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
+    
+        if (isset($lop->ngay_bat_dau) && isset($lop->ngay_ket_thuc) && isset($lop->id_mon_hoc)) {
+            $ngay_bat_dau = $this->conn->real_escape_string($lop->ngay_bat_dau);
+            $ngay_ket_thuc = $this->conn->real_escape_string($lop->ngay_ket_thuc);
+            $id_mon_hoc = $this->conn->real_escape_string($lop->id_mon_hoc);
+    
+            $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES (?, ?, ?)";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param('ssi', $ngay_bat_dau, $ngay_ket_thuc, $id_mon_hoc);
+    
+            if ($stmt->execute()) {
+                $insertedId = $this->conn->insert_id;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+            } else {
+                $error_message = $this->conn->error;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => false, 'message' => $error_message];
+            }
         } else {
-            $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
+        }
+    }
+    function insertLop2($id_lop_hoc, $ngay_bat_dau, $ngay_ket_thuc)
+    {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        
+        if ($this->conn->connect_error) {
+            return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
+        }
+    
+        if (isset($ngay_bat_dau) && isset($ngay_ket_thuc) && isset($id_mon_hoc)) {
+            $ngay_bat_dau = $this->conn->real_escape_string($ngay_bat_dau);
+            $ngay_ket_thuc = $this->conn->real_escape_string($ngay_ket_thuc);
+            $id_mon_hoc = $this->conn->real_escape_string($id_mon_hoc);
+    
+            $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES (?, ?, ?)";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param('ssi', $ngay_bat_dau, $ngay_ket_thuc, $id_mon_hoc);
+    
+            if ($stmt->execute()) {
+                $insertedId = $this->conn->insert_id;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+            } else {
+                $error_message = $this->conn->error;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => false, 'message' => $error_message];
+            }
+        } else {
+            return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
         }
     }
 

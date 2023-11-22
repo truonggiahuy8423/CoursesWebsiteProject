@@ -16,16 +16,19 @@
                 <?php
                 
                 for ($i = 0; $i < count($subjects); $i++) {
-                    echo `
-                                <option value="{$subjects[$i]->id_mon_hoc}">
-                                    {$subjects[$i]->id_mon_hoc} - {$subjects[$i]->ten_mon_hoc}
-                                </option>
-                            `;
+                    echo '
+                        <option value="' . $subjects[$i]->id_mon_hoc . '">
+                            ' .  str_pad($subjects[$i]->id_mon_hoc, 3, '0', STR_PAD_LEFT) . ' - ' . $subjects[$i]->ten_mon_hoc . '
+                        </option>
+                    ';
                 }
+                
                 ?>
             </select>
+
             <br>
         </div>
+        <p class="error-message" style="color: red;"></p>
         <span style="margin-left: 20px; margin-bottom: 10px;">Danh sách giảng viên</span>
         <div class="insert-class-form__table-container">
             <table class="insert-class-form__lecturers-table">
@@ -42,15 +45,18 @@
                     <?php
                     for ($i = 0; $i < count($lecturers); $i++) {
                         $gioi_tinh = $lecturers[$i]->gioi_tinh == 0 ? "Nam" : "Nữ";
-                        echo `
+                        $id_giang_vien = $lecturers[$i]->id_giang_vien;
+                        $ho_ten = $lecturers[$i]->ho_ten;
+                        $email = $lecturers[$i]->email;
+                        echo " {$lecturers[$i]->id_giang_vien}
                                 <tr>
-                                    <td>{$lecturers[$i]->id_giang_vien}</td>
-                                    <td>{$lecturers[$i]->ho_ten}</td>
-                                    <td>{$lecturers[$i]->email}</td>
+                                    <td>{$id_giang_vien}</td>
+                                    <td>{$ho_ten}</td>
+                                    <td>{$email}</td>
                                     <td>{$gioi_tinh}</td>
-                                    <td><input type="checkbox" value="{$lecturers[$i]->id_giang_vien}"></td>
+                                    <td><input class=\"lecturer-checkbox\" type=\"checkbox\" value=\"{$id_giang_vien}\"></td>
                                 </tr>
-                            `;
+                            ";
                     }
 
                     ?>
