@@ -65,7 +65,7 @@ class BaiNopModel {
 
         if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $baiNop = new UserModel();
+                $baiNop = new BaiNopModel();
                 $baiNop->id_bai_nop = $row['id_bai_nop'];
                 $baiNop->thoi_gian_nop = $row['thoi_gian_nop'];
                 $baiNop->id_bai_tap = $row['id_bai_tap'];
