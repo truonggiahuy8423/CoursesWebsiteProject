@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/style.css">
     <script src="<?php echo base_url(); ?>/assets/jquery.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="<?= base_url('assets/toast.css') ?>">
+    <script src="<?php echo base_url('assets/script.js'); ?>"></script>
 </head>
 
 <body>
@@ -32,6 +34,9 @@
     <div class="main-content">
         
     </div>
+
+    <div id="toast"></div>
+
     <!-- footer -->
     <div>
 
