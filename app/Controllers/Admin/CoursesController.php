@@ -2,6 +2,9 @@
 namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Controllers\LoginController;
+use App\Models\ClassModel;
+use App\Models\LecturersModel;
+use App\Models\MonHocModel;
 use App\Models\UserModel;
 
 class CoursesController extends BaseController
@@ -60,6 +63,37 @@ class CoursesController extends BaseController
     {}
 
     public function getInsertForm() {
-        return view('Admin\ViewCell\InsertClassForm');
+        // Verify login status
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $data = array();
+        // Subjects
+        $subjectsModel = new MonHocModel();
+        $data['subjects'] = $subjectsModel->getAllMonHoc();
+        // Lecturers
+        $lecturersModel = new LecturersModel();
+        $data['lecturers'] = $lecturersModel->getAllLecturers();
+        // $data[`ok`] = 10;
+        return view('Admin\ViewCell\InsertClassForm', $data);
+    }
+
+    public function insertCourse() {
+        // Verify login status
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // Process
+        
+        $courseData = json_decode($this->response->getJSON());
+        $course = new ClassModel();
+        $course->id_lop_hoc = $courseData['id_lop_hoc'];
+        $course->ngay_bat_dau = $courseData['ngay_bat_dau'];
+        $course->ngay_ket_thuc = $courseData['ngay_ket_thuc'];
+        $course->id_mon_hoc = $courseData['id_mon_hoc'];
+
+        $model = new ClassModel();
+        $return = json_encode($model->insertClass($course));
+        
     }
 }

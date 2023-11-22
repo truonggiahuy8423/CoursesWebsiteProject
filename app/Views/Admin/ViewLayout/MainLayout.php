@@ -51,46 +51,74 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-    console.log('ready');
+        $(document).ready(function() {
+            console.log('ready');
 
-    // $(document).on('click', '.insert-class-form__cancel-btn', function () {
-    //     $('.form-container').remove();
-    // });
+            // $(document).on('click', '.insert-class-form__cancel-btn', function () {
+            //     $('.form-container').remove();
+            // });
 
-    $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');
+            $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');
 
-    let loadingState = false;
+            let loadingState = false;
 
-    $(`.add-class-btn`).click(function () {
-        console.log('OK');
-        loadingEffect(true);
+            $(`.add-class-btn`).click(function() {
+                console.log('OK');
+                loadingEffect(true);
 
-        // Use jQuery.ajax for the AJAX request
-        $.ajax({
-            url: '<?php echo base_url(); ?>/Admin/CoursesController/getInsertForm',
-            method: 'GET',
-            success: function (response) {
-                loadingEffect(false);
-                $('body').append(response);
-                $(`.insert-class-form__cancel-btn`).click(function() {
-                    $('.form-container').remove();
-                })
-            },
-            error: function (xhr, status, error) {
-                loadingEffect(false);
-                console.error('Lỗi yêu cầu:', status, error);
-            },
-            complete: function () {
-                loadingEffect(false);
-            }
+                // Use jQuery.ajax for the AJAX request
+                $.ajax({
+                    url: '<?php echo base_url(); ?>/Admin/CoursesController/getInsertForm',
+                    method: 'GET',
+                    success: function(response) {
+                        loadingEffect(false);
+                        $('body').append(response);
+                        // Add event handler
+                        $(`.insert-class-form__cancel-btn`).click(function() {
+                            $('.form-container').remove();
+                        });
+                        $(`.insert-class-form__save-btn`).click(function() {
+                            // Get data from html
+                            var selectedSubjectId = $('.insert-class-form__subject-cbb').val();
+                            var beginDate = $('.insert-class-form__begin-date-picker').val();
+                            var endDate = $('.insert-class-form__end-date-picker').val();
+
+                            // Send insert request with data(Converted to JSON)
+                            $.ajax({
+                                url: '<?php echo base_url(); ?>/Admin/CoursesController/insertCourse', // Đường dẫn tới API hoặc resource bạn muốn gọi
+                                method: 'POST', // Phương thức HTTP (GET, POST, PUT, DELETE, vv.)
+                                dataType: 'json', // Kiểu dữ liệu bạn mong đợi từ phản hồi (json, html, text, vv.)
+                                data: { // Dữ liệu bạn muốn gửi đi (nếu có)
+                                    key1: 'value1',
+                                    key2: 'value2'
+                                },
+                                success: function(response) {
+                                    // Xử lý kết quả thành công ở đây
+                                    console.log(response);
+                                },
+                                error: function(xhr, status, error) {
+                                    // Xử lý lỗi ở đây
+                                    console.error('Error:', status, error);
+                                }
+                            });
+
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        loadingEffect(false);
+                        console.error('Lỗi yêu cầu:', status, error);
+                    },
+                    complete: function() {
+                        loadingEffect(false);
+                    }
+                });
+            });
         });
-    });
-});
 
         function appendElements(selector, element) {
             $(`${selector}`).html(`${ $(`${selector}`).html() + element}`)
         }
+
         function loadingEffect(state) {
             if (state) {
                 $('body').append("<div class='loading-effect'><i class='fa-solid fa-spinner loading-icon'></i></div>");

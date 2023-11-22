@@ -5,32 +5,32 @@ use CodeIgniter\Model;
 use mysqli;
 class ClassModel
 {
-    public $classId;
-    public $ngayBatDau;
-    public $ngayKetThuc;
-    public $idMonHoc;
+    public $id_lop_hoc;
+    public $ngay_bat_dau;
+    public $ngay_ket_thuc;
+    public $id_mon_hoc;
 
     private $conn;
     function __construct(){}
 
 
-    function getClassById($classId)
+    function getClassById($id_lop_hoc)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM lop_hoc WHERE id_lop_hoc = $classId";
+        $sql = "SELECT * FROM lop_hoc WHERE id_lop_hoc = $id_lop_hoc";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $user = new ClassModel();
-            $this->classId = $row["id_lop_hoc"];
-            $this->ngayBatDau = $row["ngay_bat_dau"];
-            $this->ngayKetThuc = $row["ngay_ket_thuc"];
-            $this->idMonHoc = $row["id_mon_hoc"];
+            $this->id_lop_hoc = $row["id_lop_hoc"];
+            $this->ngay_bat_dau = $row["ngay_bat_dau"];
+            $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
+            $this->id_mon_hoc = $row["id_mon_hoc"];
             $this->conn->close();
             return $user;
         }
@@ -52,10 +52,10 @@ class ClassModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $user = new ClassModel();
-                $this->classId = $row["id_lop_hoc"];
-                $this->ngayBatDau = $row["ngay_bat_dau"];
-                $this->ngayKetThuc = $row["ngay_ket_thuc"];
-                $this->idMonHoc = $row["id_mon_hoc"];
+                $this->id_lop_hoc = $row["id_lop_hoc"];
+                $this->ngay_bat_dau = $row["ngay_bat_dau"];
+                $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
+                $this->id_mon_hoc = $row["id_mon_hoc"];
                 $users[] = $user;
             }
         }
@@ -89,12 +89,12 @@ class ClassModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $ngayBatDau = $this->conn->real_escape_string($user->ngayBatDau);
-        $ngayKetThuc = $this->conn->real_escape_string($user->ngayKetThuc);
-        $idMonHoc = $this->conn->real_escape_string($user->idMonHoc);
-        $email = $this->conn->real_escape_string($user->email);
+        $ngay_bat_dau = $this->conn->real_escape_string($user->ngay_bat_dau);
+        $ngay_ket_thuc = $this->conn->real_escape_string($user->ngay_ket_thuc);
+        $id_mon_hoc = $this->conn->real_escape_string($user->id_mon_hoc);
+        // $email = $this->conn->real_escape_string($user->email);
 
-        $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES ('$ngayBatDau', '$ngayKetThuc', '$idMonHoc')";
+        $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES ('$ngay_bat_dau', '$ngay_ket_thuc', '$id_mon_hoc')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
             return ['state' => true, 'message' => ''];
@@ -111,8 +111,8 @@ class ClassModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $classId = $this->conn->real_escape_string($user->classId);
-        $sql = "DELETE FROM lop_hoc WHERE id_lop_hoc = $classId";
+        $id_lop_hoc = $this->conn->real_escape_string($user->id_lop_hoc);
+        $sql = "DELETE FROM lop_hoc WHERE id_lop_hoc = $id_lop_hoc";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -130,12 +130,12 @@ class ClassModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $classId = $this->conn->real_escape_string($user->classId);
-        $ngayBatDau = $this->conn->real_escape_string($user->ngayBatDau);
-        $ngayKetThuc = $this->conn->real_escape_string($user->ngayKetThuc);
-        $idMonHoc = $this->conn->real_escape_string($user->idMonHoc);
+        $id_lop_hoc = $this->conn->real_escape_string($user->id_lop_hoc);
+        $ngay_bat_dau = $this->conn->real_escape_string($user->ngay_bat_dau);
+        $ngay_ket_thuc = $this->conn->real_escape_string($user->ngay_ket_thuc);
+        $id_mon_hoc = $this->conn->real_escape_string($user->id_mon_hoc);
 
-        $sql = "UPDATE lop_hoc SET ngay_bat_dau = '$ngayBatDau', ngay_ket_thuc = '$ngayKetThuc', id_mon_hoc = '$idMonHoc' WHERE id_lop_hoc = $classId";
+        $sql = "UPDATE lop_hoc SET ngay_bat_dau = '$ngay_bat_dau', ngay_ket_thuc = '$ngay_ket_thuc', id_mon_hoc = '$id_mon_hoc' WHERE id_lop_hoc = $id_lop_hoc";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();

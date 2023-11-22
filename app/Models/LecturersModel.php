@@ -8,32 +8,32 @@ include 'DatabaseConnect.php';
 
 class LecturersModel
 {
-    public $lecturerId;
-    public $hoTen;
-    public $ngaySinh;
-    public $gioiTinh;
+    public $id_giang_vien;
+    public $ho_ten;
+    public $ngay_sinh;
+    public $gioi_tinh;
     public $email;
 
     private $conn;
     function __construct(){}
 
-    function getLecturersById($lecturerId)
+    function getLecturersById($id_giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM giang_vien WHERE id_giang_vien = $lecturerId";
+        $sql = "SELECT * FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $user = new LecturersModel();
-            $this->lecturerId = $row["id_giang_vien"];
-            $this->hoTen = $row["ho_ten"];
-            $this->ngaySinh = $row["ngay_sinh"];
-            $this->gioiTinh = $row["gioi_tinh"];
+            $this->id_giang_vien = $row["id_giang_vien"];
+            $this->ho_ten = $row["ho_ten"];
+            $this->ngay_sinh = $row["ngay_sinh"];
+            $this->gioi_tinh = $row["gioi_tinh"];
             $this->email = $row["email"];
             $this->conn->close();
             return $user;
@@ -58,10 +58,10 @@ class LecturersModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $user = new LecturersModel();
-                $this->lecturerId = $row["id_giang_vien"];
-                $this->hoTen = $row["ho_ten"];
-                $this->ngaySinh = $row["ngay_sinh"];
-                $this->gioiTinh = $row["gioi_tinh"];
+                $this->id_giang_vien = $row["id_giang_vien"];
+                $this->ho_ten = $row["ho_ten"];
+                $this->ngay_sinh = $row["ngay_sinh"];
+                $this->gioi_tinh = $row["gioi_tinh"];
                 $this->email = $row["email"];
                 $users[] = $user;
             }
@@ -96,12 +96,12 @@ class LecturersModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
+        $ho_ten = $this->conn->real_escape_string($user->ho_ten);
+        $ngay_sinh = $this->conn->real_escape_string($user->ngay_sinh);
+        $gioi_tinh = $this->conn->real_escape_string($user->gioi_tinh);
         $email = $this->conn->real_escape_string($user->email);
 
-        $sql = "INSERT INTO giang_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$hoTen', '$ngaySinh', '$gioiTinh', '$email')";
+        $sql = "INSERT INTO giang_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
             return ['state' => true, 'message' => ''];
@@ -118,8 +118,8 @@ class LecturersModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $lecturerId = $this->conn->real_escape_string($user->lecturerId);
-        $sql = "DELETE FROM giang_vien WHERE id_giang_vien = $lecturerId";
+        $id_giang_vien = $this->conn->real_escape_string($user->id_giang_vien);
+        $sql = "DELETE FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -137,13 +137,13 @@ class LecturersModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $lecturerId = $this->conn->real_escape_string($user->lecturerId);
-        $hoTen = $this->conn->real_escape_string($user->hoTen);
-        $ngaySinh = $this->conn->real_escape_string($user->ngaySinh);
-        $gioiTinh = $this->conn->real_escape_string($user->gioiTinh);
+        $id_giang_vien = $this->conn->real_escape_string($user->id_giang_vien);
+        $ho_ten = $this->conn->real_escape_string($user->ho_ten);
+        $ngay_sinh = $this->conn->real_escape_string($user->ngay_sinh);
+        $gioi_tinh = $this->conn->real_escape_string($user->gioi_tinh);
         $email = $this->conn->real_escape_string($user->email);
 
-        $sql = "UPDATE giang_vien SET ho_ten = '$hoTen', ngay_sinh = '$ngaySinh', gioi_tinh = '$gioiTinh', email = '$email' WHERE id_giang_vien = $lecturerId";
+        $sql = "UPDATE giang_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_giang_vien = $id_giang_vien";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();

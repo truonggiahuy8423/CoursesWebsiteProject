@@ -15,7 +15,7 @@ class MonHocModel extends Model
 
     public function __construct()
     {
-
+        
     }
 
     public function getMonHocById($monHocId)
@@ -66,7 +66,6 @@ class MonHocModel extends Model
                 $monHoc = new MonHocModel();
                 $monHoc->id_mon_hoc = $row['id_mon_hoc'];
                 $monHoc->ten_mon_hoc = $row['ten_mon_hoc'];
-
                 $monHocs[] = $monHoc;
             }
         }
