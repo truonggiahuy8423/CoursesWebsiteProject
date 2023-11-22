@@ -3,77 +3,67 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-class AssignmentModel
+Class LopModel
 {
-    public $assignmentId;
-    public $trangThai;
-    public $ten;
-    public $noiDung;
-    public $thoiHan;
-    public $idGiangVien;
-    public $idMuc;
+    public $id_lop_hoc;
+    public $ngay_bat_dau;
+    public $ngay_ket_thuc;
+    public $id_mon_hoc;
 
     private $conn;
     function __construct(){}
 
 
-    function getAssignmentById($id)
+    function getLopById($id_lop_hoc)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM hoc_vien WHERE id_bai_tap = $id";
+        $sql = "SELECT * FROM lop_hoc WHERE id_lop_hoc = $id_lop_hoc";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $user = new AssignmentModel();
-            $this->assignmentId = $row["id_bai_tap"];
-            $this->trangThai = $row["trang_thai"];
-            $this->ten = $row["ten"];
-            $this->noiDung = $row["noi_dung"];
-            $this->thoiHan = $row["thoi_han "];
-            $this->idGiangVien = $row["id_giang_vien"];
-            $this->idMuc = $row["id_muc"];
+            $lop = new LopModel();
+            $this->id_lop_hoc = $row["id_lop_hoc"];
+            $this->ngay_bat_dau = $row["ngay_bat_dau"];
+            $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
+            $this->id_mon_hoc = $row["id_mon_hoc"];
             $this->conn->close();
-            return $user;
+            return $lop;
         }
         $this->conn->close();
         return null;
     }
 
-    function getAllAssignments()
+    function getAllLops()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM hoc_vien";
+        $sql = "SELECT * FROM lop_hoc";
         $result = $this->conn->query($sql);
-        $users = [];
+        $lops = [];
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $user = new AssignmentModel();
-                $this->assignmentId = $row["id_bai_tap"];
-                $this->trangThai = $row["trang_thai"];
-                $this->ten = $row["ten"];
-                $this->noiDung = $row["noi_dung"];
-                $this->thoiHan = $row["thoi_han "];
-                $this->idGiangVien = $row["id_giang_vien"];
-                $this->idMuc = $row["id_muc"];
-                $this->conn->close();                
-                $users[] = $user;
+                $lop = new LopModel();
+                $this->id_lop_hoc = $row["id_lop_hoc"];
+                $this->ngay_bat_dau = $row["ngay_bat_dau"];
+                $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
+                $this->id_mon_hoc = $row["id_mon_hoc"];
+                $lops[] = $lop;
             }
         }
         $this->conn->close();
-        return $users;
+        return $lops;
     }
 
-    function queryDatabase($sql)
+    function executeCustomQuery($sql)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -92,68 +82,64 @@ class AssignmentModel
         return $rows;
     }
 
-    function insertAssignment($user)
+    function insertLop($lop)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $trangThai = $this->conn->real_escape_string($user->trangThai);
-        $ten = $this->conn->real_escape_string($user->ten);
-        $noiDung = $this->conn->real_escape_string($user->noiDung);
-        $thoiHan = $this->conn->real_escape_string($user->thoiHan);
-        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
-        $idMuc = $this->conn->real_escape_string($user->idMuc);
-        $sql = "INSERT INTO hoc_vien (trang_thai, ten, noi_dung, thoi_han, id_giang_vien, id_muc) VALUES ('$trangThai', '$ten', '$noiDung', '$thoiHan', '$idGiangVien', '$idMuc')";
+        $ngay_bat_dau = $this->conn->real_escape_string($lop->ngay_bat_dau);
+        $ngay_ket_thuc = $this->conn->real_escape_string($lop->ngay_ket_thuc);
+        $id_mon_hoc = $this->conn->real_escape_string($lop->id_mon_hoc);
+        $email = $this->conn->real_escape_string($lop->email);
+
+        $sql = "INSERT INTO lop_hoc (ngay_bat_dau, ngay_ket_thuc, id_mon_hoc) VALUES ('$ngay_bat_dau', '$ngay_ket_thuc', '$id_mon_hoc')";
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Insert thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
         }
     }
 
-    function deleteAssignment($user)
+    function deleteLop($lop)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $assignmentId = $this->conn->real_escape_string($user->assignmentId);
-        $sql = "DELETE FROM hoc_vien WHERE id_bai_tap = $assignmentId";
+        $id_lop_hoc = $this->conn->real_escape_string($lop->id_lop_hoc);
+        $sql = "DELETE FROM lop_hoc WHERE id_lop_hoc = $id_lop_hoc";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Delete thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
         }
     }
 
-    function updateAssignment($user)
+    function updateLop($lop)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $assignmentId = $this->conn->real_escape_string($user->assignmentId);
-        $trangThai = $this->conn->real_escape_string($user->trangThai);
-        $ten = $this->conn->real_escape_string($user->ten);
-        $noiDung = $this->conn->real_escape_string($user->noiDung);
-        $thoiHan = $this->conn->real_escape_string($user->thoiHan);
-        $idGiangVien = $this->conn->real_escape_string($user->idGiangVien);
-        $idMuc = $this->conn->real_escape_string($user->idMuc);
+        $id_lop_hoc = $this->conn->real_escape_string($lop->id_lop_hoc);
+        $ngay_bat_dau = $this->conn->real_escape_string($lop->ngay_bat_dau);
+        $ngay_ket_thuc = $this->conn->real_escape_string($lop->ngay_ket_thuc);
+        $id_mon_hoc = $this->conn->real_escape_string($lop->id_mon_hoc);
 
-        $sql = "UPDATE hoc_vien SET trang_thai = '$trangThai', ten = '$ten', noi_dung = '$noiDung', thoi_han = '$thoiHan', id_giang_vien  = '$idGiangVien', id_muc = '$idMuc' WHERE id_bai_tap = $assignmentId";
+        $sql = "UPDATE lop_hoc SET ngay_bat_dau = '$ngay_bat_dau', ngay_ket_thuc = '$ngay_ket_thuc', id_mon_hoc = '$id_mon_hoc' WHERE id_lop_hoc = $id_lop_hoc";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
-            return ['state' => true, 'message' => ''];
+            return ['state' => true, 'message' => 'Update thành công'];
         } else {
             $this->conn->close();
             return ['state' => false, 'message' => $this->conn->error];
