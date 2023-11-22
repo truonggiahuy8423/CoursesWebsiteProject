@@ -1,11 +1,12 @@
+
 // function showToast(type, message) {
 //     const toastContainer = document.getElementById('toast-container');
-    
+
 //     // Tạo một thẻ div để chứa thông báo
 //     const toastElement = document.createElement('div');
 //     toastElement.className = `toast ${type}`;
 //     toastElement.innerText = message;
-    
+
 //     // Thêm thông báo vào container
 //     toastContainer.appendChild(toastElement);
 
@@ -20,10 +21,10 @@
 //     // Create a div to hold the toast message
 //     const toastContainer = document.getElementById('toast-container');
 //     const toastElement = document.createElement('div');
-    
+
 //     // Add Bootstrap classes for styling
 //     toastElement.className = `toast show ${type}`;
-    
+
 //     // Set the toast content
 //     toastElement.innerHTML = `
 //         <div class="toast-header">
@@ -34,7 +35,7 @@
 //             ${message}
 //         </div>
 //     `;
-    
+
 //     // Append the toast to the container
 //     toastContainer.appendChild(toastElement);
 
@@ -45,11 +46,11 @@
 // }
 
 function toast(options) {
-    const toastContainer = document.getElementById('toast');
-    const toastElement = document.createElement('div');
-    const iconClass = options.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-  
-    toastElement.innerHTML = `
+  const toastContainer = document.getElementById('toast');
+  const toastElement = document.createElement('div');
+  const iconClass = options.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+
+  toastElement.innerHTML = `
       <div class="toast-header">
         <i class="${iconClass}"></i>
         <strong class="me-auto">${options.title}</strong>
@@ -59,35 +60,44 @@ function toast(options) {
         ${options.message}
       </div>
     `;
-  
-    toastElement.className = `toast show bg-${options.type} text-light`;
-  
-    // Append the toast to the container
-    toastContainer.appendChild(toastElement);
-  
-    // Automatically remove the toast after the specified duration
-    setTimeout(() => {
-      toastElement.remove();
-    }, options.duration);
+
+  toastElement.className = `toast show bg-${options.type} text-light`;
+
+  // Append the toast to the container
+  toastContainer.appendChild(toastElement);
+
+  // Automatically remove the toast after the specified duration
+  setTimeout(() => {
+    toastElement.remove();
+  }, options.duration);
+}
+
+// Function to show success toast
+function showSuccessToast() {
+  toast({
+    title: "Thành công!",
+    message: "Bạn đã thành công.",
+    type: "success",
+    duration: 5000
+  });
+}
+
+// Function to show error toast
+function showErrorToast() {
+  toast({
+    title: "Thất bại!",
+    message: "Có lỗi xảy ra, vui lòng liên hệ quản trị viên.",
+    type: "danger",
+    duration: 5000
+  });
+}
+
+
+function loadingEffect(state) {
+  if (state) {
+    $('')
+  } else {
+
   }
-  
-  // Function to show success toast
-  function showSuccessToast() {
-    toast({
-      title: "Thành công!",
-      message: "Bạn đã thành công.",
-      type: "success",
-      duration: 5000
-    });
-  }
-  
-  // Function to show error toast
-  function showErrorToast() {
-    toast({
-      title: "Thất bại!",
-      message: "Có lỗi xảy ra, vui lòng liên hệ quản trị viên.",
-      type: "danger",
-      duration: 5000
-    });
-  }
-  
+}
+

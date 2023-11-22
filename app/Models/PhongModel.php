@@ -145,7 +145,7 @@ class PhongModel extends Model
         $sql = "DELETE FROM phong WHERE id_phong = ?";
         
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $phong->id_phong);
+        $stmt->bind_param("i", $phongId);
 
         if ($stmt->execute()) {
             $stmt->close();
