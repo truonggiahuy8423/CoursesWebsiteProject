@@ -1,97 +1,136 @@
+// function toast(options) {
+//   const toastContainer = document.getElementById('toast');
+//   const toastElement = document.createElement('div');
+//   const iconClass = options.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
 
-// function showToast(type, message) {
-//     const toastContainer = document.getElementById('toast-container');
-
-//     // Tạo một thẻ div để chứa thông báo
-//     const toastElement = document.createElement('div');
-//     toastElement.className = `toast ${type}`;
-//     toastElement.innerText = message;
-
-//     // Thêm thông báo vào container
-//     toastContainer.appendChild(toastElement);
-
-//     // Tự động xóa thông báo sau một khoảng thời gian
-//     setTimeout(() => {
-//         toastElement.remove();
-//     }, 5000); 
-// }
-
-
-// function showToast(type, message) {
-//     // Create a div to hold the toast message
-//     const toastContainer = document.getElementById('toast-container');
-//     const toastElement = document.createElement('div');
-
-//     // Add Bootstrap classes for styling
-//     toastElement.className = `toast show ${type}`;
-
-//     // Set the toast content
-//     toastElement.innerHTML = `
-//         <div class="toast-header">
-//             <strong class="me-auto">Thông báo</strong>
-//             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-//         </div>
-//         <div class="toast-body">
-//             ${message}
-//         </div>
+//   toastElement.innerHTML = `
+//       <div class="toast-header">
+//         <i class="${iconClass}"></i>
+//         <strong class="me-auto">${options.title}</strong>
+//         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+//       </div>
+//       <div class="toast-body">
+//         ${options.message}
+//       </div>
 //     `;
 
-//     // Append the toast to the container
-//     toastContainer.appendChild(toastElement);
+//   toastElement.className = `toast show bg-${options.type} text-light`;
 
-//     // Automatically remove the toast after a certain time (e.g., 3 seconds)
-//     setTimeout(() => {
-//         toastElement.remove();
-//     }, 3000);
+//   // Append the toast to the container
+//   toastContainer.appendChild(toastElement);
+
+//   // Automatically remove the toast after the specified duration
+//   setTimeout(() => {
+//     toastElement.remove();
+//   }, options.duration);
 // }
 
-function toast(options) {
-  const toastContainer = document.getElementById('toast');
-  const toastElement = document.createElement('div');
-  const iconClass = options.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+// // Function to show success toast
+// function showSuccessToast() {
+//   toast({
+//     title: "Thành công!",
+//     message: "Bạn đã thành công.",
+//     type: "success",
+//     duration: 5000
+//   });
+// }
 
-  toastElement.innerHTML = `
-      <div class="toast-header">
-        <i class="${iconClass}"></i>
-        <strong class="me-auto">${options.title}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        ${options.message}
-      </div>
-    `;
+// // Function to show error toast
+// function showErrorToast() {
+//   toast({
+//     title: "Thất bại!",
+//     message: "Có lỗi xảy ra, vui lòng liên hệ quản trị viên.",
+//     type: "danger",
+//     duration: 5000
+//   });
+// }
 
-  toastElement.className = `toast show bg-${options.type} text-light`;
+function toast({
+  title = '',
+  message = '',
+  type = 'info',
+  duration = 3000
+}) {
+  const main = document.getElementById('toast');
+  if (main) {
+    const toast = documen.createElement('div');
 
-  // Append the toast to the container
-  toastContainer.appendChild(toastElement);
+    //Auto remove toast
+    const autoRemoveId = setTimeout(function () {
+      main.removeChild(toast);
+    }, duration + 1000);
 
-  // Automatically remove the toast after the specified duration
-  setTimeout(() => {
-    toastElement.remove();
-  }, options.duration);
+    //Remove toast when clicked
+    toast.onclick = function (e) {
+      if (e.target.closest('.toast__close')) {
+        main.removeChild(toast);
+        clearTimeout(autoRemoveId);
+      }
+    }
+
+    const icons = {
+      success: 'fa-solid fa-circle-check',
+      info: 'fa-solid fa-circle-info',
+      warning: 'fa-solid fa-circle-exclamation',
+      error: 'fa-solid fa-circle-exclamation',
+    };
+    const icon = icons[type];
+    const delay = (duration / 1000).toFixed(2);
+
+    toast.classList.add('toast', `toast--${type}`);
+    toast.style.animation = `slideInLeft case .3s, fadeOut linear 1s ${delay}s forwards`;
+
+    toast.innerHTML = `
+          <div class="toast__icon">
+              <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="toast__body">
+              <h3 class="toast__title">${title}</h3>
+              <p class="toast__msg">${message}</p>
+          </div>
+          <div class="toast__close">
+              <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+      `;
+    main.appendChild(toast);
+  }
 }
 
-// Function to show success toast
 function showSuccessToast() {
   toast({
-    title: "Thành công!",
-    message: "Bạn đã thành công.",
-    type: "success",
+    title: 'Thành công',
+    message: 'Bạn đã thành công',
+    type: 'success',
     duration: 5000
   });
 }
 
-// Function to show error toast
+function showInfoToast() {
+  toast({
+    title: 'Thông tin',
+    message: '',
+    type: 'info',
+    duration: 5000
+  });
+}
+
+function showWarningToast() {
+  toast({
+    title: 'Cảnh báo',
+    message: '',
+    type: 'warning',
+    duration: 5000
+  });
+}
+
 function showErrorToast() {
   toast({
-    title: "Thất bại!",
-    message: "Có lỗi xảy ra, vui lòng liên hệ quản trị viên.",
-    type: "danger",
+    title: 'Thất bại',
+    message: 'Có lỗi xảy ra, vui lòng liên hệ quản trị viên',
+    type: 'error',
     duration: 5000
   });
 }
-
 
 function loadingEffect(state) {
   if (state) {
