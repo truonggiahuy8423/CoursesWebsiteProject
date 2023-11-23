@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/style.css">
 
+    <link rel="stylesheet" type="text/css" href="<?= base_url('assets/toast.css') ?>">
+    <script src="<?php echo base_url('assets/script.js'); ?>"></script>
 </head>
 
 <body>
@@ -45,6 +47,9 @@
         <?php echo isset($mainsection) ? $mainsection : ''; ?>
         <!--  -->
     </div>
+
+    <div id="toast"></div>
+
     <!-- footer -->
     <div>
 
