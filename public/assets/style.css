@@ -316,8 +316,15 @@ img {
 .shadow-inset {
     box-shadow: inset 0 0 4px #333;
 }
+.p-3 {
+    height: 100%;
+    transition: 0.5s;
+    cursor: pointer;
+}
+.p-3:hover {
+    box-shadow: 0 0 4px #a6a6a6!important;
 
-
+}
 .class__item--upcoming {
     color: #FFA33C;
 }
@@ -328,6 +335,11 @@ img {
 
 .class__item--over {
     color: #ff0000;
+}
+.class__item {
+    margin-bottom: 20px;
+    /* min-width: 100px; */
+
 }
 .main-content {
     margin-top: 80px;

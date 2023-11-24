@@ -107,9 +107,8 @@
                                 url: '<?php echo base_url(); ?>/Admin/CoursesController/insertCourse', // Đường dẫn tới API hoặc resource bạn muốn gọi
                                 method: 'POST', // Phương thức HTTP (GET, POST, PUT, DELETE, vv.)
                                 dataType: 'json', // Kiểu dữ liệu bạn mong đợi từ phản hồi (json, html, text, vv.)
-                                data:  // Dữ liệu bạn muốn gửi đi (nếu có)
-                                    jsonData
-                                ,
+                                data: // Dữ liệu bạn muốn gửi đi (nếu có)
+                                    jsonData,
                                 success: function(response) {
                                     console.log("here");
                                     console.log(response);
@@ -136,13 +135,30 @@
                                                 var processResult = (response);
                                                 loadingEffect(false);
                                                 $('.form-container').remove();
+                                                toast({
+                                                            title: "Thành công!",
+                                                            message: `Lớp ${className} ${selectedSubjectId.toString().padStart(3, '0')}.${processResult1.auto_increment_id.toString().padStart(8, '0')} được thêm thành công`,
+                                                            type: "success",
+                                                            duration: 5000
+                                                        });
                                                 // Gọi hàm in thông báo, type: "succcess", title: "Thêm lớp thành công", content: "Lớp ${className} ${selectedSubjectId}.${processResult1.auto_increment_id} được thêm thành công"
-                                                for (var [lecturer, processState] of Object.entries(processResult)) {           // có vấn đề
+                                                for (var [lecturer, processState] of Object.entries(processResult)) { // có vấn đề
                                                     if (processState.state) {
-                                                        alert(`Lớp ${className} ${str_pad(selectedSubjectId, 3, '0', STR_PAD_LEFT)}.${str_pad(processResult1.auto_increment_id, 3, '0', STR_PAD_LEFT)} được thêm thành công`);
+                                                        toast({
+                                                            title: "Thành công!",
+                                                            message: `Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thành công`,
+                                                            type: "success",
+                                                            duration: 5000
+                                                        });
                                                         // Gọi hàm in thông báo, type: "succcess", title: "Thêm lớp thành công", content: "Lớp ${className} ${selectedSubjectId}.${processResult1.auto_increment_id} được thêm thành công"
                                                     } else {
-                                                        alert(`Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại", content: "processState.message`);
+                                                        toast({
+                                                            title: "Thất bại!",
+                                                            message: `Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại(${processState.message}).`,
+                                                            type: "danger",
+                                                            duration: 5000
+                                                        });
+                                                        alert();
                                                         // Gọi hàm in thông báo, type: "error", title: "Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại", content: "processState.message"
                                                     }
                                                 }
@@ -190,6 +206,7 @@
                 $('.loading-effect').remove();
             }
         }
+        
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 

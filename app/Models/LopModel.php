@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-
+use DateTime;
 use CodeIgniter\Model;
 use mysqli;
 include 'DatabaseConnect.php';
@@ -39,7 +39,19 @@ Class LopModel
         $this->conn->close();
         return null;
     }
-
+    public static function compareCoursesByBeginDate($a, $b) {
+        $datetime_a = DateTime::createFromFormat('Y-m-d', $a->ngay_bat_dau);
+        $datetime_b = DateTime::createFromFormat('Y-m-d', $b->ngay_bat_dau);
+    
+        if ($datetime_a > $datetime_b) {
+            return 1;
+        } else if ($datetime_a < $datetime_b) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+    
     function getAllLops()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
@@ -54,13 +66,14 @@ Class LopModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $lop = new LopModel();
-                $this->id_lop_hoc = $row["id_lop_hoc"];
-                $this->ngay_bat_dau = $row["ngay_bat_dau"];
-                $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
-                $this->id_mon_hoc = $row["id_mon_hoc"];
+                $lop->id_lop_hoc = $row["id_lop_hoc"];
+                $lop->ngay_bat_dau = $row["ngay_bat_dau"];
+                $lop->ngay_ket_thuc = $row["ngay_ket_thuc"];
+                $lop->id_mon_hoc = $row["id_mon_hoc"];
                 $lops[] = $lop;
             }
         }
+        usort($lops, [$this, 'compareCoursesByBeginDate']);
         $this->conn->close();
         return $lops;
     }

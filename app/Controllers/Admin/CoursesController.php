@@ -7,11 +7,24 @@ use App\Models\GiangVienModel;
 use App\Models\LecturersModel;
 use App\Models\LopModel;
 use App\Models\MonHocModel;
+use App\Models\phan_cong_giang_vienModel;
 use App\Models\UserModel;
 use PHPUnit\Util\Json;
-
+use DateTime;
 class CoursesController extends BaseController
 {
+    public static function compareCoursesByBeginDate($a, $b) {
+        $datetime_a = DateTime::createFromFormat('d/m/Y', $a['ngay_bat_dau']);
+        $datetime_b = DateTime::createFromFormat('d/m/Y', $b['ngay_bat_dau']);
+    
+        if ($datetime_a < $datetime_b) {
+            return 1;
+        } else if ($datetime_a > $datetime_b) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
     public function index()
     {
         // Verify login status
@@ -46,6 +59,7 @@ class CoursesController extends BaseController
                     FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
                     WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};");
             }
+            usort($courses, [$this, 'compareCoursesByBeginDate']);
             $courses_list_section_layout_data['courses'] = $courses;
         }
         else if (session()->get('role') == 2) { // Giang vien
@@ -84,9 +98,41 @@ class CoursesController extends BaseController
         $model = new LopModel();
         return implode($model->insertLop2($id, $b, $c));
     }
+    // public function h() {
+    //     $model = new phan_cong_giang_vienModel();
+    //     return implode($model);
+    // }
     public function g() {
         $model = new GiangVienModel();
         return $model->getAllGiangViens()[0]->ho_ten;
+    }
+    function kiem_tra_tinh_trang($ngay_bat_dau, $ngay_ket_thuc) {
+        $ngbdtimestmp = strtotime($ngay_bat_dau);
+        $ngkttimestmp = strtotime($ngay_ket_thuc);
+    
+        $datetime_bat_dau = new DateTime();
+        $datetime_bat_dau->setTimestamp($ngbdtimestmp);
+    
+        $datetime_ket_thuc = new DateTime();
+        $datetime_ket_thuc->setTimestamp($ngkttimestmp);
+    
+        $datetime_hien_tai = new DateTime();
+    
+        $datetime_bat_dau->setTime(0, 0, 0);
+        $datetime_ket_thuc->setTime(23, 59, 59); // Đặt giờ, phút và giây về cuối ngày
+        echo $ngay_bat_dau.$ngay_ket_thuc;
+        echo $ngbdtimestmp;
+        echo $ngkttimestmp;
+        echo strtotime("1970-1-1");
+        echo $datetime_bat_dau->format("Y");
+        // So sánh
+        if ($datetime_bat_dau <= $datetime_hien_tai && $datetime_ket_thuc >= $datetime_hien_tai) {
+            return '<span class="class__item--inprocess">Đang diễn ra</span>';
+        } elseif ($datetime_ket_thuc < $datetime_hien_tai) {
+            return '<span class="class__item--over">Đã kết thúc</span>';
+        } else {
+            return '<span class="class__item--upcoming">Sắp diễn ra</span>';
+        }
     }
     public function insertCourse() {
         // Verify login status
@@ -120,9 +166,14 @@ class CoursesController extends BaseController
         $id_lop_hoc = $courseData['id_lop_hoc'];
         $lecturer_id_list = $courseData['lecturer_id_list'];
         
+        $model = new phan_cong_giang_vienModel();
+
         $processedResult = array();
         foreach ($lecturer_id_list as $id => $name) {
-            $processedResult["$name"."($id)"] = ['state' => true, 'message' => 'Update thành công']; // gọi PhanCongGiangVienModel
+            $data = new phan_cong_giang_vienModel();
+            $data->id_giang_vien = $id;
+            $data->id_lop_hoc = $id_lop_hoc;
+            $processedResult["$name"."($id)"] = $model->insertphan_cong_giang_vien($data); // gọi PhanCongGiangVienModel
         }
         return $this->response->setJSON($processedResult);
     }

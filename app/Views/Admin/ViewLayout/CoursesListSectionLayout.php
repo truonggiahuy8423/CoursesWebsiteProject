@@ -43,31 +43,26 @@
                     return $v;
                 }
                 function kiem_tra_tinh_trang($ngay_bat_dau, $ngay_ket_thuc) {
-                    $ngbdtimestmp = strtotime($ngay_bat_dau);
-                    $ngkttimestmp = strtotime($ngay_ket_thuc);
-                    // Khởi tạo đối tượng DateTime từ chuỗi ngày bắt đầu và ngày kết thúc
-                    $datetime_bat_dau = new DateTime();
-                    $datetime_bat_dau->setTimestamp($ngbdtimestmp);
-                    $datetime_ket_thuc = new DateTime();
-                    $datetime_ket_thuc->setTimestamp($ngkttimestmp);
-                    // Khởi tạo đối tượng DateTime của hiện tại
-                    $datetime_hien_tai = new DateTime();
-                    $datetime_ket_thuc->setTimestamp(time());
-
-                    // Đặt giờ, phút, giây về 0 cho cả 3 đối tượng
-                    $datetime_bat_dau->setTime(0, 0, 0);
-                    $datetime_ket_thuc->setTime(0, 0, 0);
-                    $datetime_hien_tai->setTime(0, 0, 0);
+                    $datetime_bat_dau = DateTime::createFromFormat('d/m/Y', $ngay_bat_dau);        
                 
+                    $datetime_ket_thuc =  DateTime::createFromFormat('d/m/Y', $ngay_ket_thuc);  
+                
+                    $datetime_hien_tai = new DateTime();
+                
+                    $datetime_bat_dau->setTime(0, 0, 0);
+                    $datetime_ket_thuc->setTime(23, 59, 59); // Đặt giờ, phút và giây về cuối ngày
+                    // echo $ngay_bat_dau.$ngay_ket_thuc;
+                    // echo $datetime_bat_dau->format("Y");
                     // So sánh
-                    if ($datetime_bat_dau > $datetime_hien_tai) {
-                        return '<span class="class__item--upcoming">Sắp diễn ra</span>';
+                    if ($datetime_bat_dau <= $datetime_hien_tai && $datetime_ket_thuc >= $datetime_hien_tai) {
+                        return '<span class="class__item--inprocess">Đang diễn ra</span>';
                     } elseif ($datetime_ket_thuc < $datetime_hien_tai) {
                         return '<span class="class__item--over">Đã kết thúc</span>';
                     } else {
-                        return '<span class="class__item--inprocess">Đang diễn ra</span>';
+                        return '<span class="class__item--upcoming">Sắp diễn ra</span>';
                     }
                 }
+                
                 ?>
 
             </div>

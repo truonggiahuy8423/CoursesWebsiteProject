@@ -10,9 +10,7 @@
         <div class="insert-class-form__subject-cbb-container">
             <span style="margin-left: 20px; margin-right: 10px;">Môn học</span>
             <select class="insert-class-form__subject-cbb" name="mon_hoc" size="4" id="">
-                <option value="">
-                    005 - Cơ sở dữ liệu
-                </option>
+                
                 <?php
                 
                 for ($i = 0; $i < count($subjects); $i++) {
@@ -44,7 +42,7 @@
                 <tbody>
                     <?php
                     for ($i = 0; $i < count($lecturers); $i++) {
-                        $gioi_tinh = $lecturers[$i]->gioi_tinh == 0 ? "Nam" : "Nữ";
+                        $gioi_tinh = $lecturers[$i]->gioi_tinh == 0 ? "Nữ" : "Nam";
                         $id_giang_vien = $lecturers[$i]->id_giang_vien;
                         $ho_ten = $lecturers[$i]->ho_ten;
                         $email = $lecturers[$i]->email;
