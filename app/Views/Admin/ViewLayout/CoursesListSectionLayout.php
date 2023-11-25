@@ -6,11 +6,26 @@
     <div class="class-container">
         <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
 
-            <input style="border-radius: 0; height: 30px; width: 90px;" type="text" class="w-25 form-control search-input" placeholder="Tìm khóa học">
+            <input style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm khóa học">
             <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon" style=""></i></button>
             <button class="add-class-btn highlight-button">
                 <i class="fa-solid fa-plus add-class-icon highlight-icon"></i>
             </button>
+            <button class="delete-class-btn highlight-button">
+                <i class="fa-solid fa-trash-can highlight-icon"></i>
+            </button>
+            <div class="cancel-div">
+            <button class="cancel-delete-class-btn highlight-button--cancel">
+                <i class="fa-solid fa-x highlight-icon--cancel" style="scale: 0.5;"></i>
+            </button>
+            </div>
+            <div class="save-div">
+            <button class="save-delete-class-btn highlight-button--save">
+                <i class="fa-solid fa-check highlight-icon--save" style="scale: 0.6;"></i>
+            </button>
+
+            </div>
+            
         </div>
 
         <div class="class__list p-4 border border-gray rounded-2 m-2 mt-3 shadow-inset" style="margin-top: 8px!important;">
@@ -20,35 +35,41 @@
                     $dsgv = "";
                     $y = 0;
                     foreach ($courses[$i]['lecturers'] as $lecturer) {
-                        $dsgv = $dsgv.($y != 0 ? ', ' : '').'<a href="' . base_url() . '/profile?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
+                        $dsgv = $dsgv . ($y != 0 ? ', ' : '') . '<a href="' . base_url() . '/profile?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
                         $y++;
                     }
                     $status = kiem_tra_tinh_trang($courses[$i]['ngay_bat_dau'], $courses[$i]['ngay_ket_thuc']);
+                    $courseid = str_pad($courses[$i]["id_mon_hoc"], 3, "0", STR_PAD_LEFT) . "." . str_pad($courses[$i]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
                     echo "
-            <div class='class__item col-4 col-xxl-4 '>
+            <div class='class__item col-4 col-xxl-4' courseid='{$courses[$i]["id_lop_hoc"]}' >
                 <div class='p-3 border border-gray rounded-2 shadow-sm'>
                     <div class='class__item__title mb-5'>
-                        <h6>{$courses[$i]["ten_mon_hoc"]}</h6>
+                        <h6>{$courses[$i]["ten_mon_hoc"]} {$courseid}</h6>
                         <p>Giảng viên: {$dsgv}</p>
                     </div>
                     <div class='class__item__state'>
                         <p>Thời gian: {$courses[$i]['ngay_bat_dau']} - {$courses[$i]["ngay_ket_thuc"]}</p>
                         <p>Trạng thái: {$status}</p>
                     </div>  
+                    <input type='checkbox' class='delete-checkbox' value='{$courses[$i]["id_lop_hoc"]}'>
+
+                    
                 </div>
             </div>
         ";
                 }
-                function ok($v) {
+                function ok($v)
+                {
                     return $v;
                 }
-                function kiem_tra_tinh_trang($ngay_bat_dau, $ngay_ket_thuc) {
-                    $datetime_bat_dau = DateTime::createFromFormat('d/m/Y', $ngay_bat_dau);        
-                
-                    $datetime_ket_thuc =  DateTime::createFromFormat('d/m/Y', $ngay_ket_thuc);  
-                
+                function kiem_tra_tinh_trang($ngay_bat_dau, $ngay_ket_thuc)
+                {
+                    $datetime_bat_dau = DateTime::createFromFormat('d/m/Y', $ngay_bat_dau);
+
+                    $datetime_ket_thuc =  DateTime::createFromFormat('d/m/Y', $ngay_ket_thuc);
+
                     $datetime_hien_tai = new DateTime();
-                
+
                     $datetime_bat_dau->setTime(0, 0, 0);
                     $datetime_ket_thuc->setTime(23, 59, 59); // Đặt giờ, phút và giây về cuối ngày
                     // echo $ngay_bat_dau.$ngay_ket_thuc;
@@ -62,7 +83,7 @@
                         return '<span class="class__item--upcoming">Sắp diễn ra</span>';
                     }
                 }
-                
+
                 ?>
 
             </div>

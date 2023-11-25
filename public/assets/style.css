@@ -188,7 +188,17 @@ img {
     align-items: center;
     padding-bottom: 17px;
 }
+@keyframes newClassEffect {
+    from {
+        opacity: 0;
+        background-color: #c0c0c0;
+    }
 
+    to {
+        opacity: 1;
+        background-color: #ffffff;
+    }
+}
 .message-pop-up {
     position: absolute;
     background-color: rgb(11, 41, 0);
@@ -320,11 +330,29 @@ img {
     height: 100%;
     transition: 0.5s;
     cursor: pointer;
+    position: relative;
 }
 .p-3:hover {
     box-shadow: 0 0 4px #a6a6a6!important;
 
 }
+
+.delete-checkbox {
+    /* border-radius: 4px; */
+    /* transition: 0.3s; */
+    /* border: none; */
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    /* transition: 0.4s; */
+    visibility: hidden;
+    /* background-color: #ff0000; */
+    /* box-shadow: 0 0 4px #a6a6a6!important; */
+}
+
+
+
+
 .class__item--upcoming {
     color: #FFA33C;
 }
@@ -338,13 +366,34 @@ img {
 }
 .class__item {
     margin-bottom: 20px;
-    /* min-width: 100px; */
+    min-width: 150px;
 
 }
+
 .main-content {
     margin-top: 80px;
     margin-left: 232px;
 }
+.search-input {
+    margin: 0!important;
+}
+.highlight-button--disable {
+    background-color: rgb(188, 188, 188);
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: #cacaca;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    border-radius: 0;
+    transition: 0.4s;
+    cursor: not-allowed!important;
+}
+.highlight-button--disable .highlight-icon::before {
+    color: #2C2C2C!important;
+}
+
 .highlight-button {
     background-color: white;
     border-style: solid;
@@ -355,33 +404,122 @@ img {
     align-items: center;
     width: 35px;
     border-radius: 0;
-
-}
-.search-input {
-    margin: 0!important;
+    transition: 0.4s;
 }
 .highlight-button:hover {
     background-color: #2C2C2C;
     border-color: #cacaca!important;
-
-
 }
 
 .highlight-button:active {
     background-color: #2C2C2C!important;
 
-
 }
-.p-3 p {
-    font-size: 13px;
-    
-}
-.highlight-icon::before {
-    color: #2C2C2C;
+.highlight-button .highlight-icon::before {
+    color: #2C2C2C!important;
 }
 .highlight-button:hover .highlight-icon::before {
     color: white!important;
 }
+
+
+.highlight-button--save {
+    cursor: pointer;
+    /* margin: auto 5px; */
+    background-color: #52ec4d;
+    /* border: none!important; */
+    border-style: solid;
+    border-width: 1px!important;
+    border-radius: 30px!important;
+    border-color: #52ec4d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 0;
+    transition: 0.4s;
+}
+.highlight-button--save:hover {
+    background-color:  #308c2c;;
+    border-color: #308c2c!important;
+}
+
+.highlight-button--save:active {
+    background-color: #308c2c!important;
+
+}
+.highlight-icon--save::before {
+    color: #ffffff!important;
+}
+.highlight-button--save:hover .highlight-icon--save::before {
+    color: white!important;
+}
+
+
+
+.highlight-button--cancel {
+    cursor: pointer;
+    background-color: #ff0000;
+    border-style: solid;
+    border-width: 1px!important;
+    border-radius: 30px!important;
+    border-color: #ff0000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-clip: border-box;
+    width: 25px;
+    height: 25px;
+    border-radius: 0;
+    transition: 0.4s;
+}
+.highlight-button--cancel:hover {
+    background-color: #bf0000;
+    border-color: #bf0000!important;
+}
+
+.highlight-button--cancel:active {
+    background-color: #bf0000!important;
+
+}
+.highlight-icon--cancel::before {
+    color: #ffffff!important;
+}
+.highlight-button--cancel:hover .highlight-icon--cancel::before {
+    color: white!important;
+}
+
+.delete-class-btn {
+    /* position: relative; */
+}
+.save-div {
+    position: absolute;
+    z-index: -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* width: 30px; */
+}
+.cancel-div {
+    /* padding-left: 5px; */
+    position: absolute;
+    z-index: -2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+}
+.class__search {
+    position: relative;
+}
+
+
+.p-3 p {
+    font-size: 13px;
+    
+}
+
 .form-container {
     /* visibility: hidden; */
 }

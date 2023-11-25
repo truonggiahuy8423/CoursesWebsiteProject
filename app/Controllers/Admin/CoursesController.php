@@ -25,6 +25,21 @@ class CoursesController extends BaseController
             return 0;
         }
     }
+    public function getListOfCourses() {
+        $model = new UserModel();
+        $courses = $model->executeCustomQuery(
+            "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+            FROM lop_hoc 
+            INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc");
+        for ($i = 0; $i < count($courses); $i++) {
+            $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};");
+        }
+        usort($courses, [$this, 'compareCoursesByBeginDate']);
+        return $this->response->setJSON($courses);
+    }
     public function index()
     {
         // Verify login status
@@ -77,7 +92,21 @@ class CoursesController extends BaseController
 
 
     public function getCoursesListSection()
-    {}
+    {
+        $model = new UserModel();
+        $courses = $model->executeCustomQuery(
+            "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+            FROM lop_hoc 
+            INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc");
+        for ($i = 0; $i < count($courses); $i++) {
+            $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};");
+        }
+        usort($courses, [$this, 'compareCoursesByBeginDate']);
+        return $this->response->setJSON($courses);
+    }
 
     public function getInsertForm() {
         // Verify login status
@@ -93,6 +122,21 @@ class CoursesController extends BaseController
         $data['lecturers'] = $lecturersModel->getAllGiangViens();
         // $data[`ok`] = 10;
         return view('Admin\ViewCell\InsertClassForm', $data);
+    }
+    public function deleteCourse() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $data = json_decode(json_encode($this->request->getJSON()), true);
+        // $data = ["courses" => [106, 2, 5]];
+        $courses = $data["courses"];
+        $response = array();
+        for ($i = 0; $i < count($courses); $i++) {
+            $model = new LopModel();
+            $response[$courses[$i]] = $model->deleteLop($courses[$i]);
+        }
+
+        return $this->response->setJSON($response);
     }
     public function a($id, $b, $c) {
         $model = new LopModel();

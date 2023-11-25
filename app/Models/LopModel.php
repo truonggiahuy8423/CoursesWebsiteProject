@@ -2,6 +2,7 @@
 namespace App\Models;
 use DateTime;
 use CodeIgniter\Model;
+use Exception;
 use mysqli;
 include 'DatabaseConnect.php';
 
@@ -40,8 +41,8 @@ Class LopModel
         return null;
     }
     public static function compareCoursesByBeginDate($a, $b) {
-        $datetime_a = DateTime::createFromFormat('Y-m-d', $a->ngay_bat_dau);
-        $datetime_b = DateTime::createFromFormat('Y-m-d', $b->ngay_bat_dau);
+        $datetime_a = DateTime::createFromFormat('d/m/Y', $a->ngay_bat_dau);
+        $datetime_b = DateTime::createFromFormat('d/m/Y', $b->ngay_bat_dau);
     
         if ($datetime_a > $datetime_b) {
             return 1;
@@ -164,22 +165,23 @@ Class LopModel
         }
     }
 
-    function deleteLop($lop)
+    function deleteLop($id_lop_hoc)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $id_lop_hoc = $this->conn->real_escape_string($lop->id_lop_hoc);
+        $id_lop_hoc = $this->conn->real_escape_string($id_lop_hoc);
         $sql = "DELETE FROM lop_hoc WHERE id_lop_hoc = $id_lop_hoc";
-
-        if ($this->conn->query($sql) === TRUE) {
+        try {
+            $this->conn->query($sql);
             $this->conn->close();
             return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 
