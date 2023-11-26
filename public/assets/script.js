@@ -88,3 +88,15 @@ function loadingEffect(state) {
 
   }
 }
+
+function setDisable() {
+
+}
+
+function loadingEffect(state) {
+    if (state) {
+        $('body').append("<div class='loading-effect'><i class='fa-solid fa-spinner loading-icon'></i></div>");
+    } else {
+        $('.loading-effect').remove();
+    }
+}

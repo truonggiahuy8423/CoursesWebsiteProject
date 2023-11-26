@@ -352,7 +352,9 @@ img {
 
 
 
-
+.class-div:active {
+    background-color: #cdcdcd;
+}
 .class__item--upcoming {
     color: #FFA33C;
 }
@@ -413,15 +415,42 @@ img {
 
 .highlight-button:active {
     background-color: #2C2C2C!important;
-
 }
 .highlight-button .highlight-icon::before {
-    color: #2C2C2C!important;
+    color: #2c2c2c!important;
+    
 }
 .highlight-button:hover .highlight-icon::before {
     color: white!important;
 }
 
+
+.highlight-button--reverse {
+    background-color: #2C2C2C;
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: #2C2C2C;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    border-radius: 0;
+    transition: 0.4s;
+}
+.highlight-button--reverse:hover {
+    background-color: white;
+    border-color: #2C2C2C!important;
+}
+
+.highlight-button--reverse:active {
+    background-color: white!important;
+}
+.highlight-button--reverse .highlight-icon--reverse::before {
+    color: white!important;
+}
+.highlight-button--reverse:hover .highlight-icon--reverse::before {
+    color: #2C2C2C!important;
+}
 
 .highlight-button--save {
     cursor: pointer;
@@ -654,8 +683,10 @@ img {
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: #cecece;
   }
+
+  
 .
 /* body {
     padding-top: 50px;

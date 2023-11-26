@@ -11,9 +11,6 @@ class BuoiHocModel {
     public $id_buoi_hoc;
     public $trang_thai;
     public $ngay;
-    public $ma_lop_hoc;
-    public $so_phong;
-    public $ma_ca;
     public $id_lop_hoc;
     public $id_ca;
     public $id_phong;
@@ -45,9 +42,6 @@ class BuoiHocModel {
             $this->id_buoi_hoc = $buoiHoc['id_buoi_hoc'];
             $this->trang_thai = $buoiHoc['trang_thai'];
             $this->ngay = $buoiHoc['ngay'];
-            $this->ma_lop_hoc = $buoiHoc['ma_lop_hoc'];
-            $this->so_phong = $buoiHoc['so_phong'];
-            $this->ma_ca = $buoiHoc['ma_ca'];
             $this->id_lop_hoc = $buoiHoc['id_lop_hoc'];
             $this->id_ca = $buoiHoc['id_ca'];
             $this->id_phong = $buoiHoc['id_phong'];
@@ -77,9 +71,6 @@ class BuoiHocModel {
                 $buoiHoc->id_buoi_hoc = $row['id_buoi_hoc'];
                 $buoiHoc->trang_thai = $row['trang_thai'];
                 $buoiHoc->ngay = $row['ngay'];
-                $buoiHoc->ma_lop_hoc = $row['ma_lop_hoc'];
-                $buoiHoc->so_phong = $row['so_phong'];
-                $buoiHoc->ma_ca = $row['ma_ca'];
                 $buoiHoc->id_lop_hoc = $row['id_lop_hoc'];
                 $buoiHoc->id_ca = $row['id_ca'];
                 $buoiHoc->id_phong = $row['id_phong'];
@@ -115,10 +106,10 @@ class BuoiHocModel {
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-        $sql = "INSERT INTO buoi_hoc (trang_thai, ngay, ma_lop_hoc, so_phong, ma_ca, id_lop_hoc, id_ca, id_phong) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO buoi_hoc (trang_thai, ngay, id_lop_hoc, id_ca, id_phong) VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isiiiiii", $buoiHoc->trang_thai, $buoiHoc->ngay, $buoiHoc->ma_lop_hoc, $buoiHoc->so_phong, $buoiHoc->ma_ca, $buoiHoc->id_lop_hoc, $buoiHoc->id_ca, $buoiHoc->id_phong);
+        $stmt->bind_param("isiii", $buoiHoc->trang_thai, $buoiHoc->ngay, $buoiHoc->id_lop_hoc, $buoiHoc->id_ca, $buoiHoc->id_phong);
 
         if ($stmt->execute()) {
             $stmt->close();
@@ -136,10 +127,10 @@ class BuoiHocModel {
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-        $sql = "UPDATE buoi_hoc SET trang_thai = ?, ngay = ?, ma_lop_hoc = ?, so_phong = ?, ma_ca = ?, id_lop_hoc = ?, id_ca = ?, id_phong = ? WHERE id_buoi_hoc = ?";
+        $sql = "UPDATE buoi_hoc SET trang_thai = ?, ngay = ?, id_lop_hoc = ?, id_ca = ?, id_phong = ? WHERE id_buoi_hoc = ?";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isiiiiiii", $buoiHoc->trang_thai, $buoiHoc->ngay, $buoiHoc->ma_lop_hoc, $buoiHoc->so_phong, $buoiHoc->ma_ca, $buoiHoc->id_lop_hoc, $buoiHoc->id_ca, $buoiHoc->id_phong, $buoiHoc->id_buoi_hoc);
+        $stmt->bind_param("isiiii", $buoiHoc->trang_thai, $buoiHoc->ngay, $buoiHoc->id_lop_hoc, $buoiHoc->id_ca, $buoiHoc->id_phong, $buoiHoc->id_buoi_hoc);
 
         if ($stmt->execute()) {
             $stmt->close();
