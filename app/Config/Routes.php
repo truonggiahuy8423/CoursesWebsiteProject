@@ -25,7 +25,8 @@ $routes->group('/courses', function ($routes) {
 $routes->get('/students', 'Admin\StudentsController::index');
 $routes->get('/lecturers', 'Admin\TeachersController::index');
 $routes->get('/users', 'Admin\UsersController::index');
-$routes->get('/profile', 'ProfileController::index');
+$routes->get('/profile/lecturer', 'ProfileController::index/true');
+$routes->get('/profile/student', 'ProfileController::index/false');
 
 
 

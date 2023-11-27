@@ -15,30 +15,30 @@ class diem_danhModel
     function __construct(){}
 
 
-    function getdiem_danhModelById($notiId)
-    {
-        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
-        if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
-        }
+    // function getdiem_danhModelById($notiId)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
 
-        $sql = "SELECT * FROM diem_danh WHERE id_hoc_vien = $id_hoc_vien";
-        $result = $this->conn->query($sql);
+    //     $sql = "SELECT * FROM diem_danh WHERE id_hoc_vien = $id_hoc_vien";
+    //     $result = $this->conn->query($sql);
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $user = new diem_danhModel();
-            $this->id_hoc_vien= $row["id_hoc_vien"];
-            $this->id_buoi_hoc = $row["id_buoi_hoc"];
-            $this->ghi_chu = $row["ghi_chu"];
-            $this->co_mat = $row["co_mat"];
+    //     if ($result->num_rows > 0) {
+    //         $row = $result->fetch_assoc();
+    //         $user = new diem_danhModel();
+    //         $this->id_hoc_vien= $row["id_hoc_vien"];
+    //         $this->id_buoi_hoc = $row["id_buoi_hoc"];
+    //         $this->ghi_chu = $row["ghi_chu"];
+    //         $this->co_mat = $row["co_mat"];
             
-            $this->conn->close();
-            return $user;
-        }
-        $this->conn->close();
-        return null;
-    }
+    //         $this->conn->close();
+    //         return $user;
+    //     }
+    //     $this->conn->close();
+    //     return null;
+    // }
 
     function getAlldiem_danhModels()
     {

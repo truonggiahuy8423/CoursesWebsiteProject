@@ -6,7 +6,9 @@ use App\Controllers\BaseController;
 use App\Controllers\LoginController;
 use App\Models\BuoiHocModel;
 use App\Models\ClassModel;
+use App\Models\diem_danhModel;
 use App\Models\GiangVienModel;
+use App\Models\HocVienModel;
 use App\Models\LecturersModel;
 use App\Models\LopModel;
 use App\Models\MonHocModel;
@@ -166,16 +168,25 @@ class CoursesController extends BaseController
                     WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc} 
                     GROUP BY lop_hoc.id_lop_hoc"
             )[0]["slbh"];
-            // $course_information_section = array();
-            // $course_information_section["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
-            // $course_information_section["student_quantity"] = $course[0]["so_luong_hoc_vien"];
-            // $course_information_section["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
-            // $course_information_section["id_lop_hoc"] = $course[0]["id_lop_hoc"];
-            // $course_information_section["so_luong_giang_vien"] = $course[0]["so_luong_giang_vien"];
-            // $course_information_section["so_luong_buoi_hoc"] = $course[0]["so_luong_buoi_hoc"];
-            // $course_information_section["so_luong_buoi_hoc_da_hoc"] = $course[0]["so_luong_buoi_hoc_da_hoc"];
-
-
+            $course[0]["danh_sach_giang_vien"] = $model->executeCustomQuery(
+                "SELECT giang_vien.* FROM phan_cong_giang_vien INNER JOIN giang_vien on phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+            );
+            $course[0]["danh_sach_hoc_vien"] = $model->executeCustomQuery(
+                "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+                WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
+            );
+            for ($i = 0; $i< count($course[0]["danh_sach_hoc_vien"]); $i++) {
+                $sbv = $model->executeCustomQuery(
+                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc WHERE buoi_hoc.id_lop_hoc = {$course[0]["id_lop_hoc"]} AND diem_danh.id_hoc_vien = {$course[0]["danh_sach_hoc_vien"][$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+                )[0]["so_buoi_vang"];
+                $course[0]["danh_sach_hoc_vien"][$i]["so_buoi_vang"] = $sbv;
+            }
+            $course[0]["danh_sach_buoi_hoc"] = $model->executeCustomQuery(
+                "SELECT buoi_hoc.id_buoi_hoc, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') as ngay_hoc, DAYOFWEEK(buoi_hoc.ngay) as thu, buoi_hoc.trang_thai, buoi_hoc.id_phong, ca.thoi_gian_bat_dau, ca.thoi_gian_ket_thuc FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc};"
+            );
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+            // SELECT * FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = 110 ORDER BY id_buoi_hoc DESC
             $main_layout_data['contentsection'] = view('Admin\ViewLayout\CourseInformationSectionLayout', $course[0]);
             return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
         } else if (session()->get('role') == 2) { // Giang vien
@@ -281,6 +292,28 @@ class CoursesController extends BaseController
             $id_phong_array[] = $phong->id_phong;
         }
         $this->generateClassSchedule("2022-01-01", "2026-01-01", $id_phong_array, $id_ca_array);
+    }
+    public function fillData2() {
+        $model = new BuoiHocModel();
+        $model2 = new HocVienModel();
+        $dsbh = $model->executeCustomQuery(
+            "SELECT * FROM buoi_hoc WHERE buoi_hoc.id_lop_hoc = 110;
+        ");
+        $dshv = $model2->executeCustomQuery(
+            "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+            WHERE hoc_vien_tham_gia.id_lop_hoc = 110;"
+        );
+        foreach ($dsbh as $bh) {
+            foreach($dshv as $hv) {
+                $diem_danh = new diem_danhModel();
+                $diem_danh->id_buoi_hoc = $bh['id_buoi_hoc'];
+                $diem_danh->id_hoc_vien = $hv['id_hoc_vien'];
+                $diem_danh->ghi_chu = "";
+                $diem_danh->co_mat = 0;
+                $diem_danh->insertdiem_danhModel($diem_danh);
+            }
+        }
+
     }
 
     function generateClassSchedule($startDate, $endDate, $roomIds, $caIds)

@@ -23,7 +23,7 @@
 <body>
     <?php echo $navbar ?>
     <div class="header-container">
-        <h1>Lập trình C# - 008.008401</h1>
+        <h1><?php echo $class_name ?></h1>
     </div>
     <div class="grid-layout">
         <?php echo $leftmenu;?>
@@ -44,7 +44,7 @@
         margin-bottom: 26px;
     }
     .list-of-lecturers-container a {
-        display: flex;
+        display: inline-flex;
         color: #35abff!important;
         text-decoration: none;
         font-size: 14px;
