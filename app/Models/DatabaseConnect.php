@@ -1,5 +1,5 @@
 <?php
-$GLOBALS['servername'] = "localhost";
+$GLOBALS['servername'] = "localhost:3306";
 $GLOBALS['username'] = "root";
 $GLOBALS['password'] = "";
 $GLOBALS['dbname'] = "coursesdb";
