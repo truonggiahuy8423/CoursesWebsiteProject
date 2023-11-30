@@ -168,7 +168,7 @@ class StudentsController extends BaseController
             return redirect()->to('/');
         }
         $data = json_decode(json_encode($this->request->getJSON()), true);
-        // $data = ["courses" => [106, 2, 5]];
+        
         $students = $data["students"];
         $response = array();
         for ($i = 0; $i < count($students); $i++) {
@@ -177,5 +177,29 @@ class StudentsController extends BaseController
         }
 
         return $this->response->setJSON($response);
+    }
+
+    public function insertStudent()
+    {
+        // Verify login status
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // Process
+
+        $studentData = json_decode(json_encode($this->request->getJSON()), true);
+
+        $student = new HocVienModel();
+        $student->ho_ten = $studentData['ho_ten'];
+        $student->ngay_sinh = $studentData['ngay_sinh'];
+        $student->gioi_tinh = $studentData['gioi_tinh'];
+        $student->email = $studentData['email'];
+
+        $model = new HocVienModel();
+        // return implode('|', json_decode(json_encode($this->request->getJSON()), true));
+        // $a = array();
+        // return $this->response->setJSON(json_encode($a));
+        return $this->response->setJSON($model->insertHocVien($student));
+        // return $this->response->setJSON($this->request->getJSON());
     }
 }

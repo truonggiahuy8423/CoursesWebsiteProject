@@ -34,3 +34,59 @@
     </div>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS" crossorigin="anonymous"></script>
+
+<script>
+  function saveStudent() {
+      // Get values from the form
+    var hoTen = document.getElementById('hoTen').value;
+    var ngaySinh = document.getElementById('ngaySinh').value;
+    var gioiTinh = document.getElementById('gioiTinh').value;
+    var email = document.getElementById('email').value;
+  
+    // Perform validation if needed
+    $.ajax({
+      url: '<?php echo base_url(); ?>/Admin/StudentsController/insertStudent',
+      method: 'GET',
+      //dataType: 'json',
+      contentType: "json",
+      data: JSON.stringify({
+        hoTen: hoTen,
+        ngaySinh: ngaySinh,
+        gioiTinh: gioiTinh,
+        email: email
+      }),
+      success: function(response) {
+        if (response.success) {
+            
+            $('#InsertStudentForm').modal('hide');
+            
+            // Display success toast
+            toast({
+                title: "Thành công!",
+                message: "Thêm học viên thành công",
+                type: "success",
+                duration: 3000
+            });
+
+            
+        } else {
+            
+            alert('Failed to save student. Please try again.');
+        }
+      },
+      error: function(xhr, status, error) {
+
+          toast({
+              title: "Thất bại!",
+              message: "không thể thêm học viên",
+              type: "error",
+              duration: 3000
+          });
+
+          console.error('Error:', status, error);
+      }
+    });
+  }
+</script>
