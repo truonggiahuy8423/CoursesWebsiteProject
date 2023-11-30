@@ -66,7 +66,7 @@ echo view('Admin\ViewCell\InsertStudentForm');
                         <td><?php echo $student['ngay_sinh']; ?></td>
                         <td><?php echo $student['email']; ?></td>
                         <td class="text-center">
-                            <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" onclick="sua(<?php echo $student['id_hoc_vien']; ?>)">Sửa</button>
+                            <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" data-bs-toggle="modal" data-bs-target="#SuaStudentForm" onclick="sua(<?php echo $student['id_hoc_vien']; ?>)">Sửa</button>
                             <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" onclick="xoa(<?php echo $student['id_hoc_vien']; ?>)">Xóa</button>
                         </td>
                     </tr>
