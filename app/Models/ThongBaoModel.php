@@ -27,14 +27,13 @@ class ThongBaoModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $thong_bao = new ThongBaoModel();
             $this->id_thong_bao = $row["id_thong_bao"];
             $this->noi_dung = $row["noi_dung "];
             $this->ngay_dang = $row["ngay_dang"];
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->id_muc = $row["id_muc"];
             $this->conn->close();
-            return $thong_bao;
+            return $this;
         }
         $this->conn->close();
         return null;

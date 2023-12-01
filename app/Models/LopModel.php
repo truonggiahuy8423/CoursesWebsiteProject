@@ -29,13 +29,12 @@ Class LopModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $lop = new LopModel();
             $this->id_lop_hoc = $row["id_lop_hoc"];
             $this->ngay_bat_dau = $row["ngay_bat_dau"];
             $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
             $this->id_mon_hoc = $row["id_mon_hoc"];
             $this->conn->close();
-            return $lop;
+            return $this;
         }
         $this->conn->close();
         return null;

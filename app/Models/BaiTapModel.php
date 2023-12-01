@@ -29,7 +29,6 @@ class BaiTapModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $bai_tap = new BaiTapModel();
             $this->id_bai_tap = $row["id_bai_tap"];
             $this->trang_thai = $row["trang_thai"];
             $this->ten = $row["ten"];
@@ -38,7 +37,7 @@ class BaiTapModel
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->id_muc = $row["id_muc"];
             $this->conn->close();
-            return $bai_tap;
+            return $this;
         }
         $this->conn->close();
         return null;
