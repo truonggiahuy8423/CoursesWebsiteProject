@@ -202,4 +202,19 @@ class StudentsController extends BaseController
         return $this->response->setJSON($model->insertHocVien($student));
         // return $this->response->setJSON($this->request->getJSON());
     }
+
+    public function storeStudent() 
+    {
+        $student = new HocVienModel();
+        $data = [
+            'ho_ten' => $this->request->getPost('ho_ten'),
+            'ngay_sinh' => $this->request->getPost('ngay_sinh'),
+            'gioi_tinh' => $this->request->getPost('gioi_tinh'),
+            'email' => $this->request->getPost('email')
+        ];
+        $student->save($data);
+        $data = ['status'=>'Student Inserted Successfully'];
+        return $this->response->setJSON($data);
+
+    }
 }

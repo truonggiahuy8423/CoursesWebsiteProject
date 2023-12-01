@@ -101,6 +101,39 @@ class HocVienModel
         return $rows;
     }
 
+    // function insertHocVien($hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
+    //     }
+    //     if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
+    //         $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
+    //         $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
+    //         $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
+    //         $email = $this->conn->real_escape_string($hoc_vien->email);
+
+    //         $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
+            
+    //         $stmt = $this->conn->prepare($sql);
+    //         $stmt->bind_param("ssss", $ho_ten, $ngay_sinh, $gioi_tinh, $email);
+
+    //         if ($stmt->execute()) {
+    //             $insertedId = $this->conn->insert_id;
+    //             $stmt->close();
+    //             $this->conn->close();
+    //             return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+    //         } else {
+    //             $error_message = $this->conn->error;
+    //             $stmt->close();
+    //             $this->conn->close();
+    //             return ['state' => false, 'message' => $error_message];
+    //         }
+    //     } else {
+    //         return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
+    //     }
+    // }
+
     function insertHocVien($hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
@@ -108,15 +141,11 @@ class HocVienModel
             return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
         }
         if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
-            $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
-            $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
-            $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
-            $email = $this->conn->real_escape_string($hoc_vien->email);
 
-            $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
+            $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES (?, ?, ?, ?);";
             
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('ssss', $ho_ten, $ngay_sinh, $gioi_tinh, $email);
+            $stmt->bind_param("ssss", $hoc_vien->ho_ten, $hoc_vien->ngay_sinh, $hoc_vien->gioi_tinh, $hoc_vien->email);
 
             if ($stmt->execute()) {
                 $insertedId = $this->conn->insert_id;

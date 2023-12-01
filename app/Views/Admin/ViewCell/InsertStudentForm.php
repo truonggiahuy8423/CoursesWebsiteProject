@@ -29,7 +29,7 @@
             <label for="email" class="form-label mail">Email</label> <span id="error_email" class="text-danger ms-3"></span>
             <input type="email" class="form-control" id="email" placeholder="Email">
           </div>
-          <button type="button" class="btn btn-primary save-student-btn" onclick="saveStudent()">Lưu</button>
+          <button type="button" class="btn btn-primary save-student-btn">Lưu</button>
         </form>
       </div>
     </div>
@@ -45,101 +45,73 @@
       var ngaySinh = document.getElementById('ngaySinh').value;
       var gioiTinh = document.getElementById('gioiTinh').value;
       var email = document.getElementById('email').value;
-
-      if ($.trim($('.name').val().length == 0)) {
-        error_name = 'Vui lòng điền họ tên';
-        $('#error_name').text(error_name);
-      } else {
-        error_name = '';
-        $('#error_name').text(error_name);
-      }
       
-      if ($.trim($('.dob').val().length == 0)) {
-        error_dob = 'Vui lòng chọn ngày sinh';
-        $('#error_dob').text(error_dob);
-      } else {
-        error_dob = '';
-        $('#error_dob').text(error_dob);
+      $('#error_name, #error_dob, #error_gender, #error_email').text('');
+      // Perform input validation
+      var isValid = true;
+
+      if ($.trim(hoTen) == '') {
+        $('#error_name').text('Vui lòng điền họ tên');
+        isValid = false;
       }
 
-      if ($.trim($('.gender').val().length == 0)) {
-        error_gender = 'Vui lòng chọn giới tính';
-        $('#error_gender').text(error_gender);
-      } else {
-        error_gender = '';
-        $('#error_gender').text(error_gender);
+      if ($.trim(ngaySinh) == '') {
+        $('#error_dob').text('Vui lòng chọn ngày sinh');
+        isValid = false;
       }
 
-      if ($.trim($('.mail').val().length == 0)) {
-        error_email = 'Vui lòng điền Email';
-        $('#error_email').text(error_email);
-      } else {
-        error_email = '';
-        $('#error_email').text(error_email);
+      if ($.trim(gioiTinh) == '') {
+        $('#error_gender').text('Vui lòng chọn giới tính');
+        isValid = false;
       }
 
-      if (error_name != '' || error_dob != '' || error_gender = '' || error_email != '') {
+      if ($.trim(email) == '') {
+        $('#error_email').text('Vui lòng điền Email');
+        isValid = false;
+      }
+
+      if (!isValid) {
         return false;
       }
-      else{
-        $.ajax({
-          method: "POST",
-          url: "/"
-        })
-      }
+
+      $.ajax({
+        url: '<?php echo base_url(); ?>/Admin/StudentsController/insertStudent',
+        method: 'POST',
+        //dataType: 'json',
+        contentType: "application/json",
+        data: JSON.stringify({
+          ho_ten: hoTen,
+          ngay_sinh: ngaySinh,
+          gioi_tinh: gioiTinh,
+          email: email
+        }),
+        success: function(response) {
+          $('#themHocVienModal').modal('hide');
+          
+          toast({
+              title: "Thành công!",
+              message: "Thêm học viên thành công",
+              type: "success",
+              duration: 3000
+          });
+
+          setTimeout(function() {
+            location.reload();
+          }, 2000);
+
+        },
+        error: function(xhr, status, error) {
+          toast({
+              title: "Thất bại!",
+              message: "không thể thêm học viên",
+              type: "error",
+              duration: 3000
+          });
+          console.error('Error:', status, error);
+        }
+      });
     });
   });
-  // function saveStudent() {
-  //     // Get values from the form
-  //   var hoTen = document.getElementById('hoTen').value;
-  //   var ngaySinh = document.getElementById('ngaySinh').value;
-  //   var gioiTinh = document.getElementById('gioiTinh').value;
-  //   var email = document.getElementById('email').value;
-  
-  //   // Perform validation if needed
-  //   $.ajax({
-  //     url: '<?php echo base_url(); ?>/Admin/StudentsController/insertStudent',
-  //     method: 'GET',
-  //     //dataType: 'json',
-  //     contentType: "json",
-  //     data: JSON.stringify({
-  //       hoTen: hoTen,
-  //       ngaySinh: ngaySinh,
-  //       gioiTinh: gioiTinh,
-  //       email: email
-  //     }),
-  //     success: function(response) {
-  //       if (response.success) {
-            
-  //           $('#InsertStudentForm').modal('hide');
-            
-  //           // Display success toast
-  //           toast({
-  //               title: "Thành công!",
-  //               message: "Thêm học viên thành công",
-  //               type: "success",
-  //               duration: 3000
-  //           });
-
-            
-  //       } else {
-            
-  //           alert('Failed to save student. Please try again.');
-  //       }
-  //     },
-  //     error: function(xhr, status, error) {
-
-  //         toast({
-  //             title: "Thất bại!",
-  //             message: "không thể thêm học viên",
-  //             type: "error",
-  //             duration: 3000
-  //         });
-
-  //         console.error('Error:', status, error);
-  //     }
-  //   });
-  // }
 </script>
 
 

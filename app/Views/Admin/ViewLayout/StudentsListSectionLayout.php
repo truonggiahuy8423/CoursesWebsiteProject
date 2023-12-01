@@ -36,6 +36,7 @@ $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_v
 $totalPages = ceil($totalStudents / $recordsPerPage);
 
 // Include the form file
+//include('Admin\ViewCell\InsertStudentForm.php');
 echo view('Admin\ViewCell\InsertStudentForm');
 ?>
 <div class="students-list-section">
@@ -118,8 +119,7 @@ echo view('Admin\ViewCell\InsertStudentForm');
         color: white;
     }
 </style>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
     function xoa(id) {
         // You can add confirmation dialog here if needed
@@ -127,7 +127,7 @@ echo view('Admin\ViewCell\InsertStudentForm');
         if (confirmation) {
             // Perform delete operation, e.g., make an AJAX request to your server
             $.ajax({
-                url: '<?= base_url('Admin/StudentsControllers/deleteStudent') ?>',, // Update the path accordingly
+                url: '<?= base_url('Admin/StudentsControllers/deleteStudent') ?>', // Update the path accordingly
                 method: 'POST',
                 contentType: 'application/json', // Set content type to JSON
                 data: JSON.stringify({ students: [id] }),
