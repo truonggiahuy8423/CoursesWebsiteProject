@@ -56,7 +56,7 @@ class HocVienModel
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $this->conn->close();
-            return $row; // Return the fetched data as an associative array
+            return $row;
         }
 
         $this->conn->close();
@@ -185,6 +185,25 @@ class HocVienModel
         }
     }
 
+    // function deleteHocVien($id_hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $id_hoc_vien = $this->conn->real_escape_string($id_hoc_vien);
+    //     $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = ?";
+    //     try {
+    //         $this->conn->query($sql);
+    //         $this->conn->close();
+    //         return ['state' => true, 'message' => 'Delete thành công'];
+    //     } catch (Exception $e) {
+    //         $this->conn->close();
+    //         return ['state' => false, 'message' => $e->getMessage()];
+    //     }
+    // }
+
     function deleteHocVien($id_hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
@@ -193,16 +212,23 @@ class HocVienModel
         }
 
         $id_hoc_vien = $this->conn->real_escape_string($id_hoc_vien);
-        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = $id_hoc_vien";
-        try {
-            $this->conn->query($sql);
+
+        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_hoc_vien); 
+        if ($stmt->execute()) {
+            $stmt->close();
             $this->conn->close();
             return ['state' => true, 'message' => 'Delete thành công'];
-        } catch (Exception $e) {
+        } else {
+            $error_message = $this->conn->error;
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $e->getMessage()];
-        }
+            return ['state' => false, 'message' => $error_message];
+        }  
     }
+
 
     // function updateHocVien($hoc_vien)
     // {
