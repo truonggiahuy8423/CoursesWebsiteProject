@@ -14,7 +14,7 @@ $routes->add('/schedule', 'ScheduleController::index');
 // $routes->get('/home/courses', 'Admin\Home::index2');
 $routes->get('/courses', 'Admin\CoursesController::index');
 $routes->get('/students', 'Admin\StudentsController::index');
-
+$routes->get('/Admin/StudentsController/getStudentInfo/(:num)', 'Admin\StudentsController::getStudentInfo/$1');
 // app/Config/Routes.php
 
 $routes->group('/courses', function ($routes) {

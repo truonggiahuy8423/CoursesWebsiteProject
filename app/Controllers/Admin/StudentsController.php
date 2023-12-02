@@ -149,6 +149,25 @@ class StudentsController extends BaseController
         return $this->response->setJSON($courses);
     }
 
+    public function getStudentInfo($id)
+    {
+        // Instantiate the model
+        $model = new HocVienModel();
+
+        // Fetch student information based on the $id parameter
+        $studentData = $model->getHocVienById($id);
+
+        // Check if the student data was found
+        if ($studentData) {
+            // Return the data as JSON
+            return $this->response->setJSON($studentData);
+        } else {
+            // If the student data was not found, return an empty response or an error message
+            return $this->response->setJSON(['error' => 'Student not found']);
+        }
+    }
+
+
     public function getInsertStudent()
     {
         // Verify login status
@@ -162,22 +181,35 @@ class StudentsController extends BaseController
         // $data[`ok`] = 10;
         return view('Admin\ViewCell\InsertStudentForm', $data);
     }
-    public function deleteStudent()
+    // public function deleteStudent()
+    // {
+    //     if (!session()->has('id_user')) {
+    //         return redirect()->to('/');
+    //     }
+    //     $data = json_decode(json_encode($this->request->getJSON()), true);
+        
+    //     $students = $data["students"];
+    //     $response = array();
+    //     for ($i = 0; $i < count($students); $i++) {
+    //         $model = new HocVienModel();
+    //         $response[$students[$i]] = $model->deleteHocVien($students[$i]);
+    //     }
+
+    //     return $this->response->setJSON($response);
+    // }
+
+    public function deleteStudent($id)
     {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-        $data = json_decode(json_encode($this->request->getJSON()), true);
-        
-        $students = $data["students"];
-        $response = array();
-        for ($i = 0; $i < count($students); $i++) {
-            $model = new HocVienModel();
-            $response[$students[$i]] = $model->deleteHocVien($students[$i]);
-        }
-
-        return $this->response->setJSON($response);
+    
+        $model = new HocVienModel();
+        $response = $model->deleteHocVien($id);
+    
+        return $this->response->setJSON(['result' => $response]);
     }
+    
 
     public function insertStudent()
     {

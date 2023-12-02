@@ -38,6 +38,7 @@ $totalPages = ceil($totalStudents / $recordsPerPage);
 // Include the form file
 //include('Admin\ViewCell\InsertStudentForm.php');
 echo view('Admin\ViewCell\InsertStudentForm');
+echo view('Admin\ViewCell\UpdateStudentForm');
 ?>
 <div class="students-list-section">
     <div>
@@ -67,7 +68,8 @@ echo view('Admin\ViewCell\InsertStudentForm');
                         <td><?php echo $student['ngay_sinh']; ?></td>
                         <td><?php echo $student['email']; ?></td>
                         <td class="text-center">
-                            <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" data-bs-toggle="modal" data-bs-target="#SuaStudentForm" onclick="sua(<?php echo $student['id_hoc_vien']; ?>)">Sửa</button>
+                            <!-- <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" data-bs-toggle="modal" data-bs-target="#SuaStudentForm" onclick="sua(<?php echo $student['id_hoc_vien']; ?>)">Sửa</button> -->
+                            <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" data-bs-toggle="modal" data-bs-target="#SuaStudentForm" data-student-id="<?php echo $student['id_hoc_vien']; ?>" onclick="sua(<?php echo $student['id_hoc_vien']; ?>)">Sửa</button>
                             <button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" onclick="xoa(<?php echo $student['id_hoc_vien']; ?>)">Xóa</button>
                         </td>
                     </tr>
@@ -122,19 +124,17 @@ echo view('Admin\ViewCell\InsertStudentForm');
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
     function xoa(id) {
-        // You can add confirmation dialog here if needed
-        var confirmation = confirm("Bạn có chắc chắn muốn xóa?");
+        //alert('Delete student with id_hoc_vien:' + id);
+        var confirmation = confirm("Bạn có chắc chắn muốn xóa học viên " + id);
         if (confirmation) {
             // Perform delete operation, e.g., make an AJAX request to your server
             $.ajax({
-                url: '<?= base_url('Admin/StudentsControllers/deleteStudent') ?>', // Update the path accordingly
+                url: '<?php echo base_url(); ?>/Admin/StudentsControllers/deleteStudent',
                 method: 'POST',
-                contentType: 'application/json', // Set content type to JSON
-                data: JSON.stringify({ students: [id] }),
+                contentType: "application/json",
+                data: JSON.stringify({ id_hoc_vien: id }),
                 success: function(response) {
-                    // Handle success response
-                    console.log('Delete success:', response);
-                    // Optionally, you can remove the deleted row from the table
+
                     $('#row_' + id).remove();
                     toast({
                         title: 'Thành công',

@@ -17,9 +17,35 @@ class HocVienModel
     private $conn;
     function __construct(){}
 
+    // function getHocVienById($id_hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $sql = "SELECT * FROM hoc_vien WHERE id_hoc_vien = $id_hoc_vien";
+    //     $result = $this->conn->query($sql);
+
+    //     if ($result->num_rows > 0) {
+    //         $row = $result->fetch_assoc();
+    //         $hoc_vien = new HocVienModel();
+    //         $this->id_hoc_vien = $row["id_hoc_vien"];
+    //         $this->ho_ten = $row["ho_ten"];
+    //         $this->ngay_sinh = $row["ngay_sinh"];
+    //         $this->gioi_tinh = $row["gioi_tinh"];
+    //         $this->email = $row["email"];
+    //         $this->conn->close();
+    //         return $hoc_vien;
+    //     }
+    //     $this->conn->close();
+    //     return null;
+    // }
+
     function getHocVienById($id_hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
@@ -29,18 +55,14 @@ class HocVienModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $hoc_vien = new HocVienModel();
-            $this->id_hoc_vien = $row["id_hoc_vien"];
-            $this->ho_ten = $row["ho_ten"];
-            $this->ngay_sinh = $row["ngay_sinh"];
-            $this->gioi_tinh = $row["gioi_tinh"];
-            $this->email = $row["email"];
             $this->conn->close();
-            return $hoc_vien;
+            return $row; // Return the fetched data as an associative array
         }
+
         $this->conn->close();
         return null;
     }
+
 
     public static function compareStudentsById($a, $b) {
         $idA = is_array($a) ? $a['id_hoc_vien'] : $a->id_hoc_vien;
