@@ -151,18 +151,12 @@ class StudentsController extends BaseController
 
     public function getStudentInfo($id)
     {
-        // Instantiate the model
         $model = new HocVienModel();
-
-        // Fetch student information based on the $id parameter
         $studentData = $model->getHocVienById($id);
 
-        // Check if the student data was found
         if ($studentData) {
-            // Return the data as JSON
             return $this->response->setJSON($studentData);
         } else {
-            // If the student data was not found, return an empty response or an error message
             return $this->response->setJSON(['error' => 'Student not found']);
         }
     }
@@ -170,7 +164,6 @@ class StudentsController extends BaseController
 
     public function getInsertStudent()
     {
-        // Verify login status
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
@@ -178,7 +171,6 @@ class StudentsController extends BaseController
         // Subjects
         $studentsModel = new HocVienModel();
         $data['students'] = $studentsModel->getAllHocViens();
-        // $data[`ok`] = 10;
         return view('Admin\ViewCell\InsertStudentForm', $data);
     }
     // public function deleteStudent()
@@ -198,17 +190,17 @@ class StudentsController extends BaseController
     //     return $this->response->setJSON($response);
     // }
 
-    public function deleteStudent($id)
-    {
-        if (!session()->has('id_user')) {
-            return redirect()->to('/');
-        }
+    // public function deleteStudent($id)
+    // {
+    //     if (!session()->has('id_user')) {
+    //         return redirect()->to('/');
+    //     }
     
-        $model = new HocVienModel();
-        $response = $model->deleteHocVien($id);
+    //     $model = new HocVienModel();
+    //     $response = $model->deleteHocVien($id);
     
-        return $this->response->setJSON(['result' => $response]);
-    }
+    //     return $this->response->setJSON(['result' => $response]);
+    // }
     
 
     public function insertStudent()
@@ -217,7 +209,6 @@ class StudentsController extends BaseController
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-        // Process
 
         $studentData = json_decode(json_encode($this->request->getJSON()), true);
 
@@ -228,11 +219,7 @@ class StudentsController extends BaseController
         $student->email = $studentData['email'];
 
         $model = new HocVienModel();
-        // return implode('|', json_decode(json_encode($this->request->getJSON()), true));
-        // $a = array();
-        // return $this->response->setJSON(json_encode($a));
         return $this->response->setJSON($model->insertHocVien($student));
-        // return $this->response->setJSON($this->request->getJSON());
     }
 
     public function storeStudent() 
@@ -252,10 +239,12 @@ class StudentsController extends BaseController
 
     public function updateStudent()
     {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+
         if ($this->request->isAJAX()) {
             $data = $this->request->getJSON();
-            
-            // Validate the received data if necessary
             
             $model = new HocVienModel();
             $result = $model->updateHocVien($data);
@@ -263,4 +252,25 @@ class StudentsController extends BaseController
             return $this->response->setJSON($result);
         }
     }
+
+    public function deleteStudent()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+    
+        if ($this->request->isAJAX()) {
+            $data = $this->request->getJSON();
+            
+            $model = new HocVienModel();
+            $result = $model->deleteHocVien($data->id_hoc_vien);
+
+            return $this->response->setJSON($result);
+        }
+    }
 }
+
+
+
+
+

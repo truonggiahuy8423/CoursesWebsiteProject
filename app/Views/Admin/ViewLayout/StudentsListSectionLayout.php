@@ -8,38 +8,27 @@
 </head>
 <body>
 
-<?php
-use App\Models\HocVienModel;
-if (!session()->has('id_user')) {
-    return redirect()->to('/');
-}
+    <?php
+        use App\Models\HocVienModel;
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
 
-// Query data
-$model = new HocVienModel();
+        $model = new HocVienModel();
 
-// Pagination settings
-$recordsPerPage = 20; // Adjust this based on your preference
-$currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        // Pagination settings
+        $recordsPerPage = 20; 
+        $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        $offset = ($currentPage - 1) * $recordsPerPage;
+        $students = $model->executeCustomQuery(
+            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien LIMIT $recordsPerPage OFFSET $offset"
+        );
+        $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
+        $totalPages = ceil($totalStudents / $recordsPerPage);
 
-// Calculate the offset for the SQL query
-$offset = ($currentPage - 1) * $recordsPerPage;
-
-// Fetch students for the current page
-$students = $model->executeCustomQuery(
-    "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien LIMIT $recordsPerPage OFFSET $offset"
-);
-
-// Count total students
-$totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
-
-// Calculate total pages
-$totalPages = ceil($totalStudents / $recordsPerPage);
-
-// Include the form file
-//include('Admin\ViewCell\InsertStudentForm.php');
-echo view('Admin\ViewCell\InsertStudentForm');
-echo view('Admin\ViewCell\UpdateStudentForm');
-?>
+        echo view('Admin\ViewCell\InsertStudentForm');
+        echo view('Admin\ViewCell\UpdateStudentForm');
+    ?>
 <div class="students-list-section">
     <div>
         <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
@@ -110,10 +99,6 @@ echo view('Admin\ViewCell\UpdateStudentForm');
         margin-bottom: 10px;
     }
 
-    /* .btn {
-        width: 60px;
-        height: 30px; 
-    } */
     .table-container, thead, th {
         position: sticky;
         top: 0;
@@ -124,27 +109,28 @@ echo view('Admin\ViewCell\UpdateStudentForm');
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
     function xoa(id) {
-        //alert('Delete student with id_hoc_vien:' + id);
         var confirmation = confirm("Bạn có chắc chắn muốn xóa học viên " + id);
         if (confirmation) {
-            // Perform delete operation, e.g., make an AJAX request to your server
             $.ajax({
-                url: '<?php echo base_url(); ?>/Admin/StudentsControllers/deleteStudent',
+                url: '<?php echo base_url(); ?>/Admin/StudentsController/deleteStudent',
                 method: 'POST',
                 contentType: "application/json",
                 data: JSON.stringify({ id_hoc_vien: id }),
                 success: function(response) {
 
-                    $('#row_' + id).remove();
+                    //$('#row_' + id).remove();
                     toast({
                         title: 'Thành công',
                         message: 'Xóa học viên thành công',
                         type: 'success',
                         duration: 5000
                     });
+
+                    setTimeout(function() {
+                    location.reload();
+                    }, 1000);
                 },
                 error: function(xhr, status, error) {
-                    // Handle error response
                     console.error('Delete error:', status, error);
                     toast({
                         title: 'Thất bại',
