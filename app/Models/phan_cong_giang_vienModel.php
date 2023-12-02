@@ -63,7 +63,7 @@ class phan_cong_giang_vienModel
                 WHERE pc.id_giang_vien <> $id_giang_vien
                 AND pc.id_lop_hoc = lh.id_lop_hoc
                 AND mh.id_mon_hoc = lh.id_mon_hoc
-                AND lh.id_lop_hoc NOT IN (SELECT id_lop_hoc
+                AND pc.id_lop_hoc NOT IN (SELECT id_lop_hoc
                                           FROM phan_cong_giang_vien
                                           WHERE id_giang_vien = $id_giang_vien)";
         $result = $this->conn->query($sql);

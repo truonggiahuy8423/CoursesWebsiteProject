@@ -28,7 +28,7 @@
             </div>
             <hr>
             <div class="text-center fw-bold fs-2 mb-3">Các lớp tham gia giảng dạy</div>
-            <table class="table mt-3 table-hover align-middle text-center">
+            <table class="table deleteClassTable mt-3 table-hover align-middle text-center">
                 <thead>
                     <tr>
                         <th scope="col">ID Lớp học</th>
@@ -47,7 +47,7 @@
                                     <td>{$phancongs[$i]->ten_mon_hoc}</td>
                                     <td>{$phancongs[$i]->ngay_bat_dau}</td>
                                     <td>{$phancongs[$i]->ngay_ket_thuc}</td>
-                                    <td><input type='checkbox' class='deleteTeachingCourse' idLopHoc='{$phancongs[$i]->id_lop_hoc}'></td>
+                                    <td><input type='checkbox' class='deleteTeachingCourse' value='{$phancongs[$i]->id_lop_hoc}'></td>
                                 </tr>";
                         }
                     ?>
@@ -55,7 +55,7 @@
             </table>
             <hr>
             <div class="text-center fw-bold fs-2 mb-3">Các lớp không tham gia giảng dạy</div>
-            <table class="table mt-3 table-hover align-middle text-center">
+            <table class="table addClassTable mt-3 table-hover align-middle text-center">
                 <thead>
                     <tr>
                         <th scope="col">ID Lớp học</th>
@@ -74,12 +74,13 @@
                                     <td>{$notphancongs[$i]->ten_mon_hoc}</td>
                                     <td>{$notphancongs[$i]->ngay_bat_dau}</td>
                                     <td>{$notphancongs[$i]->ngay_ket_thuc}</td>
-                                    <td><input type='checkbox' class='addClasses' idLopHoc='{$phancongs[$i]->id_lop_hoc}'></td>
+                                    <td><input type='checkbox' class='addClasses' value='{$notphancongs[$i]->id_lop_hoc}'></td>
                                 </tr>";
                         }
                     ?>
                 </tbody>
             </table>
+            <hr>
             <div class="update-teacher-form__btn-container pb-3 d-flex justify-content-end align-items-center">
                 <button class="update-teacher-form__cancel-btn btn btn-light border border-gray me-3 shadow-sm">Hủy</button>
                 <button class="update-teacher-form__save-btn btn btn-light border border-gray shadow-sm">Lưu thông tin</button>

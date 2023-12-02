@@ -105,7 +105,6 @@ class TeachersController extends BaseController
         $teacherID = $_GET['teacherID'];
         $lecturersModel = new GiangVienModel(); 
         $phancong = new phan_cong_giang_vienModel();
-        echo "getupdate" . $_GET['teacherID'];
         
         $data['lecturer'] = $lecturersModel->getGiangVienById($teacherID);
         $data['phancongs'] = $phancong->getPhanCongByIDGiangVien($teacherID);
@@ -135,7 +134,7 @@ class TeachersController extends BaseController
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-        $courseData = json_decode(json_encode($this->request->getJSON(), true));
+        $courseData = json_decode(json_encode($this->request->getJSON()), true);
         $id_giang_vien = $courseData['id_giang_vien'];
         $list_id_lop_hoc = $courseData['list_id_lop_hoc'];
         $model = new phan_cong_giang_vienModel();
@@ -150,11 +149,24 @@ class TeachersController extends BaseController
         return $this->response->setJSON($processedResult);   
     }
 
-    // public function deleteClassesFromListOfTeachingCourses(){
-    //     if (!session()->has('id_user')) {
-    //         return redirect()->to('/');
-    //     }
-        
-    // }    
+    public function deleteClassesFromListOfTeachingCourses(){
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+
+        $courseData = json_decode(json_encode($this->request->getJSON()), true);
+        $id_giang_vien = $courseData['id_giang_vien'];
+        $list_id_lop_hoc = $courseData['list_id_lop_hoc'];
+        $model = new phan_cong_giang_vienModel();
+
+        $processedResult = array();
+        foreach ($list_id_lop_hoc as $id => $name) {
+            $data = new phan_cong_giang_vienModel();
+            $data->id_giang_vien = $id_giang_vien;
+            $data->id_lop_hoc = $id;
+            $processedResult["$name"."($id)"] = $model->deletephan_cong_giang_vien($data); // gọi PhanCongGiangVienModel
+        }
+        return $this->response->setJSON($processedResult);   
+    }    
 
 }

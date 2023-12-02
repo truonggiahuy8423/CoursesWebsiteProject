@@ -426,7 +426,7 @@
                         title: 'Thông báo',
                         message: 'Chưa chọn giảng viên cần xóa',
                         type: 'warning',
-                        duration: 5000
+                        duration: 100000
                     });
                 } else {
                     loadingEffect(true);
@@ -440,10 +440,6 @@
                     jsonData[`teachers`] = teachers;
                     jsonData = JSON.stringify(jsonData);
                     console.log(jsonData);
-                    $('.teacherCard').each(function(){
-                        console.log(123);
-                        console.log($(this).attr('teacherid'))
-                    })
                     $.ajax({
                         url: '<?php echo base_url(); ?>/Admin/TeachersController/deleteTeacher',
                         method: 'POST',
@@ -517,13 +513,12 @@
                     else{
                         $(this).children().children('.delete-checkbox').prop('checked', true);
                     }
-
                 }
                 else{
                     console.log('update-teacher');
                     loadingEffect(true);
                     console.log($(this).attr("teacherid"));
-                    teacherID = $(this).attr("teacherid");
+                    var teacherID = $(this).attr("teacherid");
                     $.ajax({
                         url: '<?php echo base_url(); ?>/Admin/TeachersController/getUpdateForm',
                         method: 'GET',
@@ -562,25 +557,117 @@
                                     contentType: 'application/json',
                                     data: jsonData,
                                     success: function(response){
-                                        loadingEffect(false);
-                                        $('.form-container').remove();
-                                        toast({
-                                            title: "Thành công!",
-                                            message: `Cập nhật giáo viên thành công`,
-                                            type: "success",
-                                            duration: 5000
-                                        });
-                                        $(`[teacherid = ${obj.id_giang_vien}]`).html('');
-                                        $(`[teacherid = ${obj.id_giang_vien}]`).append(`
-                                                            <div class='p-3 card shadow-sm'>
-                                                                <div class='card-body'>
-                                                                    <h3 class='card-title fs-4'><b>${obj.ho_ten}</b> - ${obj.id_giang_vien}</h3>
-                                                                    <div class='my-5'></div>
-                                                                    <p class='card-subtitle fs-5'><b>Email:</b> ${obj.email}</p>
-                                                                </div>
-                                                                <input type='checkbox' class='delete-checkbox' value='${obj.id_giang_vien}'>
-                                                            </div>
-                                                        `);
+                                        if(response.state){
+                                            loadingEffect(false);
+                                            $(`[teacherid = ${obj.id_giang_vien}]`).html('');
+                                            $(`[teacherid = ${obj.id_giang_vien}]`).append(`
+                                                                <div class='p-3 card shadow-sm'>
+                                                                    <div class='card-body'>
+                                                                        <h3 class='card-title fs-4'><b>${obj.ho_ten}</b> - ${obj.id_giang_vien}</h3>
+                                                                        <div class='my-5'></div>
+                                                                        <p class='card-subtitle fs-5'><b>Email:</b> ${obj.email}</p>
+                                                                    </div>
+                                                                    <input type='checkbox' class='delete-checkbox' value='${obj.id_giang_vien}'>
+                                                                </div>`);
+
+                                            // Thêm lớp học đang có vào danh sách giảng dạy
+                                            var list_id_lop_hoc = {};
+                                            $('.addClassTable .addClasses:checked').each(function(){
+                                                list_id_lop_hoc[$(this).val() + ""] = $(this).parent().parent().find('td').eq(0).text();
+                                            })
+                                            if(Object.keys(list_id_lop_hoc).length > 0){
+                                                var objPc = {
+                                                    id_giang_vien : teacherID,
+                                                    list_id_lop_hoc : list_id_lop_hoc
+                                                }
+                                                var jsonDataPC = JSON.stringify(objPc);
+                                                console.log(objPc);
+                                                console.log(jsonDataPC);
+                                                $.ajax({
+                                                    url: '<?php echo base_url(); ?>/Admin/TeachersController/addClassesIntoListOfTeachingCourses',
+                                                    method: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: jsonDataPC,
+                                                    success: function(response){
+                                                        for (var [course, processState] of Object.entries(response)) {
+                                                            if (processState.state) {
+                                                                toast({
+                                                                    title: "Thành công!",
+                                                                    message: `Thêm lớp ${course} vào danh sách giảng dạy thành công`,
+                                                                    type: "success",
+                                                                    duration: 100000
+                                                                });
+                                                            } else {
+                                                                toast({
+                                                                    title: "Thất bại!",
+                                                                    message: `Thêm lớp ${course} vào danh sách giảng dạy thành công thất bại(${processState.message}).`,
+                                                                    type: "error",
+                                                                    duration: 100000
+                                                                });
+                                                            }
+                                                        }
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error('Error:', status, error);
+                                                    }
+                                                });
+                                            }
+
+                                            // Xóa lớp học khỏi danh sách giảng dạy
+                                            var list_id_delete_lop_hoc = {}
+
+                                            $('.deleteClassTable .deleteTeachingCourse:checked').each(function(){
+                                                list_id_delete_lop_hoc[$(this).val() + ""] = $(this).parent().parent().find('td').eq(0).text();
+                                            })
+
+                                            if(Object.keys(list_id_delete_lop_hoc).length > 0){
+                                                var objDeletePc = {
+                                                    id_giang_vien : teacherID,
+                                                    list_id_lop_hoc : list_id_delete_lop_hoc
+                                                }
+
+                                                var jsonDataDeletePC = JSON.stringify(objDeletePc);
+                                                // console.log(objDeletePc);
+                                                // console.log(jsonDataDeletePC);
+                                                $.ajax({
+                                                    url: '<?php echo base_url(); ?>/Admin/TeachersController/deleteClassesFromListOfTeachingCourses',
+                                                    method: 'POST',
+                                                    dataType: 'json',
+                                                    data: jsonDataDeletePC,
+                                                    success: function(response) {
+                                                        loadingEffect(false);
+                                                        for (var [course, processState] of Object.entries(response)) {
+                                                            if (processState.state) {
+                                                                toast({
+                                                                    title: "Thành công!",
+                                                                    message: `Xóa ${course} khỏi danh sách giảng dạy thành công!`,
+                                                                    type: "success",
+                                                                    duration: 100000
+                                                                });
+                                                            } else {
+                                                                toast({
+                                                                    title: `Xóa ${course} thất bại!`,
+                                                                    message: `(${processState.message}).`,
+                                                                    type: "error",
+                                                                    duration: 100000
+                                                                });
+                                                            }
+                                                        }
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        loadingEffect(false);
+                                                        console.error('Lỗi yêu cầu:', status, error);
+                                                    }
+                                                });
+                                            }
+                                            toast({
+                                                title: "Thành công!",
+                                                message: `Cập nhật giáo viên thành công`,
+                                                type: "success",
+                                                duration: 5000
+                                            });
+                                            $('.form-container').remove();
+                                        }
                                     },
                                     error: function(xhr, status, error) {
                                         console.error('Error:', status, error);
