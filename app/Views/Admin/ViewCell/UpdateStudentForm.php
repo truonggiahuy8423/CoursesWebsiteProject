@@ -9,23 +9,24 @@
 
                 <form>
                     <div class="mb-3">
-                        <label for="hoTenSua" class="form-label">Họ Tên</label> <span id="error_name" class="text-danger ms-3"></span>
-                        <input type="text" class="form-control" id="hoTenSua">
+                        <label for="hoTenSua" class="form-label">Họ Tên</label> <span id="error_fixname" class="text-danger ms-3"></span>
+                        <input type="text" class="form-control" id="hoTenSua" placeholder="Họ tên">
                     </div>
                     <div class="mb-3">
-                        <label for="ngaySinhSua" class="form-label">Ngày Sinh</label> <span id="error_dob" class="text-danger ms-3"></span>
+                        <label for="ngaySinhSua" class="form-label">Ngày Sinh</label> <span id="error_fixdob" class="text-danger ms-3"></span>
                         <input type="date" class="form-control" id="ngaySinhSua">
                     </div>
                     <div class="mb-3">
-                        <label for="gioiTinhSua" class="form-label">Giới Tính</label> <span id="error_gender" class="text-danger ms-3"></span>
+                        <label for="gioiTinhSua" class="form-label">Giới Tính</label> <span id="error_fixgender" class="text-danger ms-3"></span>
                         <select class="form-select" id="gioiTinhSua">
+                            <option value="" disabled selected>--Chọn giới tính--</option>
                             <option value="1">Nam</option>
                             <option value="2">Nữ</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="emailSua" class="form-label">Email</label> <span id="error_name" class="text-danger ms-3"></span>
-                        <input type="email" class="form-control" id="emailSua">
+                        <label for="emailSua" class="form-label">Email</label> <span id="error_fixmail" class="text-danger ms-3"></span>
+                        <input type="email" class="form-control" id="emailSua" placeholder="Email">
                     </div>
                     <button type="button" class="btn btn-primary" onclick="luuThongTinSua()">Lưu</button>
                 </form>
@@ -35,7 +36,9 @@
 </div>
 
 <script>
+    var currentStudentId;
     function sua(id) {
+        currentStudentId = id;
         // Fetch student information using AJAX
         $.ajax({
             url: '/Admin/StudentsController/getStudentInfo/' + id,
@@ -59,27 +62,27 @@
         var gioiTinh = document.getElementById('gioiTinhSua').value;
         var email = document.getElementById('emailSua').value;
         
-        $('#error_name, #error_dob, #error_gender, #error_email').text('');
+        $('#error_fixname, #error_fixdob, #error_fixgender, #error_fixmail').text('');
         // Perform input validation
         var isValid = true;
 
         if ($.trim(hoTen) == '') {
-            $('#error_name').text('Vui lòng điền họ tên');
+            $('#error_fixname').text('Vui lòng điền họ tên');
             isValid = false;
         }
 
         if ($.trim(ngaySinh) == '') {
-            $('#error_dob').text('Vui lòng chọn ngày sinh');
+            $('#error_fixdob').text('Vui lòng chọn ngày sinh');
             isValid = false;
         }
 
         if ($.trim(gioiTinh) == '') {
-            $('#error_gender').text('Vui lòng chọn giới tính');
+            $('#error_fixgender').text('Vui lòng chọn giới tính');
             isValid = false;
         }
 
         if ($.trim(email) == '') {
-            $('#error_email').text('Vui lòng điền Email');
+            $('#error_fixmail').text('Vui lòng điền Email');
             isValid = false;
         }
 
@@ -88,39 +91,39 @@
         }
 
         $.ajax({
-            url: '<?php echo base_url(); ?>/Admin/StudentsController/insertStudent',
+            url: '<?php echo base_url(); ?>/Admin/StudentsController/updateStudent',
             method: 'POST',
-            //dataType: 'json',
             contentType: "application/json",
             data: JSON.stringify({
-            ho_ten: hoTen,
-            ngay_sinh: ngaySinh,
-            gioi_tinh: gioiTinh,
-            email: email
+                id_hoc_vien:  currentStudentId,
+                ho_ten: hoTen,
+                ngay_sinh: ngaySinh,
+                gioi_tinh: gioiTinh,
+                email: email
             }),
             success: function(response) {
-            $('#themHocVienModal').modal('hide');
-            
-            toast({
-                title: "Thành công!",
-                message: "Thêm học viên thành công",
-                type: "success",
-                duration: 3000
-            });
+                $('#suaStudentForm').modal('hide');
+                
+                toast({
+                    title: "Thành công!",
+                    message: "Cập nhật thông tin học viên thành công",
+                    type: "success",
+                    duration: 3000
+                });
 
-            setTimeout(function() {
-                location.reload();
-            }, 2000);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
 
             },
             error: function(xhr, status, error) {
-            toast({
-                title: "Thất bại!",
-                message: "không thể thêm học viên",
-                type: "error",
-                duration: 3000
-            });
-            console.error('Error:', status, error);
+                toast({
+                    title: "Thất bại!",
+                    message: "Cập nhật thất bại",
+                    type: "error",
+                    duration: 3000
+                });
+                console.error('Error:', status, error);
             }
         });
     }

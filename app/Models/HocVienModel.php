@@ -204,29 +204,59 @@ class HocVienModel
         }
     }
 
+    // function updateHocVien($hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $id_hoc_vien = $this->conn->real_escape_string($hoc_vien->id_hoc_vien);
+    //     $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
+    //     $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
+    //     $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
+    //     $email = $this->conn->real_escape_string($hoc_vien->email);
+
+    //     $sql = "UPDATE hoc_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_hoc_vien = $id_hoc_vien";
+
+    //     if ($this->conn->query($sql) === TRUE) {
+    //         $this->conn->close();
+    //         return ['state' => true, 'message' => 'Update thành công'];
+    //     } else {
+    //         $this->conn->close();
+    //         return ['state' => false, 'message' => $this->conn->error];
+    //     }
+    // }
+
     function updateHocVien($hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+            return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
         }
+        if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
 
-        $id_hoc_vien = $this->conn->real_escape_string($hoc_vien->id_hoc_vien);
-        $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
-        $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
-        $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
-        $email = $this->conn->real_escape_string($hoc_vien->email);
+            $sql = "UPDATE hoc_vien SET ho_ten = ?, ngay_sinh = ?, gioi_tinh = ?, email = ? WHERE id_hoc_vien = ?";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssssi", $hoc_vien->ho_ten, $hoc_vien->ngay_sinh, $hoc_vien->gioi_tinh, $hoc_vien->email, $hoc_vien->id_hoc_vien);
 
-        $sql = "UPDATE hoc_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_hoc_vien = $id_hoc_vien";
-
-        if ($this->conn->query($sql) === TRUE) {
-            $this->conn->close();
-            return ['state' => true, 'message' => 'Update thành công'];
+            if ($stmt->execute()) {
+                $updatedId = $this->conn->insert_id;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => true, 'message' => 'Update thành công', 'auto_increment_id' => $updatedId];
+            } else {
+                $error_message = $this->conn->error;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => false, 'message' => $error_message];
+            }
         } else {
-            $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
         }
     }
+
 }
     
 

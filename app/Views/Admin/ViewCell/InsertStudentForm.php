@@ -20,7 +20,7 @@
           <div class="mb-3">
             <label for="gioiTinh" class="form-label gender">Giới Tính</label> <span id="error_gender" class="text-danger ms-3"></span>
             <select class="form-select" id="gioiTinh">
-              <option value="" disabled selected>Chọn giới tính</option>
+              <option value="" disabled selected>--Chọn giới tính--</option>
               <option value="1">Nam</option>
               <option value="2">Nữ</option>
             </select>

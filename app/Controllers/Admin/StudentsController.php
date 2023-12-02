@@ -249,4 +249,18 @@ class StudentsController extends BaseController
         return $this->response->setJSON($data);
 
     }
+
+    public function updateStudent()
+    {
+        if ($this->request->isAJAX()) {
+            $data = $this->request->getJSON();
+            
+            // Validate the received data if necessary
+            
+            $model = new HocVienModel();
+            $result = $model->updateHocVien($data);
+
+            return $this->response->setJSON($result);
+        }
+    }
 }
