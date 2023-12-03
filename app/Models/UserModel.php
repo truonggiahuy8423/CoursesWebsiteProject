@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Exception;
 
 use CodeIgniter\Model;
 use mysqli;
@@ -70,7 +71,7 @@ class UserModel {
         
         $stmt = $this->conn->prepare($sql);
     
-        $stmt->bind_param("i", $tai_khoan);
+        $stmt->bind_param("s", $tai_khoan);
     
         $stmt->execute();
     
@@ -128,7 +129,21 @@ class UserModel {
         $this->conn->close();
         return $users;
     }
-
+    function executeCustomDDL($sql) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        try {
+            $this->conn->query($sql);
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
+            $this->conn->close();
+            return ['state' => false, 'message' => $e->getMessage()];
+        }        
+    }
     public function executeCustomQuery($sql) {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {

@@ -69,7 +69,6 @@ class CaModel extends Model
                 $ca->id_ca = $row['id_ca'];
                 $ca->thoi_gian_bat_dau = $row['thoi_gian_bat_dau'];
                 $ca->thoi_gian_ket_thuc = $row['thoi_gian_ket_thuc'];
-
                 $cas[] = $ca;
             }
         }

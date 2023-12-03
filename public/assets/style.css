@@ -119,7 +119,7 @@ img {
 
 .top-nav__logo img {
     margin-left: 20px;
-    height: 21px;
+    height: 20px;
 }
 
 .top-nav__notification,
@@ -352,7 +352,9 @@ img {
 
 
 
-
+.class-div:active {
+    background-color: #cdcdcd;
+}
 .class__item--upcoming {
     color: #FFA33C;
 }
@@ -408,20 +410,48 @@ img {
 }
 .highlight-button:hover {
     background-color: #2C2C2C;
+    color: white;
     border-color: #cacaca!important;
 }
 
 .highlight-button:active {
     background-color: #2C2C2C!important;
-
 }
 .highlight-button .highlight-icon::before {
-    color: #2C2C2C!important;
+    color: #2c2c2c!important;
+    
 }
 .highlight-button:hover .highlight-icon::before {
     color: white!important;
 }
 
+
+.highlight-button--reverse {
+    background-color: #2C2C2C;
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: #2C2C2C;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    border-radius: 0;
+    transition: 0.4s;
+}
+.highlight-button--reverse:hover {
+    background-color: white;
+    border-color: #2C2C2C!important;
+}
+
+.highlight-button--reverse:active {
+    background-color: white!important;
+}
+.highlight-button--reverse .highlight-icon--reverse::before {
+    color: white!important;
+}
+.highlight-button--reverse:hover .highlight-icon--reverse::before {
+    color: #2C2C2C!important;
+}
 
 .highlight-button--save {
     cursor: pointer;
@@ -435,8 +465,8 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 25px;
-    height: 25px;
+    width: 21px;
+    height: 21px;
     border-radius: 0;
     transition: 0.4s;
 }
@@ -469,8 +499,8 @@ img {
     justify-content: center;
     align-items: center;
     background-clip: border-box;
-    width: 25px;
-    height: 25px;
+    width: 21px;
+    height: 21px;
     border-radius: 0;
     transition: 0.4s;
 }
@@ -500,6 +530,74 @@ img {
     justify-content: center;
     align-items: center;
     /* width: 30px; */
+}
+.component-container {
+    height: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+.add-lecturer-btn {
+    height: 30px;
+    width: 30px;
+    display: inline-flex;
+    margin-left: 15px;
+    border-radius: 5px;
+}
+.add-lecturer-btn i {
+    font-size: 13px;
+}
+.update-btn, .delete-student-into-class-btn, .add-student-into-class-btn, .add-schedule-into-class-btn, .delete-schedule-from-class-btn {
+    /* margin-left: 5px; */
+    height: 100%;
+    width: 116px;
+    font-size: 13px;
+    border-radius: 5px;
+    /* box-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.3); Đổ bóng cho phần tử bọc */
+}
+.update-btn i {
+    margin-left: 8px;
+    scale: 80%;
+}
+.delete-student-into-class-btn i {
+    margin-left: 8px;
+    font-size: 12px;
+}
+.add-student-into-class-btn {
+    margin-left: 10px;
+}
+.add-student-into-class-btn i {
+    margin-left: 8px;
+    font-size: 12px;
+
+}
+.delete-student-into-class-btn, .add-student-into-class-btn {
+    width: 80px;
+    padding-left: 10px!important;
+    /* padding-left: 5px; */
+    padding-right: 10px!important;
+    /* padding: auto 30px; */
+}
+
+
+.delete-schedule-from-class-btn i {
+    font-size: 12px;
+
+    margin-left: 10px;
+}
+.add-schedule-into-class-btn {
+    margin-left: 10px;
+}
+.add-schedule-into-class-btn i {
+    font-size: 12px;
+    margin-left: 10px;
+}
+.delete-schedule-from-class-btn, .add-schedule-into-class-btn {
+    width: 80px;
+    padding-left: 10px!important;
+    /* padding-left: 5px; */
+    padding-right: 10px!important;
+    /* padding: auto 30px; */
 }
 .cancel-div {
     /* padding-left: 5px; */
@@ -556,7 +654,15 @@ img {
     /* padding: 10px;
     padding-top: 5px; */
 }
-.insert-class-form__title-section {
+.insert-lecturer-form, .insert-schedule-form, .insert-student-form {
+    background-color: #ffffff;
+    height: auto;
+    width: 70%;
+    /* border-radius: 10px; */
+    /* padding: 10px;
+    padding-top: 5px; */
+}
+.insert-class-form__title-section, .insert-schedule-form__title-section, .insert-student-form__title-section {
     width: 100%;
     background-color: #2C2C2C;
     height: 60px;
@@ -564,7 +670,21 @@ img {
     align-items: center;
     justify-content: flex-start;
 }
-.insert-class-form__title {
+.insert-class-form__title, .insert-schedule-form__title, .insert-student-form__title {
+    color: white;
+    margin-left: 25px;
+    font-weight: bold;
+
+}
+.insert-lecturer-form__title-section {
+    width: 100%;
+    background-color: #2C2C2C;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.insert-lecturer-form__title {
     color: white;
     margin-left: 25px;
     font-weight: bold;
@@ -603,21 +723,153 @@ img {
     width: 30px;
     border-radius: 25px;
 }
-
-.insert-class-form__table-container {
+.insert-lecturer-form__search-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin: 20px 20px;
+    margin-bottom: 10px;
+}
+.insert-lecturer-form__lecturers-table-container,  .insert-schedule-form__schedule-table-container, .insert-student-form__students-table-container{
     margin: auto 20px;
     margin-bottom: 15px;
-    max-height: 200px;
+    height: 200px;
     overflow: auto;
+    /* box-shadow: inset 0px 0px 3px 3px rgba(0, 0, 0, 0.5); */
     position: relative;
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: #cdcdcd;    
+}
+.insert-schedule-form__schedule-table-container {
+    height: 170px;
+}
+.lecturer-link-span {
+    display: inline-flex!important;
+    align-items: center;
+}
+.lecturer-link-span:hover .delete-lecturer-btn {
+    visibility: visible;
+}
+.delete-lecturer-btn::before {
+    color: #a6a6a6;
+}
+.delete-lecturer-btn {
+    margin-left: 10px;
+    height: 12px;
+    width: 12px;
+    font-size: 11px;
+    visibility: hidden;
+}
+.lecturer-link:hover {
+    color: rgb(0, 76, 163)!important;
+}
+.lecturer-link:hover span{
+    color: rgb(0, 76, 163)!important;
+}
+.insert-schedule-form__schedule-table tbody tr:hover {
+    background-color: #f6f6f6;
+}
+.insert-class-form__table-container, .insert-schedule-form__filter-table-container {
+    margin: auto 20px;
+    margin-bottom: 15px;
+    height: 200px;
+    overflow: auto;
+    /* box-shadow: inset 0px 0px 3px 3px rgba(0, 0, 0, 0.5); */
+    position: relative;
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: #cdcdcd;    
+}
+.insert-schedule-form__filter-table-container {
+    height: auto;
+}
+.insert-schedule-form__filter-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.insert-schedule-form__filter-table td {
+    width: 33%;
+    height: 34px;
+    font-size: 14px;
+}
 
+.insert-lecturer-form__lecturers-table {
+    width: 100%;
+}
+.insert-lecturer-form__lecturers-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+    padding-left: 10px;
+}
+.insert-lecturer-form__lecturers-table thead td {
+    background-color: #cecece;
+    text-align: center;
+    color: #2C2C2C;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+}
+
+
+.insert-student-form__students-table {
+    width: 100%;
+}
+.insert-student-form__students-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+    padding-left: 10px;
+}
+.insert-student-form__students-table thead td {
+    background-color: #cecece;
+    text-align: center;
+    color: #2C2C2C;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+}
+
+.insert-schedule-form__schedule-table {
+    width: 100%;
+}
+.insert-schedule-form__schedule-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+    padding-left: 10px;
+}
+.insert-schedule-form__schedule-table thead td {
+    background-color: #cecece;
+    text-align: center;
+    color: #2C2C2C;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
+}
+.insert-class-form__lecturers-table thead th {
+    background-color: #cecece;
+    color: #2C2C2C;
+    font-weight: bold;
+    text-align: center;
+    font-size: 13px;
+    padding: 5px;
+    height: 30px;
 }
 .insert-class-form__lecturers-table {
     width: 100%;
+    
 }
-.insert-class-form__lecturers-table td,th {
+.insert-class-form__lecturers-table td {
     font-size: 13px;
+    padding: 5px;
     height: 30px;
+    padding-left: 10px;
+
 }
 .insert-class-form__close-btn:hover {
     background-color: #dfdfdf;
@@ -647,6 +899,94 @@ img {
     margin-top: 30px;
 }
 
+.insert-lecturer-form__cancel-btn, .insert-lecturer-form__save-btn {
+    background-color: white;
+    border: none;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho phần tử bọc */
+    border-radius: 4px;
+    margin-right: 20px;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.insert-lecturer-form__cancel-btn:hover, .insert-lecturer-form__save-btn:hover {
+    background-color: #ebebeb;
+}
+.insert-lecturer-form__cancel-btn:active, .insert-lecturer-form__save-btn:active {
+    background-color: #d4d4d4;
+}
+
+.insert-student-form__cancel-btn, .insert-student-form__save-btn {
+    background-color: white;
+    border: none;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho phần tử bọc */
+    border-radius: 4px;
+    margin-right: 20px;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.insert-student-form__cancel-btn:hover, .insert-student-form__save-btn:hover {
+    background-color: #ebebeb;
+}
+.insert-student-form__cancel-btn:active, .insert-student-form__save-btn:active {
+    background-color: #d4d4d4;
+}
+.insert-lecturer-form__btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin: 20px auto;
+    margin-top: 30px;
+}
+.insert-schedule-form__table-title {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+
+}
+.insert-schedule-form__cancel-btn, .insert-schedule-form__save-btn, .insert-schedule-form__filter-btn, .insert-schedule-form__choose-schedule-btn, .insert-schedule-form__delete-chosen-schedule-btn {
+    background-color: white;
+    border: none;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho phần tử bọc */
+    border-radius: 4px;
+    margin-right: 20px;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.insert-schedule-form__cancel-btn:hover, .insert-schedule-form__save-btn:hover, .insert-schedule-form__filter-btn:hover, .insert-schedule-form__choose-schedule-btn:hover, .insert-schedule-form__delete-chosen-schedule-btn:hover{
+    background-color: #ebebeb;
+}
+.insert-schedule-form__cancel-btn:active, .insert-schedule-form__save-btn:active, .insert-schedule-form__filter-btn:active, .insert-schedule-form__choose-schedule-btn:active, .insert-schedule-form__delete-chosen-schedule-btn:active {
+    background-color: #d4d4d4;
+}
+.insert-schedule-form__btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin: 20px auto;
+    margin-top: 20px;
+}
+.insert-student-form__btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin: 20px auto;
+    margin-top: 20px;
+}
+.insert-schedule-form__filter-btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 20px;
+    margin-right: 0px;
+    /* margin-top: 30px; */
+}
   th, td {
     border: 1px solid #dddddd;
     text-align: left;
@@ -654,75 +994,79 @@ img {
   }
 
   th {
-    background-color: #f2f2f2;
+    background-color: #cecece;
   }
-.
-/* body {
-    padding-top: 50px;
-    padding-left: 230px;
-} */
-/* .top-nav__drop-down:active #drop-down-icon {
-    transform: rotate(0deg);
-} */
-/* }
 
-.top-nav__drop-down .item {
-    position: absolute;
-    z-index: 0;
-    background-color: white;
-    height: 26px;
-    display: flex;
+.insert-schedule-form__error-noti {
+    color: #de0000;
+    font-size: 12px;
+}
+.root-folder {
+    padding: 0px 30px;
+    padding-top: 15px;
+}
+.resource-item {
+    width: 100%;
+    margin: 15px 0px;
+    padding: 0px 3%;
+}
+.children-folder {
+    width: 100%;
+    margin: 15px 0px;
+    padding: 30px;
+    padding-top: 50px;
+    position: relative;
+    border-style: solid;
+    border-color: #898989;
+    border-radius: 10px;
+    border-width: 0.5px;
+}
+.children-folder__name {
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    border-width: 0.05px;
-    border-style: solid;
-    border-color: #c0c0c0;
-    width: 90%;
-    margin: 0px 5%;
-    font-style: normal;
+    border-radius: 30px;
+    height: 30px;
+    padding: 5px 20px;
+    background-color: #2C2C2C;
+    color: white;
     font-size: 13px;
-    text-decoration: none;
-    transition: 1s;
 }
-
-
-
-/*     
-
-.top-nav__drop-down:hover #drop-down-icon {
-    transform: rotate(0deg);
-/* 
-    /* animation: rotateIcon 0.5s forwards  ease-in-out; */
-/* }  */
-/* .item0 {
-    z-index: 1; */
-/* }
-.top-nav__drop-down:hover .item1 {
-    z-index: 1;
-    transform: translateY(26px);
-}
-.top-nav__drop-down:hover .item2 {
-    transform: translateY(56px);
-    z-index: 2;
-}
-.top-nav__drop-down:hover .item3 {
-    z-index: 3;
-    transform: translateY(86px);
-} */
-/* 
-.a, .b {
-    display: inline-block;
-    height: 50px;
-    width: 50px;
-}
-.a {
-    background-color: aquamarine;
-    position: relative;
-}
-.b {
-    background-color: black;
+.children-folder__component-container {
+    top: 10px;
+    left: 20px;
     position: absolute;
-    z-index: 1;
+}
+.item-details {
+    color: #898989;
+    font-size: 11px;
+}
+.notification-variant__title {
+    font-size: 15px;
+    color: #0DA7FD;
+    cursor: pointer;
+}
+.notification-variant__title i::before{
+    font-size: 14px;
+    color: #0DA7FD;
+}
+.notification-variant__content {
+    font-size: 12px;
+    padding-left: 2%;
 }
 
- */
+.link-variant__title, .file-variant__title, .assignment-variant__title {
+    font-size: 13px;
+    color: #2C2C2C;
+    cursor: pointer;
+    /* vertical-align: top; */
+}
+.link-variant__title:hover, .file-variant__title:hover, .assignment-variant__title:hover, .notification-variant__title:hover {
+    /* font-size: 13px; */
+    color: #0077e7;
+    /* vertical-align: top; */
+}
+
+.assignment-variant__title {
+    text-decoration: none;
+}

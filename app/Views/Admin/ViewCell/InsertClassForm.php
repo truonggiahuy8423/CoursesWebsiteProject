@@ -46,7 +46,7 @@
                         $id_giang_vien = $lecturers[$i]->id_giang_vien;
                         $ho_ten = $lecturers[$i]->ho_ten;
                         $email = $lecturers[$i]->email;
-                        echo " {$lecturers[$i]->id_giang_vien}
+                        echo " 
                                 <tr>
                                     <td>{$id_giang_vien}</td>
                                     <td>{$ho_ten}</td>
@@ -58,51 +58,8 @@
                     }
 
                     ?>
+                    
                     <!-- Dòng 1 -->
-
-                    <tr>
-                        <td>1</td>
-                        <td>Nguyễn Văn A</td>
-                        <td>nguyenvana@example.com</td>
-                        <td>Nam</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <!-- Dòng 2 -->
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>tranthib@example.com</td>
-                        <td>Nữ</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>tranthib@example.com</td>
-                        <td>Nữ</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>tranthib@example.com</td>
-                        <td>Nữ</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>tranthib@example.com</td>
-                        <td>Nữ</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trần Thị B</td>
-                        <td>tranthib@example.com</td>
-                        <td>Nữ</td>
-                        <td><input type="checkbox"></td>
-                    </tr>
                     <!-- Các dòng khác tương tự -->
                 </tbody>
             </table>

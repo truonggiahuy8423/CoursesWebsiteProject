@@ -60,117 +60,9 @@
 
         }
         // setInterval(reloadCoursesList, 10000);
+
         $(document).ready(function() {
-            $(`.delete-class-btn`).click(function() {
-                $(`.delete-checkbox`).css(`visibility`, `visible`);
-
-                $(`.save-div`).css(`position`, `static`);
-                $(`.save-div`).css(`z-index`, `1`);
-                $(`.cancel-div`).css(`position`, `static`);
-                $(`.cancel-div`).css(`z-index`, `1`);
-
-                let addbtn = $(`.add-class-btn`);
-                addbtn.prop(`disabled`, true);
-                addbtn.removeClass(`highlight-button`);
-                addbtn.addClass(`highlight-button--disable`);
-                let deletebtn = $(`.delete-class-btn`);
-                deletebtn.prop(`disabled`, true);
-                deletebtn.removeClass(`highlight-button`);
-                deletebtn.addClass(`highlight-button--disable`);
-            });
-            $(`.cancel-delete-class-btn`).click(function() {
-                $(`.delete-checkbox`).css(`visibility`, `hidden`);
-                $(`.delete-checkbox`).prop(`checked`, false);
-
-                $(`.save-div`).css(`position`, `absolute`);
-                $(`.save-div`).css(`z-index`, `-1`);
-                $(`.cancel-div`).css(`position`, `absolute`);
-                $(`.cancel-div`).css(`z-index`, `-1`);
-
-                let addbtn = $(`.add-class-btn`);
-                addbtn.prop(`disabled`, false);
-                addbtn.removeClass(`highlight-button--disable`);
-                addbtn.addClass(`highlight-button`);
-                let deletebtn = $(`.delete-class-btn`);
-                deletebtn.prop(`disabled`, false);
-                deletebtn.removeClass(`highlight-button--disable`);
-                deletebtn.addClass(`highlight-button`);
-            });
-            $(`.save-delete-class-btn`).click(function() {
-                // check 
-                if ($(`.delete-checkbox:checked`).length == 0) {
-                    toast({
-                        title: 'Thông báo',
-                        message: 'Chưa chọn lớp học cần xóa',
-                        type: 'warning',
-                        duration: 5000
-                    });
-                } else {
-                    loadingEffect(true);
-                    let courses = [];
-                    $(`.delete-checkbox:checked`).each(function() {
-
-                        courses.push($(this).attr("value"));
-                    });
-                    console.log(courses);
-                    let jsonData = {};
-                    jsonData[`courses`] = courses;
-                    jsonData = JSON.stringify(jsonData);
-                    $.ajax({
-                        url: '<?php echo base_url(); ?>/Admin/CoursesController/deleteCourse',
-                        method: 'POST',
-                        dataType: 'json', // Kiểu dữ liệu bạn mong đợi từ phản hồi (json, html, text, vv.)
-                        data: // Dữ liệu bạn muốn gửi đi (nếu có)
-                            jsonData,
-                        success: function(response) {
-                            loadingEffect(false);
-                            $(`.delete-checkbox`).css(`visibility`, `hidden`);
-                            $(`.delete-checkbox`).prop(`checked`, false);
-
-                            $(`.save-div`).css(`position`, `absolute`);
-                            $(`.save-div`).css(`z-index`, `-1`);
-                            $(`.cancel-div`).css(`position`, `absolute`);
-                            $(`.cancel-div`).css(`z-index`, `-1`);
-
-                            let addbtn = $(`.add-class-btn`);
-                            addbtn.prop(`disabled`, false);
-                            addbtn.removeClass(`highlight-button--disable`);
-                            addbtn.addClass(`highlight-button`);
-                            let deletebtn = $(`.delete-class-btn`);
-                            deletebtn.prop(`disabled`, false);
-                            deletebtn.removeClass(`highlight-button--disable`);
-                            deletebtn.addClass(`highlight-button`);
-                            for (var [id_lop_hoc, processState] of Object.entries(response)) {
-                                if (processState.state) {
-                                    toast({
-                                        title: "Thành công!",
-                                        message: `Xóa lớp học ${id_lop_hoc.toString().padStart(6, '0')} thành công!`,
-                                        type: "success",
-                                        duration: 100000
-                                    });
-                                    // Gọi hàm in thông báo, type: "succcess", title: "Thêm lớp thành công", content: "Lớp ${className} ${selectedSubjectId}.${processResult1.auto_increment_id} được thêm thành công"
-                                } else {
-                                    toast({
-                                        title: `Xóa lớp học ${id_lop_hoc.toString().padStart(6, '0')} thất bại!`,
-                                        message: `(${processState.message}).`,
-                                        type: "error",
-                                        duration: 100000
-                                    });
-
-                                    // Gọi hàm in thông báo, type: "error", title: "Thêm giảng viên ${lecturer} thêm vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại", content: "processState.message"
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-            console.log('ready');
-
-            // $(document).on('click', '.insert-class-form__cancel-btn', function () {
-            //     $('.form-container').remove();
-            // });
-
-            $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');
+            $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');})
 
             let loadingState = false;
 
@@ -823,6 +715,7 @@
                 $('.loading-effect').remove();
             }
         }
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
