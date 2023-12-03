@@ -140,7 +140,7 @@ class CoursesController extends BaseController
         $main_layout_data['left_nav_chosen_value'] = 1;
 
         if (session()->get('role') == 1) { // Admin
-            $result = $model->executeCustomQuery(
+           $result = $model->executeCustomQuery(
                 'SELECT ad.ho_ten, users.anh_dai_dien
                 FROM users
                 INNER JOIN ad ON users.id_ad = ad.id_ad
