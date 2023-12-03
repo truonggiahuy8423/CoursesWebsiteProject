@@ -26,13 +26,12 @@ class FileUploadModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $file = new FileUploadModel();
             $this->id_tep_tin_tai_len = $row["id_tep_tin_tai_len"];
             $this->du_lieu = $row["du_lieu"];
             $this->ngay_tai_len = $row["ngay_tai_len"];
             $this->id_user = $row["id_user"];
             $this->conn->close();
-            return $file;
+            return $this;
         }
         $this->conn->close();
         return null;

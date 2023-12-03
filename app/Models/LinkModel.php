@@ -27,14 +27,13 @@ class LinkModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $duong_link = new LinkModel();
             $this->id_duong_link = $row["id_duong_link "];
             $this->link = $row["link "];
             $this->ngay_dang = $row["ngay_dang"];
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->id_muc = $row["id_muc"];
             $this->conn->close();
-            return $duong_link;
+            return $this;
         }
         $this->conn->close();
         return null;

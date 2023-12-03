@@ -27,14 +27,13 @@ class HocVienModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $hoc_vien = new HocVienModel();
             $this->id_hoc_vien = $row["id_hoc_vien"];
             $this->ho_ten = $row["ho_ten"];
             $this->ngay_sinh = $row["ngay_sinh"];
             $this->gioi_tinh = $row["gioi_tinh"];
             $this->email = $row["email"];
             $this->conn->close();
-            return $hoc_vien;
+            return $this;
         }
         else{
             $this->conn->close();

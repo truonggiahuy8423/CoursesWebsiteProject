@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
 use mysqli;
 use Exception;
 
@@ -25,19 +26,19 @@ class GiangVienModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
+        $id_giang_vien = $this->conn->real_escape_string($id_giang_vien);
         $sql = "SELECT * FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $giang_vien = new GiangVienModel();
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->ho_ten = $row["ho_ten"];
             $this->ngay_sinh = $row["ngay_sinh"];
             $this->gioi_tinh = $row["gioi_tinh"];
             $this->email = $row["email"];
             $this->conn->close();
-            return $giang_vien;
+            return $this;
         }
         else{
             $this->conn->close();
@@ -104,33 +105,34 @@ class GiangVienModel
         $email = $this->conn->real_escape_string($giang_vien->email);
 
         $sql = "INSERT INTO giang_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
-        try {
+        try{
             $this->conn->query($sql);
+            $insertedId = $this->conn->insert_id;
             $this->conn->close();
-            return ['state' => true, 'message' => 'Cập nhật thành công'];
-        } catch (Exception $e) {
-            // Nếu có lỗi, xử lý lỗi
+            return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+        } catch(Exception $e) {
             $this->conn->close();
             return ['state' => false, 'message' => $e->getMessage()];
-        }   
+        }
+
     }
 
-    function deleteGiangVien($giang_vien)
+    function deleteGiangVien($id_giang_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-
-        $id_giang_vien = $this->conn->real_escape_string($giang_vien->id_giang_vien);
+        $id_giang_vien = $this->conn->real_escape_string($id_giang_vien);
         $sql = "DELETE FROM giang_vien WHERE id_giang_vien = $id_giang_vien";
 
-        if ($this->conn->query($sql) === TRUE) {
+        try{
+            $this->conn->query($sql);
             $this->conn->close();
             return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -149,12 +151,13 @@ class GiangVienModel
 
         $sql = "UPDATE giang_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_giang_vien = $id_giang_vien";
 
-        if ($this->conn->query($sql) === TRUE) {
+        try{
+            $this->conn->query($sql);
             $this->conn->close();
-            return ['state' => true, 'message' => 'Update thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Update thành công', 'id_giang_vien' => $id_giang_vien];
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 }
