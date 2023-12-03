@@ -3,6 +3,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+use Exception;
 
 include 'DatabaseConnect.php';
 
@@ -103,13 +104,15 @@ class GiangVienModel
         $email = $this->conn->real_escape_string($giang_vien->email);
 
         $sql = "INSERT INTO giang_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
-        if ($this->conn->query($sql) === TRUE) {
+        try {
+            $this->conn->query($sql);
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
-        }
+            return ['state' => false, 'message' => $e->getMessage()];
+        }   
     }
 
     function deleteGiangVien($giang_vien)

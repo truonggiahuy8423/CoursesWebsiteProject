@@ -16,12 +16,12 @@
             </button>
             <div class="cancel-div">
             <button class="cancel-delete-class-btn highlight-button--cancel">
-                <i class="fa-solid fa-x highlight-icon--cancel" style="scale: 0.5;"></i>
+                <i class="fa-solid fa-x highlight-icon--cancel" style="font-size: 12px!important;"></i>
             </button>
             </div>
             <div class="save-div">
             <button class="save-delete-class-btn highlight-button--save">
-                <i class="fa-solid fa-check highlight-icon--save" style="scale: 0.6;"></i>
+                <i class="fa-solid fa-check highlight-icon--save" style="font-size: 12px!important;"></i>
             </button>
 
             </div>
@@ -94,6 +94,7 @@
     
     setInterval(reloadCoursesList, 10000);
         $(document).ready(function() {
+            
             $(`.delete-class-btn`).click(function() {
                 $(`.delete-checkbox`).css(`visibility`, `visible`);
 
@@ -212,7 +213,7 @@
 
                 // Use jQuery.ajax for the AJAX request
                 $.ajax({
-                    url: '<?php echo base_url(); ?>/Admin/CoursesController/getInsertForm',
+                    url: '<?php echo base_url(); ?>/Admin/CoursesController/getInsertClassForm',
                     method: 'GET',
                     success: function(response) {
                         loadingEffect(false);
@@ -270,7 +271,11 @@
                                             success: function(response) {
                                                 // Xử lý in ra thông báo khi request thêm danh sách giảng viên vào lớp
                                                 var className = $(`.insert-class-form__subject-cbb`).find(':selected').text();
+                                                console.log(className);
+                                                className = className.trim();
                                                 className = className.substring(6, className.length);
+                                                console.log(className);
+
                                                 var processResult = (response);
                                                 loadingEffect(false);
                                                 $('.form-container').remove();
@@ -285,7 +290,7 @@
                                                     if (processState.state) {
                                                         toast({
                                                             title: "Thành công!",
-                                                            message: `Thêm giảng viên ${lecturer} vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thành công`,
+                                                            message: `Thêm giảng viên ${lecturer} vào lớp ${className} ${selectedSubjectId.toString().padStart(3, '0')}.${processResult1.auto_increment_id.toString().padStart(6, '0')} thành công`,
                                                             type: "success",
                                                             duration: 100000
                                                         });
@@ -293,7 +298,7 @@
                                                     } else {
                                                         toast({
                                                             title: "Thất bại!",
-                                                            message: `Thêm giảng viên ${lecturer} vào lớp ${selectedSubjectId}.${processResult1.auto_increment_id} thất bại(${processState.message}).`,
+                                                            message: `Thêm giảng viên ${lecturer} vào lớp ${className} ${selectedSubjectId.toString().padStart(3, '0')}.${processResult1.auto_increment_id.toString().padStart(6, '0')} thất bại(${processState.message}).`,
                                                             type: "error",
                                                             duration: 100000
                                                         });

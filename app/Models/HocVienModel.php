@@ -1,5 +1,6 @@
 <?php
 namespace App\Models;
+include 'DatabaseConnect.php';
 
 use CodeIgniter\Model;
 use mysqli;
@@ -55,11 +56,11 @@ class HocVienModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $hoc_vien = new HocVienModel();
-                $this->id_hoc_vien = $row["id_hoc_vien"];
-                $this->ho_ten = $row["ho_ten"];
-                $this->ngay_sinh = $row["ngay_sinh"];
-                $this->gioi_tinh = $row["gioi_tinh"];
-                $this->email = $row["email"];
+                $hoc_vien->id_hoc_vien = $row["id_hoc_vien"];
+                $hoc_vien->ho_ten = $row["ho_ten"];
+                $hoc_vien->ngay_sinh = $row["ngay_sinh"];
+                $hoc_vien->gioi_tinh = $row["gioi_tinh"];
+                $hoc_vien->email = $row["email"];
                 $hoc_viens[] = $hoc_vien;
             }
         }

@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/style.css">
 
     <link rel="stylesheet" type="text/css" href="<?= base_url('assets/toast.css') ?>">
@@ -21,6 +22,8 @@
 </head>
 
 <body>
+    <div id="toast"></div>
+
     <?php echo $navbar ?>
     <div class="header-container">
         <h1><?php echo $class_name ?></h1>
@@ -33,7 +36,6 @@
 <script>
     // Information Section Script
     // $(document).on('click', '.class-div', function() {
-    //             window.location.href = `<?php echo base_url(); ?>/courses/information?courseid=${$(this).parent().attr('courseid')}`;
     //         });
     /////////////////////////////
 </script>
@@ -58,10 +60,12 @@
     .list-of-lecturers-container a+a {
         margin-top: 2px;
     }
-    .class_infor-table td {
+    .class-infor-table td {
         font-size: 13px;
         padding: 5px;
         padding-left: 10px;
+        width: 50%;
+        height: 34px!important;
     }
 
     .class-infor-section__class-name {
@@ -161,7 +165,7 @@
         border-radius: 4px;
         margin-top: 10px;
     }
-    .class_infor-table, .students-table, .schedule-table {
+    .class-infor-table, .students-table, .schedule-table {
         width: 98%;
         margin: auto 1%;
         margin-top: 12px;
@@ -174,6 +178,7 @@
     .students-table td {
         font-size: 13px;
         padding: 5px;
+        height: 34px;
         padding-left: 10px;
     }
     .students-table thead td {
@@ -188,6 +193,7 @@
     .schedule-table td {
         font-size: 13px;
         padding: 5px;
+        height: 34px;
         padding-left: 10px;
     }
     .schedule-table {
