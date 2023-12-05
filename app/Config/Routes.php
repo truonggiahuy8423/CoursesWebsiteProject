@@ -21,6 +21,8 @@ $routes->group('/courses', function ($routes) {
     $routes->add('chat', 'Courses::chat');
     $routes->add('resource', 'Admin\CoursesController::resource');
 });
+$routes->get('/resource/assignment', 'Admin\CoursesController::assignment');
+
 $routes->get('/students', 'Admin\StudentsController::index');
 $routes->get('/lecturers', 'Admin\TeachersController::index');
 $routes->get('/users', 'Admin\UsersController::index');

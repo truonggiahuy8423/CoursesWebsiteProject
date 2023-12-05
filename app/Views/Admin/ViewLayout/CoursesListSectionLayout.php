@@ -203,8 +203,9 @@
             $(document).on('click', '.class-div', function() {
                 window.location.href = `<?php echo base_url(); ?>/courses/information?courseid=${$(this).parent().attr('courseid')}`;
             });
-
-
+            $(document).on('click', '.delete-checkbox', function(event) {
+                event.stopPropagation();
+            });
             let loadingState = false;
 
             $(`.add-class-btn`).click(function() {
@@ -427,6 +428,7 @@
                             </div>
                     `
                             );
+
                         }
                     }
                     // 

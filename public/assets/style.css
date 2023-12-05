@@ -330,6 +330,9 @@ img {
     height: 100%;
     transition: 0.5s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: relative;
 }
 .p-3:hover {
@@ -1066,7 +1069,10 @@ img {
     color: #0077e7;
     /* vertical-align: top; */
 }
+.link-variant__title a:hover {
+    color: #0077e7!important;
 
+}
 .assignment-variant__title {
     text-decoration: none;
 }

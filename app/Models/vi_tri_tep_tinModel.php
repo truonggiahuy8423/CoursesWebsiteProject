@@ -3,6 +3,8 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+include 'DatabaseConnect.php';
+
 class vi_tri_tep_tinModel
 {
     public $id_muc;
@@ -20,7 +22,7 @@ class vi_tri_tep_tinModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $sql = "SELECT * FROM vi_tri_tep_tin WHERE id_muc = $id_muc";
+        $sql = "SELECT * FROM vi_tri_tep_tin WHERE id_muc = $studentId";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -62,7 +64,25 @@ class vi_tri_tep_tinModel
         $this->conn->close();
         return $users;
     }
+    
+    function executeCustomQuery($sql)
+    {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
 
+        $result = $this->conn->query($sql);
+        $rows = [];
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
+    }
     function queryDatabase($sql)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
@@ -112,7 +132,7 @@ class vi_tri_tep_tinModel
         }
 
         $studentId = $this->conn->real_escape_string($user->studentId);
-        $sql = "DELETE FROM vi_tri_tep_tin WHERE id_muc = $id_muc";
+        $sql = "DELETE FROM vi_tri_tep_tin WHERE id_muc = $user";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();
@@ -134,7 +154,7 @@ class vi_tri_tep_tinModel
         $id_tep_tin_tai_len = $this->conn->real_escape_string($user->id_tep_tin_tai_len);
         $ngay_dang = $this->conn->real_escape_string($user->ngay_dang);
 
-        $sql = "UPDATE vi_tri_tep_tin SET id_muc = '$id_muc', id_tep_tin_tai_len = '$id_tep_tin_tai_len', ngay_dang = '$ngay_dang';
+        $sql = "UPDATE vi_tri_tep_tin SET id_muc = '$id_muc', id_tep_tin_tai_len = '$id_tep_tin_tai_len', ngay_dang = '$ngay_dang'";
 
         if ($this->conn->query($sql) === TRUE) {
             $this->conn->close();

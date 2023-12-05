@@ -137,7 +137,9 @@ $(document).ready(function () {
       method: 'POST',
       contentType: 'text', // Đặt kiểu dữ liệu của yêu cầu là JSON
       data: null,
-      success: function (response) { }
+      success: function (response) {
+        console.log("active");
+       }
     })
   }, 10000);
 })
