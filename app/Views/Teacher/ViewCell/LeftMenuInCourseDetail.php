@@ -19,13 +19,13 @@
                 <div>
                     <h5 class="class-infor-section__class-name"><?php echo $class_name?></h5>
                     <p style="font-size: 13px; line-height: 16px;">Thành viên: <span class="class-infor-section__members-quantity"><?php echo $student_quantity?></span></p>
-                    <p class="state-in-left-menu" style="font-size: 13px; line-height: 16px;">Trạng thái: <?php echo $state ?></p>
+                    <p style="font-size: 13px; line-height: 16px;">Trạng thái: <?php echo $state ?></p>
                 </div>
             </div>
-            <a href="<?php echo base_url().'courses/information?courseid='?><?php echo $id_lop_hoc;?>">Thông tin lớp học</a>
-            <a href="<?php echo base_url().'courses/information?courseid='?><?php echo $id_lop_hoc;?>">Điểm danh</a>
-            <a href="<?php echo base_url().'courses/resource?courseid='?><?php echo $id_lop_hoc;?>">Tài nguyên</a>
-            <a href="<?php echo base_url().'courses/information?courseid='?><?php echo $id_lop_hoc;?>">Kênh chat</a>
+            <a href="<?php echo base_url().'/information?id="'?><?php echo $id_lop_hoc;?>">Thông tin lớp học</a>
+            <a href="<?php echo base_url().'/attendance?id="'?><?php echo $id_lop_hoc;?>">Điểm danh</a>
+            <a href="<?php echo base_url().'/resourses?id="'?><?php echo $id_lop_hoc;?>">Tài nguyên</a>
+            <a href="<?php echo base_url().'/chat?id="'?><?php echo $id_lop_hoc;?>">Kênh chat</a>
 </div>
 
 <script>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
 use mysqli;
 include 'DatabaseConnect.php';
 
@@ -142,7 +143,41 @@ class BuoiHocModel {
             return ['state' => false, 'message' => $stmt->error];
         }
     }
+    function executeCustomDDL($sql) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        try {
+            $this->conn->query($sql);
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
+            $this->conn->close();
+            return ['state' => false, 'message' => $e->getMessage()];
+        }        
+    }
+    public function updateIdLopHoc($id_lop_hoc, $id_buoi_hoc) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $stmt = $this->conn->prepare("UPDATE buoi_hoc SET id_lop_hoc = ? WHERE id_buoi_hoc = ?");
+        $stmt->bind_param('ii', $id_lop_hoc, $id_buoi_hoc);
+        try {
+            $stmt->execute();
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
+            $stmt->close();
+            $this->conn->close();
+            return ['state' => false, 'message' => $e->getMessage()];
+        }  
 
+    }
     public function deleteBuoiHoc($buoiHocId) {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -153,15 +188,17 @@ class BuoiHocModel {
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $buoiHocId);
 
-        if ($stmt->execute()) {
+        try {
+            $stmt->execute();
             $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
             $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $stmt->error];
-        }
+            return ['state' => false, 'message' => $e->getMessage()];
+        }  
     }
 
     public function __destruct() {

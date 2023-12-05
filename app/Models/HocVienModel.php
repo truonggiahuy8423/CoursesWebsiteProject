@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use DateTime;
+include 'DatabaseConnect.php';
 use CodeIgniter\Model;
 use Exception;
 use mysqli;
@@ -55,8 +56,13 @@ class HocVienModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
+            $this->id_hoc_vien = $row["id_hoc_vien"];
+            $this->ho_ten = $row["ho_ten"];
+            $this->ngay_sinh = $row["ngay_sinh"];
+            $this->gioi_tinh = $row["gioi_tinh"];
+            $this->email = $row["email"];
             $this->conn->close();
-            return $row;
+            return $this;
         }
 
         $this->conn->close();

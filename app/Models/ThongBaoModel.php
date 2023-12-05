@@ -3,6 +3,8 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+include 'DatabaseConnect.php';
+
 class ThongBaoModel
 {
     public $id_thong_bao;
@@ -10,7 +12,7 @@ class ThongBaoModel
     public $ngay_dang;
     public $id_giang_vien;
     public $id_muc;
-
+    public $tieu_de;
     private $conn;
     function __construct(){}
 
@@ -27,14 +29,13 @@ class ThongBaoModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $thong_bao = new ThongBaoModel();
             $this->id_thong_bao = $row["id_thong_bao"];
             $this->noi_dung = $row["noi_dung "];
             $this->ngay_dang = $row["ngay_dang"];
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->id_muc = $row["id_muc"];
             $this->conn->close();
-            return $thong_bao;
+            return $this;
         }
         $this->conn->close();
         return null;
@@ -54,16 +55,53 @@ class ThongBaoModel
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $thong_bao = new ThongBaoModel();
-                $this->id_thong_bao = $row["id_thong_bao"];
-                $this->noi_dung = $row["noi_dung "];
-                $this->ngay_dang = $row["ngay_dang"];
-                $this->id_giang_vien = $row["id_giang_vien"];
-                $this->id_muc = $row["id_muc"];
+                $thong_bao->id_thong_bao = $row["id_thong_bao"];
+                $thong_bao->noi_dung = $row["noi_dung"];
+                $thong_bao->ngay_dang = $row["ngay_dang"];
+                $thong_bao->id_giang_vien = $row["id_giang_vien"];
+                $thong_bao->id_muc = $row["id_muc"];
                 $thong_baos[] = $thong_bao;
             }
         }
         $this->conn->close();
         return $thong_baos;
+    }
+    function getThongBaoByCourseId($id_lop_hoc)
+    {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+
+        $sql = "SELECT thong_bao.*, giang_vien.ho_ten FROM thong_bao inner join muc on thong_bao.id_muc = muc.id_muc inner join giang_vien on giang_vien.id_giang_vien = thong_bao.id_giang_vien where muc.id_lop_hoc = ? order by thong_bao.ngay_dang ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_lop_hoc);
+
+        $thong_baos = [];
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $thong_bao = array();
+                $thong_bao["id_thong_bao"] = $row["id_thong_bao"];
+                $thong_bao["noi_dung"] = $row["noi_dung"];
+                $thong_bao["ngay_dang"] = $row["ngay_dang"];
+                $thong_bao["id_giang_vien"] = $row["id_giang_vien"];
+                $thong_bao["id_muc"] = $row["id_muc"];
+                $thong_bao["tieu_de"] = $row["tieu_de"];
+                $thong_bao["ho_ten"] = $row["ho_ten"];
+                $thong_baos[] = $thong_bao;
+            }
+            $stmt->close();
+            $this->conn->close();
+            return $thong_baos;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return [];
+        }
+        
     }
 
     function executeCustomQuery($sql)

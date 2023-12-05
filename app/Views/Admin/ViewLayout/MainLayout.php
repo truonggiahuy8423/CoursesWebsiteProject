@@ -56,6 +56,11 @@
     </div>
 
     <script>
+        function setDisable() {
+
+        }
+        // setInterval(reloadCoursesList, 10000);
+
         $(document).ready(function() {
             $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');
         })

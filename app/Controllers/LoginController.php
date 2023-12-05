@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\GiangVienModel;
 use App\Models\StudentModel;
 use App\Models\UserModel;
 
@@ -9,7 +10,9 @@ class LoginController extends BaseController
 {
     public function index(): string
     {
+
         return view('LoginPage');
+        
     }
 
     public function login()
@@ -51,12 +54,16 @@ class LoginController extends BaseController
         $model = new UserModel();
         $user = $model->getUserByAccount("{$account}");
         // Login validation
-        if ($user == null) { // Login failed
+        if ($user == null || $user->mat_khau != $password) { // Login failed
+            echo $user->id_user;
+            echo $password;
             $data['login_failed'] = "Tài khoản hoặc mật khẩu không đúng";
             return view('LoginPage', $data);
         } else { // Login successfully
+            echo "here2";
             if ($user->id_ad != null)
                { 
+                echo "here3";
                 $session = session();
                 $session->set('id_user', $model->id_user);
                 $session->set('role', 1);

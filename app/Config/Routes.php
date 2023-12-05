@@ -6,7 +6,6 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'LoginController::index');
-$routes->get('/login/(:any)/(:any)', 'LoginController::login/$1');
 $routes->get('admin/home/(:any)', 'Admin\Home::index/$1');
 
 $routes->add('/class', 'ClassController::index');
@@ -21,11 +20,14 @@ $routes->group('/courses', function ($routes) {
     $routes->add('information', 'Admin\CoursesController::information');
     $routes->add('attendance', 'Courses::attendance');
     $routes->add('chat', 'Courses::chat');
-    $routes->add('resources', 'Courses::resources');
+    $routes->add('resource', 'Admin\CoursesController::resource');
 });
 $routes->group('/students', function ($routes) {
     $routes->add('information', 'Admin\StudentsController::information');
 });
+
+$routes->get('/resource/assignment', 'Admin\CoursesController::assignment');
+$routes->get('/students', 'Admin\StudentsController::index');
 $routes->get('/lecturers', 'Admin\TeachersController::index');
 $routes->get('/users', 'Admin\UsersController::index');
 $routes->get('/profile/lecturer', 'ProfileController::index/true');

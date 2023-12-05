@@ -29,13 +29,12 @@ Class LopModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $lop = new LopModel();
             $this->id_lop_hoc = $row["id_lop_hoc"];
             $this->ngay_bat_dau = $row["ngay_bat_dau"];
             $this->ngay_ket_thuc = $row["ngay_ket_thuc"];
             $this->id_mon_hoc = $row["id_mon_hoc"];
             $this->conn->close();
-            return $lop;
+            return $this;
         }
         $this->conn->close();
         return null;
@@ -96,6 +95,21 @@ Class LopModel
         }
         $this->conn->close();
         return $rows;
+    }
+    function executeCustomDDL($sql) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        try {
+            $this->conn->query($sql);
+            $this->conn->close();
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch (Exception $e) {
+            // Nếu có lỗi, xử lý lỗi
+            $this->conn->close();
+            return ['state' => false, 'message' => $e->getMessage()];
+        }        
     }
 
     function insertLop($lop)

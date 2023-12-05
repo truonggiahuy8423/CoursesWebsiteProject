@@ -3,6 +3,8 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+include 'DatabaseConnect.php';
+
 class BaiTapModel
 {
     public $id_bai_tap;
@@ -29,7 +31,6 @@ class BaiTapModel
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $bai_tap = new BaiTapModel();
             $this->id_bai_tap = $row["id_bai_tap"];
             $this->trang_thai = $row["trang_thai"];
             $this->ten = $row["ten"];
@@ -38,7 +39,7 @@ class BaiTapModel
             $this->id_giang_vien = $row["id_giang_vien"];
             $this->id_muc = $row["id_muc"];
             $this->conn->close();
-            return $bai_tap;
+            return $this;
         }
         $this->conn->close();
         return null;
@@ -73,6 +74,43 @@ class BaiTapModel
         return $bai_taps;
     }
 
+    function getBaiTapByIdLopHoc($id_lop_hoc) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+
+        $sql = "SELECT bai_tap.*, giang_vien.ho_ten FROM bai_tap inner join giang_vien on bai_tap.id_giang_vien = giang_vien.id_giang_vien inner join muc on muc.id_muc = bai_tap.id_muc where muc.id_lop_hoc = ? order by bai_tap.ngay_dang ASC";
+        // $result = $this->conn->query($sql);
+        $bai_taps = [];
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_lop_hoc);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $bai_tap = array();
+                $bai_tap["id_bai_tap"] = $row["id_bai_tap"];
+                $bai_tap["trang_thai"] = $row["trang_thai"];
+                $bai_tap["ten"] = $row["ten"];
+                $bai_tap["noi_dung"] = $row["noi_dung"];
+                $bai_tap["thoi_han"] = $row["thoi_han"];
+                $bai_tap["id_giang_vien"] = $row["id_giang_vien"];
+                $bai_tap["ho_ten"] = $row["ho_ten"];
+                $bai_tap["id_muc"] = $row["id_muc"];
+                $bai_tap["ngay_dang"] = $row["ngay_dang"];
+                // $this->conn->close();                
+                $bai_taps[] = $bai_tap;
+            }
+            $stmt->close();
+            $this->conn->close();
+            return $bai_taps;
+        }
+        $stmt->close();
+        $this->conn->close();
+        return [];
+
+    }
     function executeCustomQuery($sql)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
