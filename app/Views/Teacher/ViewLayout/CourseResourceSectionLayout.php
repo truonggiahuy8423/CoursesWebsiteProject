@@ -1,7 +1,15 @@
 <div class="content-section">
-    <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Tài nguyên lớp học</h3>
+    <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;" class="root-folder-title">Tài nguyên lớp học
+        <div class="component-container con" style="width: 62px; display: flex; justify-content: space-around; align-items: center; opacity: 0%; transition: 0.4s;">
+            <button class="add-item-btn highlight-button add-item-btn--root">
+                <i class="fa-solid fa-plus add-class-icon highlight-icon" style="margin-left: 0px!important;"></i>
+            </button>
+            <button class="delete-folder-btn highlight-button--cancel delete-folder-btn--root" style="">
+                <i class="fa-solid fa-x highlight-icon--cancel" style="font-size: 12px!important; margin-left: 0px!important;"></i>
+            </button>
+        </div>
+    </h3>
     <div class="root-folder folder" id="">
-
     </div>
 </div>
 <script>
@@ -69,6 +77,14 @@
                                 <div class="children-folder__component-container">
                                     <div class="children-folder__name">
                                         ${folder.ten_muc}
+                                    </div>
+                                    <div class="component-container con" style="width: 62px; display: flex; justify-content: space-around; align-items: center; opacity: 0%; transition: 0.4s;">
+                                        <button class="add-item-btn highlight-button add-item-btn--children">
+                                            <i class="fa-solid fa-plus add-class-icon highlight-icon" style="margin-left: 0px!important;"></i>
+                                        </button>
+                                        <button class="delete-folder-btn highlight-button--cancel delete-folder-btn--children" style="">
+                                            <i class="fa-solid fa-x highlight-icon--cancel" style="font-size: 12px!important; margin-left: 0px!important;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -164,67 +180,105 @@
     $(document).ready(function() {
         console.log(id_lop_hoc);
         rerenderCourseResources();
+
     })
+    $(document).on('click', '.add-item-btn--root', function() {
+        loadingEffect(true);
+        $.ajax({
+            url: "<?php echo base_url() ?>/Admin/CoursesController/getAddResourceIntoCourseForm",
+            // contentType: "text",
+            dataType: "text",
+            success: function(response) {
+                loadingEffect(false);
+                $('body').append(response);
+                $('.insert-resource-form__cancel-btn').click(function() {
+                    if (confirm("Hủy bỏ thao tác hiện tại?")) {
+                        $(`.form-container`).remove();
+                    }
+                })
+            }})
+
+
+    });
+    $(document).on('click', '.add-item-btn--children', function() {
+        loadingEffect(true);
+        $.ajax({
+            url: "<?php echo base_url() ?>/Admin/CoursesController/getAddResourceIntoCourseForm",
+            // contentType: "text",
+            dataType: "text",
+            success: function(response) {
+                loadingEffect(false);
+                $('body').append(response);
+                $('.insert-resource-form__cancel-btn').click(function() {
+                    if (confirm("Hủy bỏ thao tác hiện tại?")) {
+                        $(`.form-container`).remove();
+                    }
+                })
+            }})
+
+
+    });
     $(document).on('click', '.file-variant .file-title', function() {
         console.log($(this).prop('id'));
         console.log(id_lop_hoc);
-    $.ajax({
-        url: "<?php echo base_url()?>/Admin/CoursesController/getFile",
-        contentType: "text",
-        dataType: "json",
-        data: {
-            id_lop_hoc: id_lop_hoc,
-            id_file: $(this).prop('id')
-        },
-        success: function(response) {
-            if (response.state) {
-                var binaryData = atob(response.data);
+        $.ajax({
+            url: "<?php echo base_url() ?>/Admin/CoursesController/getFile",
+            contentType: "text",
+            dataType: "json",
+            data: {
+                id_lop_hoc: id_lop_hoc,
+                id_file: $(this).prop('id')
+            },
+            success: function(response) {
+                if (response.state) {
+                    var binaryData = atob(response.data);
                     var byteArray = new Uint8Array(binaryData.length);
                     for (var i = 0; i < binaryData.length; i++) {
                         byteArray[i] = binaryData.charCodeAt(i);
                     }
-                    var blob = new Blob([byteArray], { type: 'application/octet-stream' });
+                    var blob = new Blob([byteArray], {
+                        type: 'application/octet-stream'
+                    });
 
-                // Create a Blob object from the file data
-                // var blob = new Blob([atob(response.data)], { type: "application/octet-stream" });
+                    // Create a Blob object from the file data
+                    // var blob = new Blob([atob(response.data)], { type: "application/octet-stream" });
 
-                // Create a link element
-                var link = document.createElement("a");
+                    // Create a link element
+                    var link = document.createElement("a");
 
-                // Set the link's href attribute to a URL representing the Blob object
-                link.href = window.URL.createObjectURL(blob);
+                    // Set the link's href attribute to a URL representing the Blob object
+                    link.href = window.URL.createObjectURL(blob);
 
-                // Set the download attribute to the desired file name
-                link.download = response.nameFile + "." + response.extension;
+                    // Set the download attribute to the desired file name
+                    link.download = response.nameFile + "." + response.extension;
 
-                // Append the link to the document
-                document.body.appendChild(link);
+                    // Append the link to the document
+                    document.body.appendChild(link);
 
-                // Trigger a click on the link to start the download
-                link.click();
+                    // Trigger a click on the link to start the download
+                    link.click();
 
-                // Remove the link from the document
-                document.body.removeChild(link);
-            } else {
-                // Handle the case where the server returns an error
+                    // Remove the link from the document
+                    document.body.removeChild(link);
+                } else {
+                    // Handle the case where the server returns an error
+                    toast({
+                        title: "Lỗi!",
+                        message: response.message,
+                        type: "error",
+                        duration: 100000
+                    });
+                }
+            },
+            error: function() {
+                // Handle AJAX error
                 toast({
                     title: "Lỗi!",
-                    message: response.message,
+                    message: "Đã có lỗi xảy ra, vui lòng thử lại!",
                     type: "error",
                     duration: 100000
                 });
             }
-        },
-        error: function() {
-            // Handle AJAX error
-            toast({
-                title: "Lỗi!",
-                message: "Đã có lỗi xảy ra, vui lòng thử lại!",
-                type: "error",
-                duration: 100000
-            });
-        }
+        });
     });
-});
-
 </script>

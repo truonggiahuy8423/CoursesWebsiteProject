@@ -501,6 +501,9 @@ class CoursesController extends BaseController
             // Not yet
         }
     }
+    public function getAddResourceIntoCourseForm() {
+        return view("Teacher\ViewCell\AddResourceIntoClassForm");
+    }
     public function resource()
     {
 
