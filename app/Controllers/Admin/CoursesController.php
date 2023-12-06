@@ -48,14 +48,16 @@ class CoursesController extends BaseController
             return 0;
         }
     }
-    public function getListOfSubjects() {
+    public function getListOfSubjects()
+    {
         $model = new MonHocModel();
         $subjects = $model->executeCustomQuery(
             "SELECT * FROM mon_hoc"
         );
         return $this->response->setJSON($subjects);
     }
-    public function updateCourse() {
+    public function updateCourse()
+    {
         $courseData = json_decode(json_encode($this->request->getJSON()), true);
         $course = new LopModel();
         $course->id_lop_hoc = $courseData['id_lop_hoc'];
@@ -64,9 +66,9 @@ class CoursesController extends BaseController
         $course->id_mon_hoc = $courseData['id_mon_hoc'];
         // return $this->response->setJSON($course);
         return $this->response->setJSON($course->updateLop($course));
-
     }
-    public function deleteLecturerFromCourse() {
+    public function deleteLecturerFromCourse()
+    {
         $id_lop_hoc = $this->request->getVar('id_lop_hoc');
         $id_giang_vien = $this->request->getVar('id_giang_vien');
         $model = new phan_cong_giang_vienModel();
@@ -81,6 +83,33 @@ class CoursesController extends BaseController
             "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
             FROM lop_hoc 
             INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc"
+        );
+        for ($i = 0; $i < count($courses); $i++) {
+            $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};"
+            );
+        }
+        usort($courses, [$this, 'compareCoursesByBeginDate']);
+        return $this->response->setJSON($courses);
+    }
+    public function ok()
+    {
+        echo "kỳ z";
+        echo session()->get('id_role');
+    }
+    public function getListOfCoursesForTeacher()
+    {
+
+
+        $id_giang_vien = session()->get('id_role');
+
+        $model = new LopModel();
+        $courses = $model->executeCustomQuery(
+            "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+            FROM lop_hoc 
+            INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc where lop_hoc.id_lop_hoc in (select phan_cong_giang_vien.id_lop_hoc from phan_cong_giang_vien where phan_cong_giang_vien.id_giang_vien = $id_giang_vien)"
         );
         for ($i = 0; $i < count($courses); $i++) {
             $courses[$i]['lecturers'] = $model->executeCustomQuery(
@@ -114,7 +143,7 @@ class CoursesController extends BaseController
             "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
             WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
         );
-        for ($i = 0; $i< count($danh_sach_hoc_vien); $i++) {
+        for ($i = 0; $i < count($danh_sach_hoc_vien); $i++) {
             $sbv = $model->executeCustomQuery(
                 "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc
                 WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc} AND diem_danh.id_hoc_vien = {$danh_sach_hoc_vien[$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
@@ -124,7 +153,8 @@ class CoursesController extends BaseController
 
         return $this->response->setJSON($danh_sach_hoc_vien);
     }
-    public function active() {
+    public function active()
+    {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
@@ -138,7 +168,8 @@ class CoursesController extends BaseController
             "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}'"
         );
     }
-    public function getFile() {
+    public function getFile()
+    {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
@@ -165,7 +196,6 @@ class CoursesController extends BaseController
                     break;
                 }
             }
-            
         } else if ($user->id_hoc_vien != null) {
             $hvs = new HocVienModel();
             $students = $hvs->executeCustomQuery(
@@ -178,7 +208,6 @@ class CoursesController extends BaseController
                     break;
                 }
             }
-
         }
 
         if ($isHasPermission) {
@@ -207,7 +236,7 @@ class CoursesController extends BaseController
                         // $result = ["state" => false, "message" => "exist!"];
                         // return $this->response->setJSON($result);
                         // Đặt tên file khi tải về
-                       
+
                         $result = ["state" => true, "data" => base64_encode(file_get_contents($FilePath)), "nameFile" => $file->ten_tep, "extension" => $file->extension]; // Lỗi ở đây, file_get_contents
                         return $this->response->setJSON($result);
                     } else {
@@ -216,8 +245,6 @@ class CoursesController extends BaseController
                         // $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
                     }
                 }
-                
-
             } else {
                 $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
                 return $this->response->setJSON($result);
@@ -245,7 +272,7 @@ class CoursesController extends BaseController
         $main_layout_data['left_nav_chosen_value'] = 1;
 
         if (session()->get('role') == 1) { // Admin
-           $result = $model->executeCustomQuery(
+            $result = $model->executeCustomQuery(
                 'SELECT ad.ho_ten, users.anh_dai_dien
                 FROM users
                 INNER JOIN ad ON users.id_ad = ad.id_ad
@@ -273,143 +300,39 @@ class CoursesController extends BaseController
             $main_layout_data['mainsection'] = view('Admin\ViewLayout\CoursesListSectionLayout', $courses_list_section_layout_data);
             return view('Admin\ViewLayout\MainLayout', $main_layout_data);
         } else if (session()->get('role') == 2) { // Giang vien
-            // Authentication
-            
+            $result = $model->executeCustomQuery(
+                'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
+                FROM users
+                INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Giảng viên';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+            // courses
+            $courses = $model->executeCustomQuery(
+                "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+                FROM lop_hoc 
+                INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc where lop_hoc.id_lop_hoc in (select phan_cong_giang_vien.id_lop_hoc from phan_cong_giang_vien where phan_cong_giang_vien.id_giang_vien = {$result[0]['id_giang_vien']})"
+            );
+            for ($i = 0; $i < count($courses); $i++) {
+                $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                    "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                    FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};"
+                );
+            }
+            usort($courses, [$this, 'compareCoursesByBeginDate']);
+            $courses_list_section_layout_data['courses'] = $courses;
+            $main_layout_data['mainsection'] = view('Teacher\ViewLayout\CoursesListSectionLayout', $courses_list_section_layout_data);
+            return view('Teacher\ViewLayout\MainLayout', $main_layout_data);
         } else if (session()->get('role') == 3) { // Hoc vien
 
         }
 
 
         // return view('ClassPage');
-    }
-    public function resource() {
-        
-        if (!session()->has('id_user')) {
-            return redirect()->to('/');
-        }
-
-        $model = new UserModel();
-        $navbar_data = array();
-        $id_lop_hoc = null;
-        if (isset($_GET)) {
-            $id_lop_hoc = $_GET['courseid'];
-        }
-        else {
-            return redirect()->to('/courses');
-        }
-        
-        $model = new LopModel();
-        $course = $model->executeCustomQuery(
-            " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
-            FROM lop_hoc 
-            INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
-            LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
-            WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
-            GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
-        );
-        $isExist = count($course) > 0 ? true : false;
-        if (!$isExist) {
-            return view("CommonViewCell\ClassNotFound");
-        }
-        // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
-        // Not yet
-        if (session()->get('role') == 1) { // Admin
-            $main_layout_data = array();
-            $result = $model->executeCustomQuery(
-                'SELECT ad.ho_ten, users.anh_dai_dien
-                FROM users
-                INNER JOIN ad ON users.id_ad = ad.id_ad
-                WHERE users.id_user = ' . session()->get("id_user")
-            );
-            $navbar_data['username'] = "{$result[0]['ho_ten']}";
-            $navbar_data['role'] = 'Adminstrator';
-            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
-
-            
-            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
-            $model = new LopModel();
-            // $result = $model->executeCustomQuery('');
-            $left_menu_data = array();
-            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
-            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
-            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
-            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
-            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
-            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
-            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
-            $main_layout_data['class_name'] = $left_menu_data["class_name"];
-
-
-            // Mục
-            // 
-            // $mucModel = new MucModel();
-            $resourceSectionData = array();
-            $resourceSectionData['id_lop_hoc'] = $id_lop_hoc;
-            // $resourceSectionData['folders'] = $mucModel->getMucByIdLopHoc($id_lop_hoc);
-            $main_layout_data['contentsection'] = view('Admin\ViewLayout\CourseResourceSectionLayout', $resourceSectionData);
-
-
-
-            return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
-        } else if (session()->get('role') == 2) { // Giang vien
-            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
-        // Not yet
-        } else if (session()->get('role') == 3) { // Hoc vien
-// Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
-        // Not yet
-        }
-        // return view('Admin/ViewLayout/CourseResourceSectionLayout');
-    }
-    public function assignment() {
-        return view("Admin/ViewLayout/AssignmentSection", ["id_assignment" => $_GET["assignmentid"]]);
-    }
-    public function getResources() {
-        if (!session()->has('id_user')) {
-            return redirect()->to('/');
-        }
-        $id_lop_hoc = $this->request->getPost('id_lop_hoc');
-        if (!is_numeric($id_lop_hoc)) {
-            // Xử lý lỗi hoặc trả về kết quả không hợp lệ
-            return $this->response->setJSON(['error' => 'Invalid id_lop_hoc']);
-        }
-        $mucModel = new MucModel();
-        $rs = array();
-        $rs['folders'] = $mucModel->getMucByIdLopHoc($id_lop_hoc);
-
-        $thongBaoModel = new ThongBaoModel();
-        $rs['notis'] = $thongBaoModel->getThongBaoByCourseId($id_lop_hoc);
-
-        $linkModel = new LinkModel();
-        $rs['links'] = $linkModel->getAllLinksByCourseId($id_lop_hoc);    
-        
-        $viTriTepModel = new vi_tri_tep_tinModel();
-        $rs['files'] = $viTriTepModel->executeCustomQuery(
-            "SELECT 
-            v.*, 
-            m.id_muc, 
-            g.id_giang_vien, 
-            g.ho_ten,
-            t.*
-        FROM 
-            vi_tri_tep_tin v
-        INNER JOIN 
-            muc m ON v.id_muc = m.id_muc
-        INNER JOIN 
-            tep_tin_tai_len t ON t.id_tep_tin_tai_len = v.id_tep_tin_tai_len
-        INNER JOIN 
-            users u ON u.id_user = t.id_user
-        INNER JOIN 
-            giang_vien g ON g.id_giang_vien = u.id_giang_vien
-        WHERE 
-            m.id_lop_hoc = {$id_lop_hoc}
-        ORDER BY
-            v.ngay_dang ASC;
-        ");
-
-        $baiTapModel = new BaiTapModel();
-        $rs["assignments"] = $baiTapModel->getBaiTapByIdLopHoc($id_lop_hoc);
-        return $this->response->setJSON($rs);
     }
     public function information()
     {
@@ -422,8 +345,7 @@ class CoursesController extends BaseController
         $id_lop_hoc = null;
         if (isset($_GET)) {
             $id_lop_hoc = $_GET['courseid'];
-        }
-        else {
+        } else {
             return redirect()->to('/courses');
         }
 
@@ -450,11 +372,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
-
-            
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
-
 
             $model = new LopModel();
             // $result = $model->executeCustomQuery('');
@@ -483,52 +401,295 @@ class CoursesController extends BaseController
                     WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc} 
                     GROUP BY lop_hoc.id_lop_hoc"
             )[0]["slbh"];
-            $course[0]["danh_sach_giang_vien"] = $model->executeCustomQuery(
-                "SELECT giang_vien.* FROM phan_cong_giang_vien INNER JOIN giang_vien on phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
-                WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
-            );
-            $course[0]["danh_sach_hoc_vien"] = $model->executeCustomQuery(
-                "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
-                WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
-            );
-            for ($i = 0; $i< count($course[0]["danh_sach_hoc_vien"]); $i++) {
-                $sbv = $model->executeCustomQuery(
-                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc WHERE buoi_hoc.id_lop_hoc = {$course[0]["id_lop_hoc"]} AND diem_danh.id_hoc_vien = {$course[0]["danh_sach_hoc_vien"][$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
-                )[0]["so_buoi_vang"];
-                $course[0]["danh_sach_hoc_vien"][$i]["so_buoi_vang"] = $sbv;
-            }
+            // $course[0]["danh_sach_giang_vien"] = $model->executeCustomQuery(
+            //     "SELECT giang_vien.* FROM phan_cong_giang_vien INNER JOIN giang_vien on phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+            //     WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+            // );
+            // $course[0]["danh_sach_hoc_vien"] = $model->executeCustomQuery(
+            //     "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+            //     WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
+            // );
+            // for ($i = 0; $i < count($course[0]["danh_sach_hoc_vien"]); $i++) {
+            //     $sbv = $model->executeCustomQuery(
+            //         "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc WHERE buoi_hoc.id_lop_hoc = {$course[0]["id_lop_hoc"]} AND diem_danh.id_hoc_vien = {$course[0]["danh_sach_hoc_vien"][$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+            //     )[0]["so_buoi_vang"];
+            //     $course[0]["danh_sach_hoc_vien"][$i]["so_buoi_vang"] = $sbv;
+            // }
             // $course[0]["danh_sach_buoi_hoc"] = $model->executeCustomQuery(
             //     "SELECT buoi_hoc.id_buoi_hoc, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') as ngay_hoc, DAYOFWEEK(buoi_hoc.ngay) as thu, buoi_hoc.trang_thai, buoi_hoc.id_phong, ca.thoi_gian_bat_dau, ca.thoi_gian_ket_thuc 
             //     FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc}
             //     ORDER BY buoi_hoc.ngay ASC, buoi_hoc.id_phong ASC, buoi_hoc.id_ca ASC;"
             // );
             $main_layout_data['class_name'] = $left_menu_data["class_name"];
-            // SELECT * FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = 110 ORDER BY id_buoi_hoc DESC
             $main_layout_data['contentsection'] = view('Admin\ViewLayout\CourseInformationSectionLayout', $course[0]);
             return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
         } else if (session()->get('role') == 2) { // Giang vien
-// Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
-        // Not yet
+            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+            $id_giang_vien = session()->get('id_role');
+            $model = new phan_cong_giang_vienModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM phan_cong_giang_vien WHERE phan_cong_giang_vien.id_giang_vien = {$id_giang_vien} AND phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ClassNotFound");
+            } else {
+                $result = $model->executeCustomQuery(
+                    'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
+                    FROM users
+                    INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE users.id_user = ' . session()->get("id_user")
+                );
+                $navbar_data['username'] = "{$result[0]['ho_ten']}";
+                $navbar_data['role'] = 'Giảng viên';
+                $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+
+                $model = new LopModel();
+                // $result = $model->executeCustomQuery('');
+                $left_menu_data = array();
+                $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+                $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+                $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+                $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+                $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+                $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+
+
+                $course[0]["so_luong_giang_vien"] = $model->executeCustomQuery(
+                    "SELECT COUNT(phan_cong_giang_vien.id_giang_vien) as slgv FROM lop_hoc LEFT JOIN phan_cong_giang_vien ON lop_hoc.id_lop_hoc = phan_cong_giang_vien.id_lop_hoc
+                WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slgv"];
+                $course[0]["so_luong_buoi_hoc"] = $model->executeCustomQuery(
+                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as slbh FROM lop_hoc LEFT JOIN buoi_hoc ON lop_hoc.id_lop_hoc = buoi_hoc.id_lop_hoc
+                WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slbh"];
+                $course[0]["so_luong_buoi_hoc_da_hoc"] = $model->executeCustomQuery(
+                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as slbh FROM lop_hoc LEFT JOIN buoi_hoc ON lop_hoc.id_lop_hoc = buoi_hoc.id_lop_hoc and buoi_hoc.trang_thai = 2
+                    WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc} 
+                    GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slbh"];
+                // $course[0]["danh_sach_giang_vien"] = $model->executeCustomQuery(
+                //     "SELECT giang_vien.* FROM phan_cong_giang_vien INNER JOIN giang_vien on phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                // WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+                // );
+                // $course[0]["danh_sach_hoc_vien"] = $model->executeCustomQuery(
+                //     "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+                // WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
+                // );
+                // for ($i = 0; $i < count($course[0]["danh_sach_hoc_vien"]); $i++) {
+                //     $sbv = $model->executeCustomQuery(
+                //         "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc WHERE buoi_hoc.id_lop_hoc = {$course[0]["id_lop_hoc"]} AND diem_danh.id_hoc_vien = {$course[0]["danh_sach_hoc_vien"][$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+                //     )[0]["so_buoi_vang"];
+                //     $course[0]["danh_sach_hoc_vien"][$i]["so_buoi_vang"] = $sbv;
+                // }
+                // $course[0]["danh_sach_buoi_hoc"] = $model->executeCustomQuery(
+                //     "SELECT buoi_hoc.id_buoi_hoc, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') as ngay_hoc, DAYOFWEEK(buoi_hoc.ngay) as thu, buoi_hoc.trang_thai, buoi_hoc.id_phong, ca.thoi_gian_bat_dau, ca.thoi_gian_ket_thuc 
+                //     FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc}
+                //     ORDER BY buoi_hoc.ngay ASC, buoi_hoc.id_phong ASC, buoi_hoc.id_ca ASC;"
+                // );
+                $main_layout_data['class_name'] = $left_menu_data["class_name"];
+                $main_layout_data['contentsection'] = view('Teacher\ViewLayout\CourseInformationSectionLayout', $course[0]);
+                return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+            }
+
+            // Not yet
         } else if (session()->get('role') == 3) { // Hoc vien
-// Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
-        // Not yet
+            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+            // Not yet
         }
     }
-    public function deleteScheduleFromCourse() {
+    public function resource()
+    {
+
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+
+        $model = new UserModel();
+        $navbar_data = array();
+        $id_lop_hoc = null;
+        if (isset($_GET)) {
+            $id_lop_hoc = $_GET['courseid'];
+        } else {
+            return redirect()->to('/courses');
+        }
+
+        $model = new LopModel();
+        $course = $model->executeCustomQuery(
+            " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
+            FROM lop_hoc 
+            INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
+            LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
+            WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+            GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
+        );
+        $isExist = count($course) > 0 ? true : false;
+        if (!$isExist) {
+            return view("CommonViewCell\ClassNotFound");
+        }
+        // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+        // Not yet
+        if (session()->get('role') == 1) { // Admin
+            $main_layout_data = array();
+            $result = $model->executeCustomQuery(
+                'SELECT ad.ho_ten, users.anh_dai_dien
+                FROM users
+                INNER JOIN ad ON users.id_ad = ad.id_ad
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Adminstrator';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+
+
+
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+            $model = new LopModel();
+            // $result = $model->executeCustomQuery('');
+            $left_menu_data = array();
+            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+
+
+            // Mục
+            // 
+            // $mucModel = new MucModel();
+            $resourceSectionData = array();
+            $resourceSectionData['id_lop_hoc'] = $id_lop_hoc;
+            // $resourceSectionData['folders'] = $mucModel->getMucByIdLopHoc($id_lop_hoc);
+            $main_layout_data['contentsection'] = view('Admin\ViewLayout\CourseResourceSectionLayout', $resourceSectionData);
+            return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+        } else if (session()->get('role') == 2) { // Giang vien
+            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+            $id_giang_vien = session()->get('id_role');
+            $model = new phan_cong_giang_vienModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM phan_cong_giang_vien WHERE phan_cong_giang_vien.id_giang_vien = {$id_giang_vien} AND phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ClassNotFound");
+            } else {
+                $result = $model->executeCustomQuery(
+                    'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
+                    FROM users
+                    INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE users.id_user = ' . session()->get("id_user")
+                );
+                $navbar_data['username'] = "{$result[0]['ho_ten']}";
+                $navbar_data['role'] = 'Giảng viên';
+                $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+                $model = new LopModel();
+                // $result = $model->executeCustomQuery('');
+                $left_menu_data = array();
+                $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+                $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+                $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+                $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+                $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+                $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+                $main_layout_data['class_name'] = $left_menu_data["class_name"];
+    
+    
+                // Mục
+                // 
+                // $mucModel = new MucModel();
+                $resourceSectionData = array();
+                $resourceSectionData['id_lop_hoc'] = $id_lop_hoc;
+                $main_layout_data['contentsection'] = view('Teacher\ViewLayout\CourseResourceSectionLayout', $resourceSectionData);
+                return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+            }
+            // Not yet
+        } else if (session()->get('role') == 3) { // Hoc vien
+            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+            // Not yet
+        }
+        // return view('Admin/ViewLayout/CourseResourceSectionLayout');
+    }
+    public function assignment()
+    {
+        return view("Admin/ViewLayout/AssignmentSection", ["id_assignment" => $_GET["assignmentid"]]);
+    }
+    public function getResources()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getPost('id_lop_hoc');
+        if (!is_numeric($id_lop_hoc)) {
+            // Xử lý lỗi hoặc trả về kết quả không hợp lệ
+            return $this->response->setJSON(['error' => 'Invalid id_lop_hoc']);
+        }
+        $mucModel = new MucModel();
+        $rs = array();
+        $rs['folders'] = $mucModel->getMucByIdLopHoc($id_lop_hoc);
+
+        $thongBaoModel = new ThongBaoModel();
+        $rs['notis'] = $thongBaoModel->getThongBaoByCourseId($id_lop_hoc);
+
+        $linkModel = new LinkModel();
+        $rs['links'] = $linkModel->getAllLinksByCourseId($id_lop_hoc);
+
+        $viTriTepModel = new vi_tri_tep_tinModel();
+        $rs['files'] = $viTriTepModel->executeCustomQuery(
+            "SELECT 
+            v.*, 
+            m.id_muc, 
+            g.id_giang_vien, 
+            g.ho_ten,
+            t.*
+        FROM 
+            vi_tri_tep_tin v
+        INNER JOIN 
+            muc m ON v.id_muc = m.id_muc
+        INNER JOIN 
+            tep_tin_tai_len t ON t.id_tep_tin_tai_len = v.id_tep_tin_tai_len
+        INNER JOIN 
+            users u ON u.id_user = t.id_user
+        INNER JOIN 
+            giang_vien g ON g.id_giang_vien = u.id_giang_vien
+        WHERE 
+            m.id_lop_hoc = {$id_lop_hoc}
+        ORDER BY
+            v.ngay_dang ASC;
+        "
+        );
+
+        $baiTapModel = new BaiTapModel();
+        $rs["assignments"] = $baiTapModel->getBaiTapByIdLopHoc($id_lop_hoc);
+        return $this->response->setJSON($rs);
+    }
+    
+    public function deleteScheduleFromCourse()
+    {
         $array = json_decode(json_encode($this->request->getJSON()), true);
         $dsbh = $array["danh_sach_id_buoi_hoc"];
         // $dsbh = [77320];
         // $id_lop_hoc = $this->request->getVar("id_lop_hoc");
         $result = array();
         $model = new BuoiHocModel();
-        foreach($dsbh as $id_buoi_hoc) {
+        foreach ($dsbh as $id_buoi_hoc) {
             $result[$id_buoi_hoc] = $model->executeCustomDDL(
                 "UPDATE buoi_hoc SET buoi_hoc.id_lop_hoc = NULL WHERE buoi_hoc.id_buoi_hoc = {$id_buoi_hoc}"
             );
         }
         return $this->response->setJSON($result);
     }
-    public function deleteStudentFromCourse() {
+    public function deleteStudentFromCourse()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
         $array = json_decode(json_encode($this->request->getJSON()), true);
         $dshv = $array["danh_sach_id_hoc_vien"];
         // $dsbh = [77320];
@@ -536,7 +697,7 @@ class CoursesController extends BaseController
         $id_lop_hoc = $array["id_lop_hoc"];
         $result = array();
         $model = new hoc_vien_tham_giaModel();
-        foreach($dshv as $id_hoc_vien) {
+        foreach ($dshv as $id_hoc_vien) {
             $hvtg = new hoc_vien_tham_giaModel();
             $hvtg->id_hoc_vien = $id_hoc_vien;
             $hvtg->id_lop_hoc = $id_lop_hoc;
@@ -546,11 +707,15 @@ class CoursesController extends BaseController
         }
         return $this->response->setJSON($result);
     }
-    public function test() {
+    public function test()
+    {
         $this->deleteScheduleFromCourse();
     }
     public function getCoursesListSection()
     {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
         $model = new UserModel();
         $courses = $model->executeCustomQuery(
             "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
@@ -567,10 +732,11 @@ class CoursesController extends BaseController
         usort($courses, [$this, 'compareCoursesByBeginDate']);
         return $this->response->setJSON($courses);
     }
-    public function getInsertLecturerForm() {
-        if (!session()->has('id_user')) {
-            return redirect()->to('/');
-        }
+    public function getInsertLecturerForm()
+    {
+        // if (!session()->has('id_user')) {
+        //     return redirect()->to('/');
+        // }
 
         $data = array();
         $lecturersModel = new GiangVienModel();
@@ -578,7 +744,8 @@ class CoursesController extends BaseController
         return view('Admin\ViewCell\InsertLecturerIntoClassForm', $data);
     }
 
-    public function getInsertStudentForm() {
+    public function getInsertStudentForm()
+    {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
@@ -590,14 +757,22 @@ class CoursesController extends BaseController
         // return $this->response->setJSON($data['students']);
         // return view('LoginPage');
     }
-    public function getScheduleList() {
+    public function schedule()
+    {
+        return view("SchedulePage");
+    }
+    public function getScheduleList()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
         $data = json_decode($this->request->getVar("json"), true);
         // $data = json_encode();
         $model = new CaModel();
         $ca = ($data['id_ca'] == -1 ? "" : "AND buoi_hoc.id_ca = {$data['id_ca']}");
         $phong = ($data['id_phong'] == -1 ? "" : "AND buoi_hoc.id_phong = {$data['id_phong']}");
         $thu = ($data['thu_trong_tuan'] == -1 ? "" : "AND DAYOFWEEK(buoi_hoc.ngay) = {$data['thu_trong_tuan']}");
-    
+
 
         $result = $model->executeCustomQuery(
             "SELECT buoi_hoc.id_buoi_hoc, buoi_hoc.trang_thai, buoi_hoc.id_phong, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') AS ngay, DAYOFWEEK(buoi_hoc.ngay) AS thu, 
@@ -612,11 +787,12 @@ class CoursesController extends BaseController
         return $this->response->setJSON($result);
         // return $this->response->setJSON($data);
     }
-    public function getScheduleListByLCourseId() {
+    public function getScheduleListByLCourseId()
+    {
         $id_lop_hoc = $this->request->getVar("id");
         // $data = json_encode();
         $model = new CaModel();
-    
+
 
         $result = $model->executeCustomQuery(
             "SELECT buoi_hoc.id_buoi_hoc, buoi_hoc.trang_thai, buoi_hoc.id_phong, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') AS ngay, DAYOFWEEK(buoi_hoc.ngay) AS thu, 
@@ -631,7 +807,8 @@ class CoursesController extends BaseController
         return $this->response->setJSON($result);
         // return $this->response->setJSON($data);
     }
-    public function insertScheduleIntoClass() {
+    public function insertScheduleIntoClass()
+    {
         $data = json_decode($this->request->getVar("json"), true);
         $id_lop_hoc = json_decode($this->request->getVar("id"), true);
 
@@ -642,7 +819,8 @@ class CoursesController extends BaseController
         }
         return $this->response->setJSON($result);
     }
-    public function getInsertScheduleForm() {
+    public function getInsertScheduleForm()
+    {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
@@ -731,18 +909,20 @@ class CoursesController extends BaseController
         }
         $this->generateClassSchedule("2022-01-01", "2026-01-01", $id_phong_array, $id_ca_array);
     }
-    public function fillData2() {
+    public function fillData2()
+    {
         $model = new BuoiHocModel();
         $model2 = new HocVienModel();
         $dsbh = $model->executeCustomQuery(
             "SELECT * FROM buoi_hoc WHERE buoi_hoc.id_lop_hoc = 110;
-        ");
+        "
+        );
         $dshv = $model2->executeCustomQuery(
             "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
             WHERE hoc_vien_tham_gia.id_lop_hoc = 110;"
         );
         foreach ($dsbh as $bh) {
-            foreach($dshv as $hv) {
+            foreach ($dshv as $hv) {
                 $diem_danh = new diem_danhModel();
                 $diem_danh->id_buoi_hoc = $bh['id_buoi_hoc'];
                 $diem_danh->id_hoc_vien = $hv['id_hoc_vien'];
@@ -751,9 +931,8 @@ class CoursesController extends BaseController
                 $diem_danh->insertdiem_danhModel($diem_danh);
             }
         }
-
     }
-    
+
     function generateClassSchedule($startDate, $endDate, $roomIds, $caIds)
     {
         // Iterate through the date range

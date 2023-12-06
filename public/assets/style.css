@@ -374,10 +374,15 @@ img {
     min-width: 150px;
 
 }
-
+.main-content--teacher-layout {
+    margin-top: 80px;
+    /* margin-left: 232px; */
+    /* width: 100%; */
+}
 .main-content {
     margin-top: 80px;
     margin-left: 232px;
+    /* width: 100%; */
 }
 .search-input {
     margin: 0!important;
