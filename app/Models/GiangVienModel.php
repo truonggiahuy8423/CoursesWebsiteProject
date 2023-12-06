@@ -3,7 +3,6 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-use Exception;
 
 include 'DatabaseConnect.php';
 
