@@ -8,21 +8,7 @@
 
             <input style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm khóa học">
             <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon" style=""></i></button>
-            <button class="add-class-btn highlight-button">
-                <i class="fa-solid fa-plus add-class-icon highlight-icon"></i>
-            </button>
-            <button class="delete-class-btn highlight-button">
-                <i class="fa-solid fa-trash-can highlight-icon"></i>
-            </button>
-            <div class="cancel-div">
-            <button class="cancel-delete-class-btn highlight-button--cancel">
-                <i class="fa-solid fa-x highlight-icon--cancel" style="font-size: 12px!important;"></i>
-            </button>
-            </div>
-            <div class="save-div">
-            <button class="save-delete-class-btn highlight-button--save">
-                <i class="fa-solid fa-check highlight-icon--save" style="font-size: 12px!important;"></i>
-            </button>
+            
 
             </div>
             
@@ -35,7 +21,7 @@
                     $dsgv = "";
                     $y = 0;
                     foreach ($courses[$i]['lecturers'] as $lecturer) {
-                        $dsgv = $dsgv . ($y != 0 ? ', ' : '') . '<a href="' . base_url() . '/profile/lecturer?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
+                        $dsgv = $dsgv . ($y != 0 ? ', ' : '') . '<a href="' . base_url() . '/profile/lecturerS?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
                         $y++;
                     }
                     $status = kiem_tra_tinh_trang($courses[$i]['ngay_bat_dau'], $courses[$i]['ngay_ket_thuc']);
@@ -343,7 +329,7 @@
         function reloadCoursesList() {
             console.log("kkk");
             $.ajax({
-                url: '<?php echo base_url(); ?>/Admin/CoursesController/getListOfCourses',
+                url: '<?php echo base_url(); ?>/Admin/CoursesController/getListOfCoursesForTeacher',
                 method: 'GET',
                 contentType: 'application/json', // Đặt kiểu dữ liệu của yêu cầu là JSON
                 data: null,

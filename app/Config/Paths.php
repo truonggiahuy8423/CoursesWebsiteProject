@@ -38,7 +38,7 @@ class Paths
      * @see http://codeigniter.com/user_guide/general/managing_apps.html
      */
     public string $appDirectory = __DIR__ . '/..';
-
+    public string $filesPath = __DIR__ . '/../../userFiles';
     /**
      * ---------------------------------------------------------------
      * WRITABLE DIRECTORY NAME
