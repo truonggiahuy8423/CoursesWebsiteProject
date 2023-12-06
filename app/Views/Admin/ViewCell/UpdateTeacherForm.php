@@ -1,7 +1,20 @@
 <div class="form-container">
     <div class="update-teacher-form bg-white h-75 overflow-auto" style="width: 70%;">
-        <div class="update-teacher-form__title-section w-100 bg-dark d-flex justify-content-start align-items-center sticky-top" style="height: 60px;">
-            <h5 class="update-teacher-form__title text-white fw-bold" style="margin-left: 25px;">Cập nhật giáo viên</h5>
+        <div class="update-teacher-form__title-section w-100 bg-dark d-flex justify-content-between align-items-center sticky-top" style="height: 60px;">
+            <div class="ps-3">
+                <h5 class="update-teacher-form__title text-white fw-bold">Cập nhật giáo viên</h5>
+            </div>    
+            <div class="update-teacher-form__btn-container pe-3 d-flex justify-content-end align-items-center">
+                <button class="update-teacher-form__cancel-btn btn btn-light border border-gray me-3 shadow-sm">
+                    <i class="fas fa-times" style="color: #333;"></i>
+                </button>
+                <button class="update-teacher-form__save-btn btn btn-light border border-gray me-3 shadow-sm">
+                    <i class="fas fa-check" style="color: #333;"></i>
+                </button>
+                <button class="update-teacher-form__profile-btn btn btn-light border border-gray shadow-sm" teacherID="<?php echo isset($lecturer->id_giang_vien) ? $lecturer->id_giang_vien: '' ?>">
+                    <i class="far fa-user-circle" style="color: #333;"></i>
+                </button>
+            </div>
         </div>
         <div class="update-teacher-form__content-section p-3">
             <div class="text-center fw-bold fs-2 mb-3">Thông tin cơ bản</div>
@@ -81,10 +94,7 @@
                 </tbody>
             </table>
             <hr>
-            <div class="update-teacher-form__btn-container pb-3 d-flex justify-content-end align-items-center">
-                <button class="update-teacher-form__cancel-btn btn btn-light border border-gray me-3 shadow-sm">Hủy</button>
-                <button class="update-teacher-form__save-btn btn btn-light border border-gray shadow-sm">Lưu thông tin</button>
-            </div>
+            
         </div>
     </div>
 </div>

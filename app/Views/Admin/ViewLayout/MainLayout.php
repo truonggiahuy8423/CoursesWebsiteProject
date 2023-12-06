@@ -62,7 +62,7 @@
         // setInterval(reloadCoursesList, 10000);
 
         $(document).ready(function() {
-            $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');})
+            $('.left-nav .item<?php echo $left_nav_chosen_value; ?>').addClass('highlight');
 
             let loadingState = false;
 
@@ -578,7 +578,9 @@
                 }
             })
 
-
+            $(document).on('click', '.update-teacher-form__profile-btn', function() {
+                window.location.href = `<?php echo base_url(); ?>/profile/lecturer?id=${$(this).attr('teacherID')}`;
+            });
         });
 
         function reloadCoursesList() {
