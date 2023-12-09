@@ -45,10 +45,11 @@
     let files = null;
     let assignments = null;
 
-    function rerenderCourseResources() {
+    async function rerenderCourseResources(id_muc = null) {
         loadingEffect(true);
         let data = new FormData();
         data.append("id_lop_hoc", id_lop_hoc);
+        $(`.root-folder`).empty();
         // get folders
         $.ajax({
             url: "<?php echo base_url() ?>/Admin/CoursesController/getResources",
@@ -126,9 +127,12 @@
                             $(`.folder[id="${links[a]["id_muc"]}"]`).prepend(`
                                <div class="resource-item link-variant">
                                     <h5 class="link-variant__title">
+                                        <span class="content-panel">
                                         <img src="<?php echo base_url() ?>/assets/img/link_icon.png" style="height: 14px; margin-bottom: 2px;" alt="">
                                         <a href="${links[a]["link"]}" style="text-decoration: none; color: #2C2C2C;">${links[a]["tieu_de"]}</a>
                                         <span class="item-details">Đã đăng vào ${links[a]["ngay_dang"]} bởi ${links[a]["ho_ten"]}</span>
+                                        <i value="${links[a]["id_duong_link"]}" type="link" class='fa-solid fa-x delete-resource-btn' style='z-index:100; font-size: 11px!important;'></i>
+                                        </span>
                                     </h5>
                                 </div>
                             `);
@@ -138,9 +142,12 @@
                             $(`.folder[id="${notis[b]["id_muc"]}"]`).prepend(`
                                 <div class="resource-item notification-variant">
                                     <h5 class="notification-variant__title">
-                                        <i class="bi bi-chat-left-text"></i>
-                                        ${notis[b]["tieu_de"]}
-                                        <span class="item-details">Đã đăng vào ${notis[b]["ngay_dang"]} bởi ${notis[b]["ho_ten"]}</span>
+                                        <span class="content-panel">
+                                            <i class="bi bi-chat-left-text"></i>
+                                            <span class="noti-title"> ${notis[b]["tieu_de"]} </span>
+                                            <span class="item-details">Đã đăng vào ${notis[b]["ngay_dang"]} bởi ${notis[b]["ho_ten"]}</span>
+                                            <i value="${notis[b]["id_thong_bao"]}" type="noti" class='fa-solid fa-x delete-resource-btn' style='z-index:100; font-size: 11px!important;'></i>
+                                        </span>
                                     </h5>
                                     <p class="notification-variant__content">${notis[b]["noi_dung"]}</p>
                                 </div>
@@ -152,9 +159,12 @@
                             $(`.folder[id="${files[c]["id_muc"]}"]`).prepend(`
                                 <div class="resource-item file-variant">
                                     <h5 class="file-variant__title">
+                                    <span class="content-panel">
                                         <img src="<?php echo base_url() ?>/assets/img/${fileExtension.indexOf(files[c]['extension']) !== -1 ? file_icon[files[c]['extension']] : 'any_file_icon' }.png" style="height: 14px; margin-bottom: 2px;" alt="">
                                         <span class="file-title" id="${files[c]['id_tep_tin_tai_len']}">${files[c]['ten_tep']}.${files[c]['extension']}</span>
                                         <span class="item-details">Đã đăng ${files[c]['ngay_dang']} bởi ${files[c]['ho_ten']}</span>
+                                        <i value="${files[c]["id_tep_tin_tai_len"]}" type="file" class='fa-solid fa-x delete-resource-btn' style='z-index:100; font-size: 11px!important;'></i>
+                                    </span>
                                     </h5>
                                 </div>
                             `);
@@ -164,14 +174,27 @@
                             $(`.folder[id="${assignments[d]["id_muc"]}"]`).prepend(`
                                 <div class="resource-item assignment-variant">
                                     <h5 class="assignment-variant__title" href="">
+                                    <span class="content-panel">
                                         <img src="<?php echo base_url() ?>/assets/img/assignment_icon.png" style="height: 14px; margin-bottom: 2px;" alt="">
                                         <a href="<?php echo base_url() ?>//resource/assignment?assignmentid=${assignments[d]["id_bai_tap"]}" style="text-decoration: none; color: #2C2C2C;">${assignments[d]["ten"]}</a>
                                         <span class="item-details">Đã đăng ${assignments[d]['ngay_dang']} bởi ${assignments[d]['ho_ten']}</span>
+                                        <i value="${assignments[d]["id_bai_tap"]}" type="assignment" class='fa-solid fa-x delete-resource-btn' style='z-index:100; font-size: 11px!important;'></i>
+                                        </span>
                                     </h5>
                                 </div>
                             `);
                             d++
                             break;
+                    }
+                }
+                if (id_muc !== null) {
+                    let targetElement = $(`.folder[id="${id_muc}"]`)[0];
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                            inline: 'nearest'
+                        });
                     }
                 }
             }
@@ -182,6 +205,60 @@
         rerenderCourseResources();
 
     })
+    $(document).on('click', '.delete-resource-btn', function() {
+        if (!confirm("Xác nhận xóa tài nguyên này?")) {
+            return;
+        }
+        loadingEffect(true);
+        var urlParams = new URLSearchParams(window.location.search);
+        // var param1Value = urlParams.get('courrseid');
+        let id_lop_hoc = urlParams.get('courseid');
+        let id_muc = $(this).parent().parent().parent().parent().attr("id");
+        console.log(id_muc);
+        let type = $(this).attr("type");
+        let id = ($(this).attr("value"));
+        $.ajax({
+            url: "<?php echo base_url() ?>/Admin/CoursesController/removeResource",
+            contentType: "text",
+            dataType: "json",
+            data: {
+                type: type,
+                id: id,
+                id_muc: id_muc,
+                id_lop_hoc: id_lop_hoc
+            },
+            success: function(response) {
+                loadingEffect(false);
+                if (response.state) {
+                    rerenderCourseResources(id_muc);
+                    toast({
+                        title: "Thành công!",
+                        message: response.message,
+                        type: "success",
+                        duration: 100000
+                    });
+                } else {
+                    toast({
+                        title: "Lỗi!",
+                        message: response.message,
+                        type: "error",
+                        duration: 100000
+                    });
+                }
+            },
+            error: function() {
+                toast({
+                    title: "Lỗi!",
+                    message: "Đã có lỗi xảy ra, vui lòng thử lại!",
+                    type: "error",
+                    duration: 100000
+                });
+            }
+
+
+        })
+    });
+
     $(document).on('click', '.add-item-btn--root', function() {
         loadingEffect(true);
         $.ajax({
@@ -191,17 +268,20 @@
             success: function(response) {
                 loadingEffect(false);
                 $('body').append(response);
+                $(`.insert-resource-form`).attr(`value`, $(`.root-folder`).attr(`id`));
                 $('.insert-resource-form__cancel-btn').click(function() {
                     if (confirm("Hủy bỏ thao tác hiện tại?")) {
                         $(`.form-container`).remove();
                     }
                 })
-            }})
+            }
+        })
 
 
     });
     $(document).on('click', '.add-item-btn--children', function() {
         loadingEffect(true);
+        $btn = $(this);
         $.ajax({
             url: "<?php echo base_url() ?>/Admin/CoursesController/getAddResourceIntoCourseForm",
             // contentType: "text",
@@ -209,12 +289,14 @@
             success: function(response) {
                 loadingEffect(false);
                 $('body').append(response);
+                $(`.insert-resource-form`).attr(`value`, $btn.parent().parent().parent().attr(`id`));
                 $('.insert-resource-form__cancel-btn').click(function() {
                     if (confirm("Hủy bỏ thao tác hiện tại?")) {
                         $(`.form-container`).remove();
                     }
                 })
-            }})
+            }
+        })
 
 
     });

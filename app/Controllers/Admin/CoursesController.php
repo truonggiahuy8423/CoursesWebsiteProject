@@ -501,6 +501,89 @@ class CoursesController extends BaseController
             // Not yet
         }
     }
+    function uploadFile() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $file = $this->request->getFile('file');
+
+        if ($file->isValid()) {
+            $user_id = session()->get("id_user");
+            $encoded = md5(uniqid());
+            $fileModel = new FileUploadModel();
+            $fileModel->du_lieu = $encoded;
+            $fileModel->id_user = $user_id;
+            $fileModel->ngay_tai_len = $this->getCurrentDateTimeVietnam();
+            $fileModel->ten_tep = $this->removeFileExtension($file->getClientName());
+            $fileModel->extension = $file->getExtension();
+
+            $rs = $fileModel->insertFileUpload($fileModel);
+            if ($rs["state"]) {
+                // move file
+                // Đường dẫn đầy đủ tới thư mục lưu trữ file
+                $ex = $file->getExtension();
+                $uploadDir = (new Paths())->filesPath;
+                $newFileName = $encoded.'.'.$ex;
+                // Di chuyển file tải lên đến thư mục mới
+                $file->move($uploadDir, $newFileName);
+                $rs["fileName"] = $this->removeFileExtension($file->getClientName());
+                $rs["extension"] = $ex;
+                return $this->response->setJSON($rs);
+            } else {
+                return $this->response->setJSON(["state" => false, "message" => "Tệp tải lên không thành công"]);
+            }
+            return $this->response->setJSON(["state" => false, "message" => "Tệp tải lên không thành công"]);
+        } else {
+            return $this->response->setJSON(["state" => false, "message" => "Tệp tải lên không thành công"]);
+        }
+        
+        
+
+        // Tạo một mã duy nhất để đặt tên file mới
+        $uniqueId = uniqid();
+        $newFileName = $uniqueId . '_' . $file->getName();
+
+        // Đường dẫn đầy đủ tới thư mục lưu trữ file
+        $uploadDir = WRITEPATH . 'uploads/';
+
+        // Di chuyển file tải lên đến thư mục mới
+        $file->move($uploadDir, $newFileName);
+
+    }
+    function removeFileExtension($fileName) {
+        // Sử dụng pathinfo để lấy thông tin về tên file
+        $fileInfo = pathinfo($fileName);
+    
+        // Trả về phần tên file mà không có extension
+        return $fileInfo['filename'];
+    }
+    
+
+    function getCurrentDateTimeVietnam()
+    {
+        // Tạo đối tượng DateTimeZone cho múi giờ Việt Nam
+        $vietnamTimeZone = new \DateTimeZone('Asia/Ho_Chi_Minh');
+
+        // Tạo đối tượng DateTime sử dụng múi giờ Việt Nam
+        $currentDateTime = new DateTime('now', $vietnamTimeZone);
+
+        // Định dạng ngày giờ theo ý muốn (ví dụ: "Y-m-d H:i:s")
+        $formattedDateTime = $currentDateTime->format('Y-m-d H:i:s');
+
+        return $formattedDateTime;
+    }
+
+    function promiseTest() {
+        return view('t');
+    }
+    function getChooseUserFileForm() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new FileUploadModel();
+        $data["listOfUserFile"] = $model->getListOfFilesByUserId(session()->get("id_user"));
+        return view("ChooseUserFileForm", $data);
+    }
     public function getAddResourceIntoCourseForm() {
         return view("Teacher\ViewCell\AddResourceIntoClassForm");
     }
@@ -619,6 +702,32 @@ class CoursesController extends BaseController
         }
         // return view('Admin/ViewLayout/CourseResourceSectionLayout');
     }
+    public function getFileById() {
+        $file_id = $this->request->getVar("file_id");
+
+        //auth
+        $model = new FileUploadModel();
+        $id_user = session()->get('id_user');
+        $listOfUserFile = $model->getListOfFilesByUserId($id_user);
+        $isHasPermission = false;
+        foreach ($listOfUserFile as $file) {
+            if ($file_id === $file->id_tep_tin_tai_len) {
+                $isHasPermission = true;
+            }
+        }
+        if (!$isHasPermission) {
+            return $this->response->setJSON(["state" => false]);
+        }
+
+        $model = new FileUploadModel();
+        $rs = $model->getFileUploadById($file_id);
+
+        if ($rs === null) { // khong bao gio
+            return $this->response->setJSON(["state" => false]);
+        } else {
+            return $this->response->setJSON(["state" => true, "file" => $rs]);
+        }
+    }
     public function assignment()
     {
         return view("Admin/ViewLayout/AssignmentSection", ["id_assignment" => $_GET["assignmentid"]]);
@@ -710,6 +819,7 @@ class CoursesController extends BaseController
         }
         return $this->response->setJSON($result);
     }
+
     public function test()
     {
         $this->deleteScheduleFromCourse();
@@ -1032,4 +1142,197 @@ class CoursesController extends BaseController
         }
         return $this->response->setJSON($processedResult);
     }
+    function postNewFolder() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $ten_muc = $this->request->getVar("ten_muc");
+        $id_muc = $this->request->getVar("id_muc");
+
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            $muc = new MucModel();
+            $muc->id_lop_hoc = $id_lop_hoc;
+            $muc->ten_muc = $ten_muc;
+            $muc->id_muc_cha = $id_muc;
+            $rs2 = $muc->insertMuc($muc);
+            return $this->response->setJSON($rs2);
+            
+        }  else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+    }
+    function postNewLinkOnClass() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $dlink = $this->request->getVar("link");
+        $tieu_de = $this->request->getVar("tieu_de");
+        $id_muc = $this->request->getVar("id_muc");
+
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            $link = new LinkModel();
+            $link->id_muc = $id_muc;
+            $link->tieu_de = $tieu_de;
+            $link->link = $dlink;
+
+            $link->ngay_dang = $this->getCurrentDateTimeInVietnam();
+
+            
+            $model = new UserModel();
+            $model->getUserById(session()->get("id_user"));
+            if ($model == null || $model->id_giang_vien == null) {
+                return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+            }
+            
+            $link->id_giang_vien = $model->id_giang_vien;
+            // var_dump("ok");
+            $rs2 = $link->insertLink($link);
+            return $this->response->setJSON($rs2);
+            
+        }  else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+    }
+    
+    function postNewNotiOnClass() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $noi_dung = $this->request->getVar("noi_dung");
+        $tieu_de = $this->request->getVar("tieu_de");
+        $id_muc = $this->request->getVar("id_muc");
+
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            $noti = new ThongBaoModel();
+            $noti->id_muc = $id_muc;
+            $noti->tieu_de = $tieu_de;
+            $noti->noi_dung = $noi_dung;
+
+            $noti->ngay_dang = $this->getCurrentDateTimeInVietnam();
+
+            
+            $model = new UserModel();
+            $model->getUserById(session()->get("id_user"));
+            if ($model == null || $model->id_giang_vien == null) {
+                return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+            }
+            
+            $noti->id_giang_vien = $model->id_giang_vien;
+            // var_dump("ok");
+            $rs2 = $noti->insertThongBao($noti);
+            return $this->response->setJSON($rs2);
+            
+        }  else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+    }
+    function postFileOnClass() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $file_id = $this->request->getVar("file_id");
+        $id_muc = $this->request->getVar("id_muc");
+
+        $model = new FileUploadModel();
+        $id_user = session()->get('id_user');
+        $listOfUserFile = $model->getListOfFilesByUserId($id_user);
+        $isHasPermission = false;
+        foreach ($listOfUserFile as $file) {
+            if ($file_id === $file->id_tep_tin_tai_len) {
+                $isHasPermission = true;
+            }
+        }
+        if (!$isHasPermission) {
+            return $this->response->setJSON(["state" => false, "message" => "Bạn không có quyền trên tệp tin này hoặc tệp tin không tồn tại"]);
+        }
+
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            $vttt = new vi_tri_tep_tinModel();
+            $vttt->id_muc = $id_muc;
+            $vttt->id_tep_tin_tai_len = $file_id;
+            $vttt->ngay_dang = $this->getCurrentDateTimeInVietnam();
+            $rs2 = $vttt->insertvi_tri_tep_tin($vttt);
+            return $this->response->setJSON($rs2);
+        } else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+        // $vttt->id_muc;
+        
+    }
+    function getCurrentDateTimeInVietnam() {
+        // Tạo đối tượng DateTime với múi giờ là Asia/Ho_Chi_Minh
+        $vietnamTimeZone = new \DateTimeZone('Asia/Ho_Chi_Minh');
+        $dateTime = new DateTime('now', $vietnamTimeZone);
+    
+        // Định dạng ngày giờ theo định dạng mong muốn (ví dụ: 'Y-m-d H:i:s')
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+    
+        return $formattedDateTime;
+    }
+    public function removeResource() {
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $id = $this->request->getVar("id");
+        $id_muc = $this->request->getVar("id_muc");
+        $type = $this->request->getVar("type");
+
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            switch ($type) {
+                case "file";
+                    $model = new vi_tri_tep_tinModel();
+                    $model->id_muc = $id_muc;
+                    $model->id_tep_tin_tai_len = $id;
+                    return $this->response->setJSON($model->deletevi_tri_tep_tin($model));
+                    break;
+                case "noti";
+                    $model = new ThongBaoModel();
+                    $model->id_thong_bao = $id;
+                    $model->id_muc = $id_muc;
+                    return $this->response->setJSON($model->deleteThongBao($model));
+                    break;
+                case "link";
+                    $model = new LinkModel();
+                    $model->id_duong_link = $id;
+                    $model->id_muc = $id_muc;
+                    return $this->response->setJSON($model->deleteLink($model));
+                    break;
+                case "asssignment";
+                    return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+                    break;
+
+            }
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+            // return $this->response->setJSON([]);
+        } else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+        
+        
+
+    }
+
 }
+

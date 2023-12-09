@@ -143,3 +143,38 @@ $(document).ready(function () {
     })
   }, 10000);
 })
+
+async function chooseUserFile() {
+  return new Promise(function(resolve, reject) {
+    loadingEffect(true);
+    $.ajax({
+      url: `${window.location.protocol}//${window.location.hostname}/Admin/CoursesController/getChooseUserFileForm`,
+      contentType: "",
+      dataType: "text",
+      data: "",
+      success: function(response) {
+        loadingEffect(false);
+        $(`body`).append(response);
+        setTimeout(function() {
+          $(`.get-file-form`).css('opacity', '1');
+         }, 100);
+         $(document).ready(function() {
+          $(`.get-file-form__cancel-btn`).click(function() {
+            $(`.form-container--file`).remove();
+            resolve(false);
+          });
+          $(`.get-file-form__save-btn`).click(function() {
+            let file_id = $(`.file-item[ischosen="true"]`).attr('value');
+            // setTimeout(function() {
+              $(`.form-container--file`).remove();
+            
+            resolve(file_id);
+          });
+         })
+      },
+      error: function() {
+  
+      }
+    })
+  })
+}

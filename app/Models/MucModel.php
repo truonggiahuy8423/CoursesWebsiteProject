@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
 use mysqli;
 
 include 'DatabaseConnect.php';
@@ -146,11 +147,12 @@ class MucModel
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sii", $muc->ten_muc, $muc->id_lop_hoc, $muc->id_muc_cha);
 
-        if ($stmt->execute()) {
+        try {
+            $stmt->execute();
             $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Mục mới được tạo thành công'];
+        } catch (Exception $e) {
             $stmt->close();
             $this->conn->close();
             return ['state' => false, 'message' => $stmt->error];

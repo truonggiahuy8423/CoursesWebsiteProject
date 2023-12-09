@@ -122,9 +122,11 @@
                             $(`.folder[id="${notis[b]["id_muc"]}"]`).prepend(`
                                 <div class="resource-item notification-variant">
                                     <h5 class="notification-variant__title">
-                                        <i class="bi bi-chat-left-text"></i>
-                                        ${notis[b]["tieu_de"]}
-                                        <span class="item-details">Đã đăng vào ${notis[b]["ngay_dang"]} bởi ${notis[b]["ho_ten"]}</span>
+                                        <span class="content-panel">
+                                            <i class="bi bi-chat-left-text"></i>
+                                            <span class="noti-title"> ${notis[b]["tieu_de"]} </span>
+                                            <span class="item-details">Đã đăng vào ${notis[b]["ngay_dang"]} bởi ${notis[b]["ho_ten"]}</span>
+                                        </span>
                                     </h5>
                                     <p class="notification-variant__content">${notis[b]["noi_dung"]}</p>
                                 </div>
