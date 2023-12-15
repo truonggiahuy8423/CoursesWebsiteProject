@@ -416,7 +416,17 @@ img {
     border-radius: 0;
     transition: 0.4s;
 }
+.submit-btn, .cancel-submit-btn, .modify-submit-btn {
+    border: none;
+    font-size: 13px;
+    height: 34px;
+    border-radius: 5px;
+    padding: 0px 15px!important;
+    width: auto!important;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
 .highlight-button:hover {
+    /* color: #c5ffce; */
     background-color: #2C2C2C;
     color: white;
     border-color: #cacaca!important;
@@ -431,6 +441,7 @@ img {
 }
 .highlight-button:hover .highlight-icon::before {
     color: white!important;
+    /* color: #d9edff; */
 }
 
 
@@ -638,6 +649,10 @@ img {
     padding-right: 10px!important;
     /* padding: auto 30px; */
 }
+.content-textarea {
+    width: 700px;
+    height: 60px;
+}
 .cancel-div {
     /* padding-left: 5px; */
     position: absolute;
@@ -705,7 +720,7 @@ img {
     /* padding: 10px;
     padding-top: 5px; */
 }
-.insert-lecturer-form, .insert-schedule-form, .insert-student-form, .insert-resource-form, .get-file-form  {
+.insert-lecturer-form, .insert-schedule-form, .insert-student-form, .insert-resource-form, .get-file-form, .submit-assignment-form  {
     background-color: #ffffff;
     height: auto;
     width: 70%;
@@ -716,6 +731,10 @@ img {
 .insert-resource-form {
     width: 50%;
 
+}
+.submit-assignment-form  {
+    width: 40%;
+    min-width: 400px;
 }
 .get-file-form {
     width: 40%;
@@ -766,7 +785,7 @@ img {
     font-weight: bold;
 
 }
-.insert-resource-form__title-section {
+.insert-resource-form__title-section, .submit-assignment-form__title-section {
     width: 100%;
     background-color: #2C2C2C;
     height: 60px;
@@ -774,7 +793,7 @@ img {
     align-items: center;
     justify-content: flex-start;
 }
-.insert-resource-form__title {
+.insert-resource-form__title, .submit-assignment-form__title {
     color: white;
     margin-left: 25px;
     font-weight: bold;
@@ -1034,7 +1053,7 @@ img {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-.insert-lecturer-form__cancel-btn, .insert-lecturer-form__save-btn, .insert-resource-form__cancel-btn, .insert-resource-form__save-btn {
+.insert-lecturer-form__cancel-btn, .insert-lecturer-form__save-btn, .insert-resource-form__cancel-btn, .insert-resource-form__save-btn, .submit-assignment-form__save-btn, .submit-assignment-form__cancel-btn {
     background-color: white;
     border: none;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Đổ bóng cho phần tử bọc */
@@ -1044,10 +1063,11 @@ img {
     cursor: pointer;
     font-size: 13px;
 }
-.insert-lecturer-form__cancel-btn:hover, .insert-lecturer-form__save-btn:hover, .insert-resource-form__cancel-btn:hover, .insert-resource-form__save-btn:hover {
+
+.insert-lecturer-form__cancel-btn:hover, .insert-lecturer-form__save-btn:hover, .insert-resource-form__cancel-btn:hover, .insert-resource-form__save-btn:hover, .submit-assignment-form__save-btn:hover, .submit-assignment-form__cancel-btn:hover {
     background-color: #ebebeb;
 }
-.insert-lecturer-form__cancel-btn:active, .insert-lecturer-form__save-btn:active, .insert-resource-form__cancel-btn:hover, .insert-resource-form__save-btn:active {
+.insert-lecturer-form__cancel-btn:active, .insert-lecturer-form__save-btn:active, .insert-resource-form__cancel-btn:hover, .insert-resource-form__save-btn:active, .submit-assignment-form__save-btn:active, .submit-assignment-form__cancel-btn:active {
     background-color: #d4d4d4;
 }
 
@@ -1067,7 +1087,7 @@ img {
 .insert-student-form__cancel-btn:active, .insert-student-form__save-btn:active {
     background-color: #d4d4d4;
 }
-.insert-lecturer-form__btn-container , .insert-resource-form__btn-container{
+.insert-lecturer-form__btn-container , .insert-resource-form__btn-container, .submit-assignment-form__btn-container{
     display: flex;
     align-items: center;
     justify-content: right;
@@ -1228,15 +1248,41 @@ img {
     color: #0077e7!important;
 
 }
+.fa-angles-left::before {
+    color: #0077e7!important;
+}
+.custom-link {
+    margin-left: 30px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #0077e7!important;
+    margin-top: 17px!important;
+    display: flex;
+    align-items: center;
+}
+.assignment-content {
+    margin-left: 60px;
+    margin-top: 17px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
 .assignment-variant__title {
     text-decoration: none;
 }
 .insert-resource-form__overflow-container {
     width: 96%;
     margin: 20px 2%;
-    height: 140px;
+    height: 196px;
     overflow: auto;
     box-shadow: inset 0 0 3px rgba(49, 49, 49, 0.2);
+}
+.submit-assignment-form__overflow-container {
+    /* width: 96%; */
+    margin: 20px 10px;
+    height: 196px;
+    overflow: auto;
+    margin-top: 0px;
+    box-shadow: inset 0 0 3px rgba(49, 49, 49, 0.4);
 }
 .insert-resource-form__option-container {
     display: grid;
@@ -1314,7 +1360,19 @@ img {
 .noti-title-input {
     width: 450px!important;
 }
-.noti-content-input {
+.submit-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50px;
+}
+.assignment-title-input {
+    width: 400px!important;
+}
+.datetimelocal {
+    font-size: 14px;
+}
+.noti-content-input, .assignment-content-input {
     font-size: 14px!important;
     border-width: 0.1px;
     border-color: #f3f3f3!important;
@@ -1496,24 +1554,318 @@ input[type="file"] {
 }
 .file-item--var {
     height: 24px;
-    margin-left: 10px;
-
+    margin-left: 5px;
     background-color: white;
-    /* height: 34px; */
     font-size: 12px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     padding-left: 10px;
-    /* padding: 4px 12px; */
     padding-right: 25px;
     box-shadow: 1px 1px 3px rgba(43, 43, 43, 0.5);   
+    cursor: pointer;
     min-width: 150px;
-    /* cursor: pointer; */
-    /* animation: newClassEffect 0.6s forwards; */
+    margin-bottom: 8px;
 }
 
 .file-item--var img {
     width: 12px;
     margin-right: 10px;
+}
+/* .file-item--var2 + .file-item--var2 {
+    margin-top: 10px;
+} */
+.file-item--var2 {
+    margin-bottom: 10px;
+    height: 24px;
+    background-color: white;
+    font-size: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 25px;
+    box-shadow: 1px 1px 3px rgba(43, 43, 43, 0.5);   
+    cursor: pointer;
+    min-width: 150px;
+    animation: newClassEffect 0.6s forwards;
+    margin-right: 20px;
+    position: relative;
+}
+.file-item--var2 i{
+    position: absolute;
+    right: 9px;
+    font-size: 8px!important;
+}
+.file-item--var2:hover i::before {
+    color: #898989;
+}
+.file-item--var2 i::before{
+    color: white;
+    font-size: 9px!important;
+}
+.file-item--var2 img {
+    width: 12px;
+    margin-right: 10px;
+}
+/* .file-item--var:hover {
+    background-color: #f5f5f5;
+} */
+.list-of-lecturers-container {
+    margin-top: 12px;
+    margin-left: 50px;
+    margin-bottom: 26px;
+}
+.list-of-lecturers-container a {
+    display: inline-flex;
+    color: #35abff!important;
+    text-decoration: none;
+    font-size: 14px;
+}
+.list-of-lecturers-container span {
+    display: flex;
+    color: #35abff!important;
+    text-decoration: none;
+    font-size: 14px;
+}
+.list-of-lecturers-container a+a {
+    margin-top: 2px;
+}
+.class-infor-table td {
+    font-size: 13px;
+    padding: 5px;
+    padding-left: 10px;
+    width: 50%;
+    height: 34px!important;
+}
+
+
+.assignment-infor-table td {
+    font-size: 13px;
+    padding: 5px;
+    padding-left: 10px;
+    width: 200px;
+    height: 34px;
+}
+.class-infor-section__class-name {
+    /* margin-bottom: 2px; */
+}
+
+.header-container {
+    margin: 12px;
+    margin-top: 62px;
+    border-style: solid;
+    border-width: 0.3px;
+    border-color: #cecece;
+    height: 130px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.header-container h1 {
+    margin-left: 50px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 370px 1fr;
+    /* border-style: solid; */
+    height: 100px;
+
+}
+
+.menu {
+    border-style: solid;
+    border-width: 0.3px;
+    border-color: #cecece;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 12px;
+    margin-right: 12px;
+    padding-bottom: 40px;
+    height: 270px;
+}
+
+.menu a {
+    height: 38px;
+    width: 100%;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2C2C2C;
+    font-size: 14px;
+    border-left: none;
+    border-right: none;
+    transition: 0.4s;
+}
+
+.menu a:hover {
+    background-color: #e8e8e8;
+}
+
+/* .menu a+a {
+    border-top-style: solid;
+    border-top-width: 0.05px;
+    border-top-color: #cecece;
+}
+.menu a:first-of-type {
+    border-top-style: solid;
+    border-top-width: 0.05px;
+    border-top-color: #cecece;
+} 
+.menu a:last-of-type {
+    border-bottom-style: solid;
+    border-bottom-width: 0.05px;
+    border-bottom-color: #cecece;
+} */
+.content-section {
+    border-style: solid;
+    border-width: 0.3px;
+    border-color: #cecece;
+    border-radius: 10px;
+    margin-right: 12px;
+}
+
+.class-infor-section {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    margin-top: 12px;
+    margin-bottom: 20px;
+}
+
+.class-infor-section__back-btn {
+    height: 28px !important;
+    width: 44px !important;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+.class-infor-table, .students-table, .schedule-table, .assignment-infor-table, .submit-table {
+    width: 98%;
+    margin: auto 1%;
+    margin-top: 12px;
+    margin-bottom: 26px;
+}
+.students-table {
+    margin-top: 12px;
+    margin-bottom: 26px;
+}
+.students-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 34px;
+    padding-left: 10px;
+}
+.students-table thead td {
+    background-color: #2C2C2C;
+    text-align: center;
+    color: white;
+}
+
+.submit-table {
+    margin-top: 12px;
+    margin-bottom: 26px;
+}
+.submit-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 34px;
+    padding-left: 10px;
+}
+.submit-table thead td {
+    background-color: #2C2C2C;
+    text-align: center;
+    color: white;
+}
+.submit-table td:nth-child(1) {
+    width: 9%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.submit-table td:nth-child(2) {
+    width: 16%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.submit-table td:nth-child(3) {
+    width: 20%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.submit-table td:nth-child(4) {
+    width: 15%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.submit-table td:nth-child(5) {
+    width: 40%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.assignment-infor-table td:nth-child(1) {
+    width: 30%; /* Độ rộng cố định cho cột 1 và cột 2 */
+}
+.schedule-table {
+    margin-top: 12px;
+    margin-bottom: 26px;
+}
+.schedule-table td {
+    font-size: 13px;
+    padding: 5px;
+    height: 34px;
+    padding-left: 10px;
+}
+.schedule-table {
+    margin-top: 12px;
+    margin-bottom: 26px;
+}
+.schedule-table thead td {
+    background-color: #2C2C2C;
+    text-align: center;
+    color: white;
+}
+.schedule-table tr:hover {
+    background-color: #e8e8e8;
+}
+.student-row a {
+    visibility: hidden;
+}
+.student-row:hover {
+    background-color: #e8e8e8;
+}
+.student-row:hover a {
+    visibility: visible;
+}
+.submit-assignment-form__files-container {
+    /* width: 100%; */
+    /* margin: 10px 10px; */
+    padding: 10px;
+    margin-top: 0px;
+    align-items: start;
+    /* min-height: 300px; */
+    /* box-shadow: inset 0 0px 3px rgba(0, 0, 0, 0.3); */
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.submit-assignment-form__add-file-btn {
+    width: 200px;
+    height: 26px;
+    border-style: dashed;
+    border-width: 1.5px;
+    display: flex;
+    font-size: 13px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    border-color: #0DA7FD;
+    color: #0077e7;
+    cursor: pointer;
+    transition: 0.5s;
+    /* margin-top: 10px; */
+}
+.submit-assignment-form__add-file-btn:hover {
+    color: white;
+    background-color: #53acff;
+}
+.submit-assignment-form__add-file-btn:hover .add-file-icon::before {
+    color: white;
+}
+.add-file-icon::before {
+    color: #0077e7;
 }

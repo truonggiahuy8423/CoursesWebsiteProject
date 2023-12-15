@@ -4,9 +4,11 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Controllers\LoginController;
+use App\Models\BaiNopModel;
 use App\Models\BaiTapModel;
 use App\Models\BuoiHocModel;
 use App\Models\CaModel;
+use App\Models\chi_tiet_bai_nopModel;
 use App\Models\ClassModel;
 use App\Models\diem_danhModel;
 use Config\Paths;
@@ -67,6 +69,21 @@ class CoursesController extends BaseController
         // return $this->response->setJSON($course);
         return $this->response->setJSON($course->updateLop($course));
     }
+    public function updateAssignment()
+    {
+        $assignmentData = json_decode(json_encode($this->request->getJSON()), true);
+        // echo $assignmentData["id_bai_tap"];
+        // return $this->response->setJSON(["state" => false, "message" => "ok".$assignmentData["id_bai_tap"]]);
+        $asm = new BaiTapModel();
+        $asm->id_bai_tap = $assignmentData['id_bai_tap'];
+        $asm->thoi_han_nop = $assignmentData['thn'];
+        $asm->thoi_han = $assignmentData['th'];
+        $asm->ten = $assignmentData['ten'];
+        $asm->noi_dung = $assignmentData['noi_dung'];
+
+        // return $this->response->setJSON($course);
+        return $this->response->setJSON($asm->updateBaiTap($asm));
+    }
     public function deleteLecturerFromCourse()
     {
         $id_lop_hoc = $this->request->getVar('id_lop_hoc');
@@ -110,6 +127,28 @@ class CoursesController extends BaseController
             "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
             FROM lop_hoc 
             INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc where lop_hoc.id_lop_hoc in (select phan_cong_giang_vien.id_lop_hoc from phan_cong_giang_vien where phan_cong_giang_vien.id_giang_vien = $id_giang_vien)"
+        );
+        for ($i = 0; $i < count($courses); $i++) {
+            $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};"
+            );
+        }
+        usort($courses, [$this, 'compareCoursesByBeginDate']);
+        return $this->response->setJSON($courses);
+    }
+    public function getListOfCoursesForStudent()
+    {
+
+
+        $id_hoc_vien = session()->get('id_role');
+
+        $model = new LopModel();
+        $courses = $model->executeCustomQuery(
+            "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+                FROM lop_hoc 
+                INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc where lop_hoc.id_lop_hoc in (select hoc_vien_tham_gia.id_lop_hoc from hoc_vien_tham_gia where hoc_vien_tham_gia.id_hoc_vien = $id_hoc_vien)"
         );
         for ($i = 0; $i < count($courses); $i++) {
             $courses[$i]['lecturers'] = $model->executeCustomQuery(
@@ -167,6 +206,111 @@ class CoursesController extends BaseController
         $model->executeCustomDDL(
             "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}'"
         );
+    }
+    
+    public function getFile2()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_lop_hoc = $this->request->getVar('id_lop_hoc');
+        $id_user = session()->get('id_user');
+        $id_file = $this->request->getVar('id_file');
+        $assignmentid = $this->request->getVar('id_bai_tap');
+
+        // $result = ["state" => false, "message" => $id_lop_hoc."/".$id_file."/".$assignmentid];
+        // return $this->response->setJSON($result);
+        if (!is_numeric($id_lop_hoc) || !is_numeric($id_file)) {
+            // $result = ["state" => false, "message" => "Here"];
+            // return $this->response->setJSON($result);
+            $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+            return $this->response->setJSON($result);
+        }
+        // Check xem id có quyền hạn trong lớp hay không
+        $userModel = new UserModel();
+        $user = $userModel->getUserById($id_user);
+        $isHasPermission = false;
+        if ($user->id_ad != null) {
+            $isHasPermission = true;
+        } else if ($user->id_giang_vien != null) {
+            $pcgv = new GiangVienModel();
+            $lecturers = $pcgv->executeCustomQuery(
+                "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten, giang_vien.email
+                    FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+            );
+            foreach ($lecturers as $lec) {
+                if ($lec["id_giang_vien"] == $user->id_giang_vien) {
+                    $isHasPermission = true;
+                    break;
+                }
+            }
+        } else if ($user->id_hoc_vien != null) {
+
+        }
+
+        if ($isHasPermission) {
+            $accessFile = false;
+            $model = new LopModel();
+            $rs = $model->executeCustomQuery(
+                "SELECT * FROM bai_tap INNER JOIN muc on bai_tap.id_muc = muc.id_muc WHERE bai_tap.id_bai_tap = $assignmentid and muc.id_lop_hoc = $id_lop_hoc;"
+                // "SELECT vi_tri_tep_tin.id_tep_tin_tai_len FROM lop_hoc INNER JOIN muc on lop_hoc.id_lop_hoc = muc.id_lop_hoc INNER JOIN vi_tri_tep_tin on muc.id_muc = vi_tri_tep_tin.id_muc WHERE lop_hoc.id_lop_hoc = $id_lop_hoc;"
+            );
+            if (count($rs) == 0) {
+                $result = ["state" => false, "message" => "Here"];
+                return $this->response->setJSON($result);
+                $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+                return $this->response->setJSON($result);
+            }
+            $model = new chi_tiet_bai_nopModel();
+            $dstt = $model->executeCustomQuery(
+                "SELECT DISTINCT chi_tiet_bai_nop.id_tep_tin_tai_len FROM bai_tap INNER JOIN bai_nop on bai_tap.id_bai_tap = bai_nop.id_bai_tap INNER JOIN chi_tiet_bai_nop on bai_nop.id_bai_nop = chi_tiet_bai_nop.id_bai_nop WHERE bai_tap.id_bai_tap = $assignmentid"
+            );
+            foreach ($dstt as $tt) {
+                if ($tt["id_tep_tin_tai_len"] == $id_file) {
+                    $accessFile = true;
+                    break;
+                }
+            }
+            
+
+            if ($accessFile) {
+                $model = new FileUploadModel();
+                $file = $model->getFileUploadById($id_file);
+                if ($file == null) {
+                    $result = ["state" => false, "message" => "Tài nguyên không tồn tại!"];
+                    return $this->response->setJSON($result);
+                } else {
+                    $FilePath = $this->path . "/{$file->du_lieu}.{$file->extension}";
+                    // $result = ["state" => false, "message" => "Here"];
+                    // return $this->response->setJSON($result);
+                    if (file_exists($FilePath)) {
+                        // $result = ["state" => false, "message" => "exist!"];
+                        // $result = ["state" => false, "message" => "Here"];
+
+                        // return $this->response->setJSON($result);
+                        // Đặt tên file khi tải về
+
+                        $result = ["state" => true, "data" => base64_encode(file_get_contents($FilePath)), "nameFile" => $file->ten_tep, "extension" => $file->extension]; // Lỗi ở đây, file_get_contents
+                        return $this->response->setJSON($result);
+                    } else {
+                        $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+                        return $this->response->setJSON($result);
+                        // $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+                    }
+                }
+            } else {
+                
+                $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+                return $this->response->setJSON($result);
+            }
+        } else {
+            
+            $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+            return $this->response->setJSON($result);
+        }
+        // Check xem file cần get có được đăng vào lớp hay không
+
     }
     public function getFile()
     {
@@ -257,6 +401,143 @@ class CoursesController extends BaseController
 
     }
 
+    
+    // public function getFile2()
+    // {
+    //     if (!session()->has('id_user')) {
+    //         return redirect()->to('/');
+    //     }
+    //     $id_lop_hoc = $this->request->getVar('id_lop_hoc');
+    //     $id_user = session()->get('id_user');
+    //     $id_file = $this->request->getVar('id_file');
+    //     $assignmentid = $this->request->getVar('id_bai_tap');
+
+    //     // $result = ["state" => false, "message" => $id_lop_hoc."/".$id_file."/".$assignmentid];
+    //     // return $this->response->setJSON($result);
+    //     if (!is_numeric($id_lop_hoc) || !is_numeric($id_file)) {
+    //         // $result = ["state" => false, "message" => "Here"];
+    //         // return $this->response->setJSON($result);
+    //         $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+    //         return $this->response->setJSON($result);
+    //     }
+    //     // Check xem id có quyền hạn trong lớp hay không
+    //     $userModel = new UserModel();
+    //     $user = $userModel->getUserById($id_user);
+    //     $isHasPermission = false;
+    //     if ($user->id_ad != null) {
+    //         $isHasPermission = true;
+    //     } else if ($user->id_giang_vien != null) {
+    //         $pcgv = new GiangVienModel();
+    //         $lecturers = $pcgv->executeCustomQuery(
+    //             "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten, giang_vien.email
+    //                 FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+    //                 WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+    //         );
+    //         foreach ($lecturers as $lec) {
+    //             if ($lec["id_giang_vien"] == $user->id_giang_vien) {
+    //                 $isHasPermission = true;
+    //                 break;
+    //             }
+    //         }
+    //     } else if ($user->id_hoc_vien != null) {
+
+    //     }
+
+    //     if ($isHasPermission) {
+    //         $accessFile = false;
+    //         $model = new LopModel();
+    //         $rs = $model->executeCustomQuery(
+    //             "SELECT * FROM bai_tap INNER JOIN muc on bai_tap.id_muc = muc.id_muc WHERE bai_tap.id_bai_tap = $assignmentid and muc.id_lop_hoc = $id_lop_hoc;"
+    //             // "SELECT vi_tri_tep_tin.id_tep_tin_tai_len FROM lop_hoc INNER JOIN muc on lop_hoc.id_lop_hoc = muc.id_lop_hoc INNER JOIN vi_tri_tep_tin on muc.id_muc = vi_tri_tep_tin.id_muc WHERE lop_hoc.id_lop_hoc = $id_lop_hoc;"
+    //         );
+    //         if (count($rs) == 0) {
+    //             $result = ["state" => false, "message" => "Here"];
+    //             return $this->response->setJSON($result);
+    //             $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+    //             return $this->response->setJSON($result);
+    //         }
+    //         $model = new chi_tiet_bai_nopModel();
+    //         $dstt = $model->executeCustomQuery(
+    //             "SELECT DISTINCT chi_tiet_bai_nop.id_tep_tin_tai_len FROM bai_tap INNER JOIN bai_nop on bai_tap.id_bai_tap = bai_nop.id_bai_tap INNER JOIN chi_tiet_bai_nop on bai_nop.id_bai_nop = chi_tiet_bai_nop.id_bai_nop WHERE bai_tap.id_bai_tap = $assignmentid"
+    //         );
+    //         foreach ($dstt as $tt) {
+    //             if ($tt["id_tep_tin_tai_len"] == $id_file) {
+    //                 $accessFile = true;
+    //                 break;
+    //             }
+    //         }
+            
+
+    //         if ($accessFile) {
+    //             $model = new FileUploadModel();
+    //             $file = $model->getFileUploadById($id_file);
+    //             if ($file == null) {
+    //                 $result = ["state" => false, "message" => "Tài nguyên không tồn tại!"];
+    //                 return $this->response->setJSON($result);
+    //             } else {
+    //                 $FilePath = $this->path . "/{$file->du_lieu}.{$file->extension}";
+    //                 // $result = ["state" => false, "message" => "Here"];
+    //                 // return $this->response->setJSON($result);
+    //                 if (file_exists($FilePath)) {
+    //                     // $result = ["state" => false, "message" => "exist!"];
+    //                     // $result = ["state" => false, "message" => "Here"];
+
+    //                     // return $this->response->setJSON($result);
+    //                     // Đặt tên file khi tải về
+
+    //                     $result = ["state" => true, "data" => base64_encode(file_get_contents($FilePath)), "nameFile" => $file->ten_tep, "extension" => $file->extension]; // Lỗi ở đây, file_get_contents
+    //                     return $this->response->setJSON($result);
+    //                 } else {
+    //                     $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+    //                     return $this->response->setJSON($result);
+    //                     // $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+    //                 }
+    //             }
+    //         } else {
+                
+    //             $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+    //             return $this->response->setJSON($result);
+    //         }
+    //     } else {
+            
+    //         $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+    //         return $this->response->setJSON($result);
+    //     }
+    //     // Check xem file cần get có được đăng vào lớp hay không
+
+    // }
+    public function getFile3()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // $id_lop_hoc = $this->request->getVar('id_lop_hoc');
+        $id_user = session()->get('id_user');
+        $id_file = $this->request->getVar('id_file');
+        // $model = new FileUploadModel();
+        if (!is_numeric($id_file)) {
+            $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+            return $this->response->setJSON($result);
+        }
+
+        $model = new FileUploadModel();
+        $file = $model->getFileUploadById($id_file);
+        if ($file == null || $file->id_user != $id_user) {
+            $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+            return $this->response->setJSON($result);
+        } else {
+            $FilePath = $this->path . "/{$file->du_lieu}.{$file->extension}";
+            if (file_exists($FilePath)) {
+                $result = ["state" => true, "data" => base64_encode(file_get_contents($FilePath)), "nameFile" => $file->ten_tep, "extension" => $file->extension]; // Lỗi ở đây, file_get_contents
+                return $this->response->setJSON($result);
+            } else {
+                $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+                return $this->response->setJSON($result);
+                // $result = ["state" => false, "message" => "Tài nguyên không tồn tại hoặc bạn không có quyền hạn trên tài nguyên này!"];
+            }
+        }
+    }
+ 
     public function index()
     {
         // Verify login status
@@ -328,12 +609,280 @@ class CoursesController extends BaseController
             $main_layout_data['mainsection'] = view('Teacher\ViewLayout\CoursesListSectionLayout', $courses_list_section_layout_data);
             return view('Teacher\ViewLayout\MainLayout', $main_layout_data);
         } else if (session()->get('role') == 3) { // Hoc vien
-
+            $result = $model->executeCustomQuery(
+                'SELECT hoc_vien.ho_ten, hoc_vien.id_hoc_vien, users.anh_dai_dien
+                FROM users
+                INNER JOIN hoc_vien ON users.id_hoc_vien = hoc_vien.id_hoc_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Học viên';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+            // courses
+            $courses = $model->executeCustomQuery(
+                "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
+                FROM lop_hoc 
+                INNER JOIN mon_hoc on lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc where lop_hoc.id_lop_hoc in (select hoc_vien_tham_gia.id_lop_hoc from hoc_vien_tham_gia where hoc_vien_tham_gia.id_hoc_vien = {$result[0]['id_hoc_vien']})"
+            );
+            for ($i = 0; $i < count($courses); $i++) {
+                $courses[$i]['lecturers'] = $model->executeCustomQuery(
+                    "SELECT giang_vien.id_giang_vien, giang_vien.ho_ten
+                    FROM phan_cong_giang_vien INNER JOIN giang_vien ON phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE phan_cong_giang_vien.id_lop_hoc = {$courses[$i]['id_lop_hoc']};"
+                );
+            }
+            usort($courses, [$this, 'compareCoursesByBeginDate']);
+            $courses_list_section_layout_data['courses'] = $courses;
+            $main_layout_data['mainsection'] = view('Student\ViewLayout\CoursesListSectionLayout', $courses_list_section_layout_data);
+            return view('Student\ViewLayout\MainLayout', $main_layout_data);
         }
 
 
         // return view('ClassPage');
     }
+    public function getAssignmentInformation() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // assignmentid: assignmentid * 1
+        $assignmentid = null;
+        if (isset($_GET)) {
+            $assignmentid = $_GET['assignmentid'];
+        } else {
+            return redirect()->to('/courses');
+        }
+        if (!is_numeric($assignmentid)) {
+            return redirect()->to('/courses');
+        }
+        $assignmentModel = new BaiTapModel();
+        $assignment = $assignmentModel->executeCustomQuery(
+            "SELECT id_bai_tap, thoi_han_nop, ten, noi_dung, thoi_han, id_giang_vien, id_muc, ngay_dang FROM bai_tap WHERE bai_tap.id_bai_tap = $assignmentid"
+        );
+        if (count($assignment) == 0) {
+            $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+            return $this->response->setJSON($result);
+        }
+        $muc = (new MucModel())->getMucById($assignment[0]["id_muc"]);
+        $model = new BaiNopModel();
+        $assignment[0]["submits"] = $model->executeCustomQuery(
+            "SELECT bai_nop.id_bai_nop, 
+                bai_nop.thoi_gian_nop,
+                bai_nop.id_bai_tap, hoc_vien.id_hoc_vien, hoc_vien.ho_ten FROM hoc_vien inner join hoc_vien_tham_gia on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+                LEFT JOIN bai_nop ON bai_nop.id_hoc_vien = hoc_vien.id_hoc_vien and bai_nop.id_bai_tap = $assignmentid WHERE hoc_vien_tham_gia.id_lop_hoc = $muc->id_lop_hoc;"
+        );
+
+        $model = new chi_tiet_bai_nopModel();
+        for ($i = 0; $i < count($assignment[0]["submits"]); $i++) {
+            if ($assignment[0]['submits'][$i]['id_bai_nop'] != null) {
+                $assignment[0]["submits"][$i]["files"] = $model->executeCustomQuery(
+                    "SELECT tep_tin_tai_len.* FROM chi_tiet_bai_nop INNER JOIN tep_tin_tai_len on chi_tiet_bai_nop.id_tep_tin_tai_len = tep_tin_tai_len.id_tep_tin_tai_len WHERE chi_tiet_bai_nop.id_bai_nop = {$assignment[0]['submits'][$i]['id_bai_nop']}
+                        "
+                );
+            } else {
+                $assignment[0]["submits"][$i]["files"] = [];
+            }
+        }
+        return $this->response->setJSON($assignment[0]);        
+
+    }
+    
+    public function getAssignmentInformationForStudent() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $id_hoc_vien = session()->get("id_role");
+        
+        // assignmentid: assignmentid * 1
+        $assignmentid = null;
+        if (isset($_GET)) {
+            $assignmentid = $_GET['assignmentid'];
+        } else {
+            return redirect()->to('/courses');
+        }
+        if (!is_numeric($assignmentid)) {
+            return redirect()->to('/courses');
+        }
+        $assignmentModel = new BaiTapModel();
+        $assignment = $assignmentModel->executeCustomQuery(
+            "SELECT id_bai_tap, thoi_han_nop, ten, noi_dung, thoi_han, id_giang_vien, id_muc, ngay_dang FROM bai_tap WHERE bai_tap.id_bai_tap = $assignmentid"
+        );
+        if (count($assignment) == 0) {
+            $result = ["state" => false, "message" => "Đã có lỗi xảy ra!"];
+            return $this->response->setJSON($result);
+        }
+        $model = new BaiNopModel();
+        $assignment[0]["student_submit"] = ($model->executeCustomQuery(
+            "SELECT * FROM bai_nop WHERE bai_nop.id_hoc_vien = $id_hoc_vien and  bai_nop.id_bai_tap = $assignmentid;
+        "));
+        if (count($assignment[0]["student_submit"]) > 0) {
+            $assignment[0]["student_submit"] = $assignment[0]["student_submit"][0];
+            // tep
+            $model = new chi_tiet_bai_nopModel();
+            $id_bai_nop = $assignment[0]['student_submit']['id_bai_nop'];
+            $assignment[0]["student_submit"]["files"] = $model->executeCustomQuery(
+                "SELECT tep_tin_tai_len.* FROM chi_tiet_bai_nop inner join tep_tin_tai_len on chi_tiet_bai_nop.id_tep_tin_tai_len = tep_tin_tai_len.id_tep_tin_tai_len where chi_tiet_bai_nop.id_bai_nop = $id_bai_nop
+            ");
+        } else {
+            $assignment[0]["student_submit"] = null;
+        }
+
+
+        return $this->response->setJSON($assignment[0]);        
+
+    }
+    public function assignment()
+    {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+
+        $assignmentid = null;
+        if (isset($_GET)) {
+            $assignmentid = $_GET['assignmentid'];
+        } else {
+            return redirect()->to('/courses');
+        }
+        if (!is_numeric($assignmentid)) {
+            return redirect()->to('/courses');
+        }
+        $assignmentModel = new BaiTapModel();
+        $assignment = $assignmentModel->executeCustomQuery(
+            "SELECT id_bai_tap, thoi_han_nop, ten, noi_dung, thoi_han, id_giang_vien, id_muc, ngay_dang FROM bai_tap WHERE bai_tap.id_bai_tap = $assignmentid"
+        );
+
+
+        if (count($assignment) == 0) {
+            return view("CommonViewCell\ExceptionPage", ["message" => "Tài nguyên không tồn tại"]);
+        }
+
+
+        // Query data 
+        $model = new UserModel();
+        $navbar_data = array();
+        $main_layout_data = array();
+        $assignment_section_layout_data = array();
+
+        $muc = (new MucModel())->getMucById($assignment[0]["id_muc"]);
+
+
+        
+
+        if (session()->get('role') == 1) { // Admin
+
+        } else if (session()->get('role') == 2) { // Giang vien
+            $id_giang_vien = session()->get('id_role');
+            $model = new phan_cong_giang_vienModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM phan_cong_giang_vien WHERE phan_cong_giang_vien.id_giang_vien = {$id_giang_vien} AND phan_cong_giang_vien.id_lop_hoc = {$muc->id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ExceptionPage", ["message" => "Tài nguyên không tồn tại hoặc bạn không có quyền truy cập tài nguyên lớp học này"]);
+            }
+
+
+            $course = $model->executeCustomQuery(
+                " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
+                FROM lop_hoc 
+                INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
+                LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
+                WHERE lop_hoc.id_lop_hoc = {$muc->id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
+            );    
+
+            $result = $model->executeCustomQuery(
+                'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
+                FROM users
+                INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Giảng viên';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+    
+            $model = new LopModel();
+            // $result = $model->executeCustomQuery('');
+            $left_menu_data = array();
+            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+    
+
+            // query information about assignment
+            // Here 
+            
+
+
+            $assignment_section_layout_data["assignment"] = $assignment[0];
+            $assignment_section_layout_data["id_lop_hoc"] = $muc->id_lop_hoc;
+            /////////////////////////////////////
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+            $main_layout_data['contentsection'] = view('Teacher\ViewLayout\AssignmentSection', $assignment_section_layout_data);
+            return view('Teacher\ViewLayout\CourseDetailLayout', $main_layout_data);
+        } else if (session()->get('role') == 3) { // Hoc vien
+            $id_hoc_vien = session()->get('id_role');
+            $model = new phan_cong_giang_vienModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM hoc_vien_tham_gia WHERE hoc_vien_tham_gia.id_hoc_vien = {$id_hoc_vien} AND hoc_vien_tham_gia.id_lop_hoc = {$muc->id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ExceptionPage", ["message" => "Tài nguyên không tồn tại hoặc bạn không có quyền truy cập tài nguyên lớp học này"]);
+            }
+            
+
+            $course = $model->executeCustomQuery(
+                " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
+                FROM lop_hoc 
+                INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
+                LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
+                WHERE lop_hoc.id_lop_hoc = {$muc->id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
+            );    
+
+            $result = $model->executeCustomQuery(
+                'SELECT hoc_vien.ho_ten, hoc_vien.id_hoc_vien, users.anh_dai_dien
+                FROM users
+                INNER JOIN hoc_vien ON users.id_hoc_vien = hoc_vien.id_hoc_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Học viên';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+    
+            $model = new LopModel();
+            // $result = $model->executeCustomQuery('');
+            $left_menu_data = array();
+            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+    
+
+            // query information about assignment
+            // Here 
+            
+
+
+            $assignment_section_layout_data["assignment"] = $assignment[0];
+            $assignment_section_layout_data["id_lop_hoc"] = $muc->id_lop_hoc;
+            /////////////////////////////////////
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+            $main_layout_data['contentsection'] = view('Student\ViewLayout\AssignmentSection', $assignment_section_layout_data);
+            return view('Student\ViewLayout\CourseDetailLayout', $main_layout_data);
+        }
+    }
+
+    
+
     public function information()
     {
         if (!session()->has('id_user')) {
@@ -360,7 +909,7 @@ class CoursesController extends BaseController
         );
         $isExist = count($course) > 0 ? true : false;
         if (!$isExist) {
-            return view("CommonViewCell\ClassNotFound");
+            return view("CommonViewCell\ExceptionPage", ["message" => "Bạn không có quyền hạn ở lớp học này"]);
         }
         if (session()->get('role') == 1) { // Admin
             $result = $model->executeCustomQuery(
@@ -431,7 +980,7 @@ class CoursesController extends BaseController
                 "SELECT * FROM phan_cong_giang_vien WHERE phan_cong_giang_vien.id_giang_vien = {$id_giang_vien} AND phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc}"
             );
             if (count($result) == 0) {
-                return view("CommonViewCell\ClassNotFound");
+                return view("CommonViewCell\ExceptionPage", ["message" => "Bạn không có quyền truy cập lớp học này"]);
             } else {
                 $result = $model->executeCustomQuery(
                     'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
@@ -499,6 +1048,76 @@ class CoursesController extends BaseController
         } else if (session()->get('role') == 3) { // Hoc vien
             // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
             // Not yet
+            $id_hoc_vien = session()->get('id_role');
+            $model = new UserModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM hoc_vien_tham_gia WHERE hoc_vien_tham_gia.id_hoc_vien = {$id_hoc_vien} AND hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ExceptionPage", ["message" => "Bạn không có quyền truy cập lớp học này"]);
+            } else {
+                $result = $model->executeCustomQuery(
+                    'SELECT hoc_vien.ho_ten, hoc_vien.id_hoc_vien, users.anh_dai_dien
+                    FROM users
+                    INNER JOIN hoc_vien ON users.id_hoc_vien = hoc_vien.id_hoc_vien
+                    WHERE users.id_user = ' . session()->get("id_user")
+                );
+                $navbar_data['username'] = "{$result[0]['ho_ten']}";
+                $navbar_data['role'] = 'Học viên';
+                $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+        
+
+                $model = new LopModel();
+                // $result = $model->executeCustomQuery('');
+                $left_menu_data = array();
+                $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+                $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+                $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+                $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+                $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+                $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+
+
+                $course[0]["so_luong_giang_vien"] = $model->executeCustomQuery(
+                    "SELECT COUNT(phan_cong_giang_vien.id_giang_vien) as slgv FROM lop_hoc LEFT JOIN phan_cong_giang_vien ON lop_hoc.id_lop_hoc = phan_cong_giang_vien.id_lop_hoc
+                WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slgv"];
+                $course[0]["so_luong_buoi_hoc"] = $model->executeCustomQuery(
+                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as slbh FROM lop_hoc LEFT JOIN buoi_hoc ON lop_hoc.id_lop_hoc = buoi_hoc.id_lop_hoc
+                WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+                GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slbh"];
+                $course[0]["so_luong_buoi_hoc_da_hoc"] = $model->executeCustomQuery(
+                    "SELECT COUNT(buoi_hoc.id_buoi_hoc) as slbh FROM lop_hoc LEFT JOIN buoi_hoc ON lop_hoc.id_lop_hoc = buoi_hoc.id_lop_hoc and buoi_hoc.trang_thai = 2
+                    WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc} 
+                    GROUP BY lop_hoc.id_lop_hoc"
+                )[0]["slbh"];
+                // $course[0]["danh_sach_giang_vien"] = $model->executeCustomQuery(
+                //     "SELECT giang_vien.* FROM phan_cong_giang_vien INNER JOIN giang_vien on phan_cong_giang_vien.id_giang_vien = giang_vien.id_giang_vien
+                // WHERE phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc};"
+                // );
+                // $course[0]["danh_sach_hoc_vien"] = $model->executeCustomQuery(
+                //     "SELECT hoc_vien.*, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh_hv FROM hoc_vien_tham_gia INNER JOIN hoc_vien on hoc_vien.id_hoc_vien = hoc_vien_tham_gia.id_hoc_vien
+                // WHERE hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc};"
+                // );
+                // for ($i = 0; $i < count($course[0]["danh_sach_hoc_vien"]); $i++) {
+                //     $sbv = $model->executeCustomQuery(
+                //         "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc WHERE buoi_hoc.id_lop_hoc = {$course[0]["id_lop_hoc"]} AND diem_danh.id_hoc_vien = {$course[0]["danh_sach_hoc_vien"][$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+                //     )[0]["so_buoi_vang"];
+                //     $course[0]["danh_sach_hoc_vien"][$i]["so_buoi_vang"] = $sbv;
+                // }
+                // $course[0]["danh_sach_buoi_hoc"] = $model->executeCustomQuery(
+                //     "SELECT buoi_hoc.id_buoi_hoc, DATE_FORMAT(buoi_hoc.ngay, '%d/%m/%Y') as ngay_hoc, DAYOFWEEK(buoi_hoc.ngay) as thu, buoi_hoc.trang_thai, buoi_hoc.id_phong, ca.thoi_gian_bat_dau, ca.thoi_gian_ket_thuc 
+                //     FROM buoi_hoc INNER JOIN ca ON buoi_hoc.id_ca = ca.id_ca WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc}
+                //     ORDER BY buoi_hoc.ngay ASC, buoi_hoc.id_phong ASC, buoi_hoc.id_ca ASC;"
+                // );
+                $main_layout_data['class_name'] = $left_menu_data["class_name"];
+                $main_layout_data['contentsection'] = view('Teacher\ViewLayout\CourseInformationSectionLayout', $course[0]);
+                return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+            }
         }
     }
     function uploadFile() {
@@ -614,7 +1233,7 @@ class CoursesController extends BaseController
         );
         $isExist = count($course) > 0 ? true : false;
         if (!$isExist) {
-            return view("CommonViewCell\ClassNotFound");
+            return view("CommonViewCell\ExceptionPage", ["message" => "Bạn không có quyền hạn ở lớp học này"]);
         }
         // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
         // Not yet
@@ -699,6 +1318,42 @@ class CoursesController extends BaseController
         } else if (session()->get('role') == 3) { // Hoc vien
             // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
             // Not yet
+            $main_layout_data = array();
+            
+            $result = $model->executeCustomQuery(
+                'SELECT hoc_vien.ho_ten, hoc_vien.id_hoc_vien, users.anh_dai_dien
+                FROM users
+                INNER JOIN hoc_vien ON users.id_hoc_vien = hoc_vien.id_hoc_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Học viên';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+    
+
+
+            $model = new LopModel();
+            // $result = $model->executeCustomQuery('');
+            $left_menu_data = array();
+            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+
+
+            // Mục
+            // 
+            // $mucModel = new MucModel();
+            $resourceSectionData = array();
+            $resourceSectionData['id_lop_hoc'] = $id_lop_hoc;
+            // $resourceSectionData['folders'] = $mucModel->getMucByIdLopHoc($id_lop_hoc);
+            $main_layout_data['contentsection'] = view('Student\ViewLayout\CourseResourceSectionLayout', $resourceSectionData);
+            return view('Student\ViewLayout\CourseDetailLayout', $main_layout_data);
         }
         // return view('Admin/ViewLayout/CourseResourceSectionLayout');
     }
@@ -728,10 +1383,7 @@ class CoursesController extends BaseController
             return $this->response->setJSON(["state" => true, "file" => $rs]);
         }
     }
-    public function assignment()
-    {
-        return view("Admin/ViewLayout/AssignmentSection", ["id_assignment" => $_GET["assignmentid"]]);
-    }
+    
     public function getResources()
     {
         if (!session()->has('id_user')) {
@@ -856,7 +1508,79 @@ class CoursesController extends BaseController
         $data['lecturers'] = $lecturersModel->getAllGiangViens();
         return view('Admin\ViewCell\InsertLecturerIntoClassForm', $data);
     }
+    public function submitAssignment() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $submission = json_decode(json_encode($this->request->getJSON()), true);
 
+        // $submission = [
+        //     "id_bai_tap" => "3",
+        //     "list_of_files_id" => [1, 2,34, 4, 53, 34]
+        // ];
+        $id_bai_tap = $submission["id_bai_tap"];
+        $dstep = $submission["list_of_files_id"];
+        
+        
+        $bai_nop = new BaiNopModel();
+        $bai_nop->id_bai_tap = $id_bai_tap;
+        $bai_nop->id_hoc_vien = session()->get("id_role");
+        $bai_nop->thoi_gian_nop = $this->getCurrentDateTimeInVietnam();
+        $rs = $bai_nop->insertBaiNop($bai_nop);
+        $id_bai_nop = $rs["id_bai_nop"];
+        // return $this->response->setJSON(["state" => true, "message" => $rs['id_bai_nop']]);
+        if ($rs["state"]) {
+            $dstt = $this->filterAndFormatArray($dstep);
+            $id_user = session()->get("id_user");
+            $dstt = (new chi_tiet_bai_nopModel())->executeCustomQuery(
+                "SELECT id_tep_tin_tai_len FROM tep_tin_tai_len WHERE id_user = $id_user $dstt;
+            ");
+
+            foreach($dstt as $tt) {
+                        // return $this->response->setJSON(["state" => true, "message" => true]);
+                $ctbn = new chi_tiet_bai_nopModel();
+                $ctbn->id_bai_nop = $id_bai_nop;
+                $ctbn->id_tep_tin_tai_len = $tt["id_tep_tin_tai_len"];
+                $ctbn->insertchi_tiet_bai_nop($ctbn);
+                // return $this->response->setJSON($rs);
+            }
+
+        } 
+        return $this->response->setJSON($rs);
+    }
+    function deleteSubmission() {
+        $id_bai_tap = $this->request->getVar("assignmentid");
+        $id_hoc_vien = session()->get("id_role");
+        $model = new BaiNopModel();
+        $rs = $model->executeCustomQuery(
+            "SELECT * FROM bai_nop WHERE id_bai_tap = $id_bai_tap and id_hoc_vien = $id_hoc_vien"
+        );
+        if (count($rs) > 0) {
+            return $this->response->setJSON($model->deleteBaiNop($rs[0]["id_bai_nop"]));
+        }
+       return $this->response->setJSON(['state' => false, 'message' => "Đã có lỗi xảy ra"]);
+    }
+    function filterAndFormatArray($arr) {
+        // Lọc các phần tử không phải số
+        $filteredArray = array_filter($arr, 'is_numeric');
+    
+        // Nếu mảng sau khi lọc không có phần tử nào, trả về chuỗi rỗng
+        if (empty($filteredArray)) {
+            return '';
+        }
+    
+        // Format chuỗi theo dạng "IN (phần tử 1, phần tử 2,...)"
+        $formattedString = 'and id_tep_tin_tai_len IN (' . implode(', ', $filteredArray) . ')';
+    
+        return $formattedString;
+    }
+    public function getSubmissionForm() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        return view('Student\ViewCell\SubmitSubmissionForm');
+
+    }
     public function getInsertStudentForm()
     {
         if (!session()->has('id_user')) {
@@ -1241,6 +1965,51 @@ class CoursesController extends BaseController
             return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
         }
     }
+
+    function postAssignmentOnClass() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // id_lop_hoc: id_lop_hoc,
+        // id_muc: id_muc,
+        // ten_bai_tap: ten_bai_tap,
+        // noi_dung: noi_dung,
+        // thoi_han: replaceLettersWithSpace(th),
+        // thoi_han_nop: replaceLettersWithSpace(thn)
+        $id_lop_hoc = $this->request->getVar("id_lop_hoc");
+        $noi_dung = $this->request->getVar("noi_dung");
+        $ten_bai_tap = $this->request->getVar("ten_bai_tap");
+        $id_muc = $this->request->getVar("id_muc");
+        $th = $this->request->getVar("thoi_han");
+        $thn = $this->request->getVar("thoi_han_nop");
+
+        $model = new UserModel();
+        $model->getUserById(session()->get("id_user"));
+        if ($model == null || $model->id_giang_vien == null) {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra"]);
+        }
+        $muc = new MucModel();
+        $rs = $muc->getMucById($id_muc);
+        // return $this->response->setJSON(["state" => true, "message" => $id_lop_hoc ]);
+        // if ($rs-)
+        if ($rs != null && $rs->id_lop_hoc == $id_lop_hoc) {
+            $bt = new BaiTapModel();
+            $bt->id_muc = $id_muc;
+            $bt->ten = $ten_bai_tap;
+            $bt->noi_dung = $noi_dung;
+            $bt->thoi_han = $th;
+            $bt->thoi_han_nop = $thn;
+            $bt->ngay_dang = $this->getCurrentDateTimeInVietnam();
+            $bt->id_giang_vien = $model->id_giang_vien;
+
+            // var_dump("ok");
+            $rs2 = $bt->insertBaiTap($bt);
+            return $this->response->setJSON($rs2);
+            
+        }  else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+        }
+    }
     function postFileOnClass() {
         if (!session()->has('id_user')) {
             return redirect()->to('/');
@@ -1320,7 +2089,10 @@ class CoursesController extends BaseController
                     return $this->response->setJSON($model->deleteLink($model));
                     break;
                 case "asssignment";
-                    return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra" ]);
+                    $model = new BaiTapModel();
+                    $model->id_bai_tap = $id;
+                    $model->id_muc = $id_muc;
+                    return $this->response->setJSON($model->deleteBaiTap($model));
                     break;
 
             }

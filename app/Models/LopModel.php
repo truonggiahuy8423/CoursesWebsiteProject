@@ -213,12 +213,13 @@ Class LopModel
 
         $sql = "UPDATE lop_hoc SET ngay_bat_dau = '$ngay_bat_dau', ngay_ket_thuc = '$ngay_ket_thuc', id_mon_hoc = '$id_mon_hoc' WHERE id_lop_hoc = $id_lop_hoc";
 
-        if ($this->conn->query($sql) === TRUE) {
+        try {
+            $this->conn->query($sql);
             $this->conn->close();
-            return ['state' => true, 'message' => 'Update thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Cập nhật thành công'];
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 }

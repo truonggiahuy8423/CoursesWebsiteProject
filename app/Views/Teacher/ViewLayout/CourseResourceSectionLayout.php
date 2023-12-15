@@ -61,6 +61,7 @@
             success: function(response) {
                 if (response.hasOwnProperty('error')) {
                     console.log(response.error);
+                    loadingEffect(false);
                     return;
                 }
                 let folders = response['folders'];

@@ -164,11 +164,19 @@ async function chooseUserFile() {
             resolve(false);
           });
           $(`.get-file-form__save-btn`).click(function() {
-            let file_id = $(`.file-item[ischosen="true"]`).attr('value');
+            let dom = $(`.file-item[ischosen="true"]`);
+            let file_id = dom.attr('value');
+            let fileName =  removeNewlines(tachChuoiCham(dom.text()).fileName).trim();
+            let extension =  removeNewlines(tachChuoiCham(dom.text()).extension).trim();
+
             // setTimeout(function() {
               $(`.form-container--file`).remove();
             
-            resolve(file_id);
+            resolve({
+              id_tep_tin_tai_len: file_id,
+              ten_tep: fileName,
+              extension: extension
+            });
           });
          })
       },
@@ -177,4 +185,22 @@ async function chooseUserFile() {
       }
     })
   })
+}
+function tachChuoiCham(chuoi) {
+  var index = chuoi.indexOf('.');
+
+  if (index !== -1) {
+      var truocCham = chuoi.substring(0, index);
+      var sauCham = chuoi.substring(index + 1);
+      return { fileName: truocCham, extension: sauCham };
+  } else {
+      return { fileName: chuoi, extension: '' };
+  }
+}
+
+function removeNewlines(inputString) {
+  // Sử dụng biểu thức chính quy để thay thế tất cả các ký tự \n thành chuỗi rỗng
+  var resultString = inputString.replace(/\n/g, '');
+
+  return resultString;
 }

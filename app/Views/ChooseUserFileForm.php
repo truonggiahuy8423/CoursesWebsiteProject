@@ -61,6 +61,10 @@
                     return;
                 } else {
                     var file = fileInput.files[0];
+                    if (file.size / (1024 * 1024) > 50) {
+                        uploadingNoti("Độ lớn file không vượt quá 50MB", false);
+                        return;
+                    }
                     var formData = new FormData();
                     formData.append('file', file);
                     uploadingEffect(true);
