@@ -22,6 +22,7 @@ use App\Models\MucModel;
 use App\Models\phan_cong_giang_vienModel;
 use App\Models\PhongModel;
 use App\Models\ThongBaoModel;
+use App\Models\TinNhanRiengModel;
 use App\Models\UserModel;
 use App\Models\vi_tri_tep_tinModel;
 use CodeIgniter\Files\File;
@@ -281,7 +282,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
+            $navbar_data['chatBox'] = $this->getChatBox();
             $courses = $model->executeCustomQuery(
                 "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
                 FROM lop_hoc 
@@ -309,6 +310,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Giảng viên';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             // courses
             $courses = $model->executeCustomQuery(
@@ -334,6 +336,40 @@ class CoursesController extends BaseController
 
         // return view('ClassPage');
     }
+
+    public function getChatBox(){
+        $tinNhanRiengModel = new TinNhanRiengModel();
+        $chat_box = $tinNhanRiengModel->queryDatabase(
+            'SELECT DISTINCT user_nhan
+            FROM tin_nhan_rieng
+            WHERE user_gui = ' . session()->get("id_user"));
+
+        for($i = 0; $i < count($chat_box); $i++){
+            $user_nhan = strval($chat_box[$i]["user_nhan"]);
+            $chat_box[$i]['lastestTime'] = $tinNhanRiengModel->queryDatabase(
+                'SELECT thoi_gian, anh
+                FROM tin_nhan_rieng
+                WHERE user_gui IN ('.$user_nhan .','.session()->get("id_user").')
+                AND user_nhan IN ('.$user_nhan .','.session()->get("id_user").')
+                ORDER BY thoi_gian DESC
+                LIMIT 1');
+            $chat_box[$i]['hoTen'] = $tinNhanRiengModel->queryDatabase(
+                'SELECT
+                    CASE
+                        WHEN u.id_giang_vien IS NOT NULL THEN gv.ho_ten
+                        WHEN u.id_ad IS NOT NULL THEN ad.ho_ten
+                        WHEN u.id_hoc_vien IS NOT NULL THEN hv.ho_ten
+                    END AS ho_ten
+                FROM
+                    users u
+                LEFT JOIN giang_vien gv ON u.id_giang_vien = gv.id_giang_vien
+                LEFT JOIN ad ON u.id_ad = ad.id_ad
+                LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
+                WHERE u.id_user = ' . $user_nhan);
+        }
+        return $chat_box;
+    }
+
     public function information()
     {
         if (!session()->has('id_user')) {
@@ -372,6 +408,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
 
             $model = new LopModel();
@@ -442,6 +479,7 @@ class CoursesController extends BaseController
                 $navbar_data['username'] = "{$result[0]['ho_ten']}";
                 $navbar_data['role'] = 'Giảng viên';
                 $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
                 $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
 
                 $model = new LopModel();
@@ -546,9 +584,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
-
-
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             $model = new LopModel();
             // $result = $model->executeCustomQuery('');
@@ -590,6 +626,7 @@ class CoursesController extends BaseController
                 $navbar_data['username'] = "{$result[0]['ho_ten']}";
                 $navbar_data['role'] = 'Giảng viên';
                 $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
                 $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
                 $model = new LopModel();
                 // $result = $model->executeCustomQuery('');

@@ -199,18 +199,17 @@ img {
         background-color: #ffffff;
     }
 }
-.message-pop-up {
-    position: absolute;
-    background-color: rgb(11, 41, 0);
-    width: 220px;
-    height: 300px;
-    top: 30px;
-    left: -137px;
-    border-radius: 10px;
-    visibility: hidden;
+
+.message-pop-up, 
+.inbox {
+    position: fixed;
+    background-color: #eff1f3;
+    width: 300px;
+    height: calc(100% - 60px);
+    top: 55px;
+    right: -300px;
     opacity: 0;
     transition: 0.5s;
-
 }
 
 .notification-pop-up {
@@ -258,6 +257,13 @@ img {
 
 .profile-pop-up a:hover {
     background-color: rgb(184, 184, 184);
+}
+
+.inbox__body{
+    background-color: #eff1f3; 
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .left-nav {

@@ -7,7 +7,7 @@
         <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
 
             <input style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm khóa học">
-            <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon" style=""></i></button>
+            <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
             <button class="add-class-btn highlight-button">
                 <i class="fa-solid fa-plus add-class-icon highlight-icon"></i>
             </button>
