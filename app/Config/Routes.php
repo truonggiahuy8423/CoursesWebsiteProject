@@ -17,7 +17,7 @@ $routes->get('/courses', 'Admin\CoursesController::index');
 
 $routes->group('/courses', function ($routes) {
     $routes->add('information', 'Admin\CoursesController::information');
-    $routes->add('attendance', 'Courses::attendance');
+    $routes->add('attendance', 'Admin\CoursesController::attendance');
     $routes->add('chat', 'Courses::chat');
     $routes->add('resource', 'Admin\CoursesController::resource');
 });

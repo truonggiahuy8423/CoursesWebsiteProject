@@ -15,11 +15,67 @@ class BuoiHocModel {
     public $id_lop_hoc;
     public $id_ca;
     public $id_phong;
-
+    public $thu;
+    
+    public $thoi_gian_bat_dau;
+    public $thoi_gian_ket_thuc;
     private $conn;
 
     public function __construct() {
 
+    }
+
+
+    public function getAllBuoiHocByLopHocId($id_lop_hoc) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+    
+        // Sử dụng prepared statement để tránh SQL injection
+        $sql = "SELECT bh.*, ca.thoi_gian_bat_dau, ca.thoi_gian_ket_thuc, DAYOFWEEK(bh.ngay) AS thu 
+                FROM buoi_hoc bh
+                INNER JOIN ca ON bh.id_ca = ca.id_ca
+                WHERE bh.id_lop_hoc = ?";
+        $stmt = $this->conn->prepare($sql);
+    
+        // Kiểm tra lỗi trong quá trình chuẩn bị prepared statement
+        if ($stmt === false) {
+            die("Lỗi trong quá trình chuẩn bị câu truy vấn");
+        }
+    
+        // Bind tham số vào câu truy vấn
+        $stmt->bind_param("i", $id_lop_hoc);
+    
+        // Thực hiện truy vấn
+        $stmt->execute();
+    
+        // Lấy kết quả
+        $result = $stmt->get_result();
+    
+        $buoiHocs = array();
+    
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $buoiHoc = new BuoiHocModel();
+                $buoiHoc->id_buoi_hoc = $row['id_buoi_hoc'];
+                $buoiHoc->trang_thai = $row['trang_thai'];
+                $buoiHoc->ngay = $row['ngay'];
+                $buoiHoc->id_lop_hoc = $row['id_lop_hoc'];
+                $buoiHoc->id_ca = $row['id_ca'];
+                $buoiHoc->id_phong = $row['id_phong'];
+                $buoiHoc->thoi_gian_bat_dau = $row['thoi_gian_bat_dau'];
+                $buoiHoc->thoi_gian_ket_thuc = $row['thoi_gian_ket_thuc'];
+                $buoiHoc->thu = $row['thu'];
+    
+                $buoiHocs[] = $buoiHoc;
+            }
+        }
+    
+        // Đóng kết nối và trả về kết quả
+        $stmt->close();
+        $this->conn->close();
+        return $buoiHocs;
     }
 
     public function getBuoiHocById($buoiHocId) {
