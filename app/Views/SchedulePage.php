@@ -437,7 +437,6 @@ $.ajax({
     data: jsonts, // Chuyển đổi dữ liệu sang chuỗi JSON
     success: function(response) {
         console.log(response);
-        globalCheckbox.length = 0;
         // Xử lý phản hồi thành công từ máy chủ
     },
     error:function(response) {
@@ -585,10 +584,6 @@ $.ajax({
                 container.append(containerTG);
                 $('.container-tg').prepend(newElement);
                 
-                // globalCheckbox.forEach(function(checkbox) {
-                // checkbox.prop('disabled', true);
-                // inputText.prop('disabled',true)
-                // });
 
                 globalCheckbox.forEach(function(element) {
                     element.prop('disabled', true);

@@ -8,12 +8,12 @@
   margin-left: 10px;
 }
 .group-child4 {
-    
+  margin-left: 30px;
   margin-top: 10px;
 
   border-radius: var(--br-3xs);
   background-color: var(--color-white);
-  border: 0.5px solid var(--color-gray-200);
+  border: 0.5px solid #cecece;
   box-sizing: border-box;
   width: 1150px;
   min-height: 200px;
@@ -30,7 +30,7 @@
 .rectangle-parent1 {
   width: 100px;
   height: 36px;
-  border: 0.1px groove rgba(0, 0, 0, 0.5);
+  border: 0.1px groove #cecece;
   box-sizing: border-box;
   cursor: pointer; /* Đặt con trỏ chuột thành kiểu pointer khi di chuột vào */
   display: inline-block; /* Hiển thị div như một phần tử inline-block để nó có thể chứa nội dung bên trong */
@@ -106,15 +106,15 @@ margin-bottom: 0;
 
     border-radius: var(--br-3xs);
     background-color: var(--color-white);
-    border: 0.5px solid var(--color-gray-200);
+    border: 0.5px solid #cecece;
     box-sizing: border-box;
-    width: 1480px;
+    width: 1515px;
     height: 136px;
   }
   .subject {
     width: 875px;
     height: 130px;
-    margin-top: 58px;
+    margin-top: 45px;
     margin-left: 65px;
     font-size: 35px;
     text-align: left;
@@ -127,6 +127,7 @@ margin-bottom: 0;
 
   }
   .menu {
+    width: 346px;
     border-style: solid;
     border-width: 0.3px;
     border-color: #cecece;
@@ -1727,6 +1728,13 @@ line-height: normal;
 
   .show-buttons{
     margin-left: 1000px;
+    width: 83px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #FFF;
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
+
   }
 
 /* CSS để hiển thị thông báo khi nhấn */
@@ -1833,4 +1841,19 @@ font-size: 11px;
 font-style: normal;
 font-weight: 400;
 line-height: normal;
+background-color: #fff;
+}
+p{
+  text-align: left;
+}
+.class-infor-section__class-name
+{
+  text-align: left;
+}
+.fa-solid.fa-arrow-left {
+  font-size: 18px; /* Kích thước bạn muốn áp dụng cho biểu tượng */
+}
+.class-infor-section__back-btn
+{
+  border-radius: 4px !important;
 }
