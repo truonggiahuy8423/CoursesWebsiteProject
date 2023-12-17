@@ -12,7 +12,6 @@ class LoginController extends BaseController
     {
 
         return view('LoginPage');
-        
     }
 
     public function login()
@@ -55,35 +54,55 @@ class LoginController extends BaseController
         $user = $model->getUserByAccount("{$account}");
         // Login validation
         if ($user == null || $user->mat_khau != $password) { // Login failed
-            echo $user->id_user;
-            echo $password;
+            // echo $user->id_user;
+            // echo $password;
             $data['login_failed'] = "Tài khoản hoặc mật khẩu không đúng";
             return view('LoginPage', $data);
         } else { // Login successfully
             echo "here2";
-            if ($user->id_ad != null)
-               { 
+            if ($user->id_ad != null) {
                 echo "here3";
                 $session = session();
-                $session->set('id_user', $model->id_user);
+                $session->start();
+                $session->set('id_user', $user->id_user);
                 $session->set('role', 1);
+                $session->set('id_role', $user->id_ad);
+
                 //return view('LoginPage');
 
                 //f (isset($_SESSION['id_user']))
                 //echo "ok";
                 return redirect()->to("/courses");
+            } else if ($user->id_giang_vien != null) {
+                $session = session();
+                $session->start();
+                $session->set('id_user', $user->id_user);
+                $session->set('role', 2);
+                $session->set('id_role', $user->id_giang_vien);
+                //return view('LoginPage');
 
+                //f (isset($_SESSION['id_user']))
+                //echo "ok";
+                return redirect()->to("/courses");
+            } else if ($user->id_hoc_vien != null) {
+                $session = session();
+                $session->start();
+                $session->set('id_user', $user->id_user);
+                $session->set('role', 3);
+                $session->set('id_role', $user->id_hoc_vien);
+                //return view('LoginPage');
+
+                //f (isset($_SESSION['id_user']))
+                //echo "ok";
+                return redirect()->to("/courses");
             }
-            // else if ($user->id_giang_vien != null)
-            //     return redirect()->to("teacher/home/" . urlencode(json_encode($_POST)));
-            // else if ($user->id_hoc_vien != null)
-            //     return redirect()->to("student/home/" . urlencode(json_encode($_POST)));
         }
     }
 
-    
 
-    public function logout() {
+
+    public function logout()
+    {
         // Start the session
         $session = session();
         $session->remove('id_user');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+use Exception;
 include 'DatabaseConnect.php';
 class BaiNopModel {
 
@@ -106,14 +107,16 @@ class BaiNopModel {
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sii", $baiNop->thoi_gian_nop, $baiNop->id_bai_tap, $baiNop->id_hoc_vien);
 
-        if ($stmt->execute()) {
+        try {
+            $stmt->execute();
+            $id = $this->conn->insert_id;
             $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Bài nộp đã được thêm thành công', 'id_bai_nop' => $id];
+        } catch (Exception $e) {
             $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $stmt->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -146,16 +149,17 @@ class BaiNopModel {
         $sql = "DELETE FROM bai_nop WHERE id_bai_nop = ?";
         
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
+        $stmt->bind_param("i", $baiNopId);
 
-        if ($stmt->execute()) {
+        try {
+            $stmt->execute();
             $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Bài nộp đã được xóa thành công'];
+        } catch (Exception $e) {
             $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $stmt->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 

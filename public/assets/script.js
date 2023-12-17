@@ -137,7 +137,70 @@ $(document).ready(function () {
       method: 'POST',
       contentType: 'text', // Đặt kiểu dữ liệu của yêu cầu là JSON
       data: null,
-      success: function (response) { }
+      success: function (response) {
+        console.log("active");
+       }
     })
   }, 10000);
 })
+
+async function chooseUserFile() {
+  return new Promise(function(resolve, reject) {
+    loadingEffect(true);
+    $.ajax({
+      url: `${window.location.protocol}//${window.location.hostname}/Admin/CoursesController/getChooseUserFileForm`,
+      contentType: "",
+      dataType: "text",
+      data: "",
+      success: function(response) {
+        loadingEffect(false);
+        $(`body`).append(response);
+        setTimeout(function() {
+          $(`.get-file-form`).css('opacity', '1');
+         }, 100);
+         $(document).ready(function() {
+          $(`.get-file-form__cancel-btn`).click(function() {
+            $(`.form-container--file`).remove();
+            resolve(false);
+          });
+          $(`.get-file-form__save-btn`).click(function() {
+            let dom = $(`.file-item[ischosen="true"]`);
+            let file_id = dom.attr('value');
+            let fileName =  removeNewlines(tachChuoiCham(dom.text()).fileName).trim();
+            let extension =  removeNewlines(tachChuoiCham(dom.text()).extension).trim();
+
+            // setTimeout(function() {
+              $(`.form-container--file`).remove();
+            
+            resolve({
+              id_tep_tin_tai_len: file_id,
+              ten_tep: fileName,
+              extension: extension
+            });
+          });
+         })
+      },
+      error: function() {
+  
+      }
+    })
+  })
+}
+function tachChuoiCham(chuoi) {
+  var index = chuoi.indexOf('.');
+
+  if (index !== -1) {
+      var truocCham = chuoi.substring(0, index);
+      var sauCham = chuoi.substring(index + 1);
+      return { fileName: truocCham, extension: sauCham };
+  } else {
+      return { fileName: chuoi, extension: '' };
+  }
+}
+
+function removeNewlines(inputString) {
+  // Sử dụng biểu thức chính quy để thay thế tất cả các ký tự \n thành chuỗi rỗng
+  var resultString = inputString.replace(/\n/g, '');
+
+  return resultString;
+}

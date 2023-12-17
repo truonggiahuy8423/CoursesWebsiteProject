@@ -64,22 +64,7 @@
         </button>
     </h3>
     <div class="list-of-lecturers-container">
-        <?php
-        if (count($danh_sach_giang_vien) == 0) {
-            echo '<p style="color: #e8e8e8;">Chưa có giảng viên</p>';
-        } else {
-            foreach ($danh_sach_giang_vien as $giang_vien) {
-                $profile_url = base_url() . "profile/lecturer?id=" . $giang_vien["id_giang_vien"];
-                echo " 
-                        <span class='lecturer-link-span'>
-                                <a class='lecturer-link' href='{$profile_url}'><span>{$giang_vien['ho_ten']}</span>&nbsp;-&nbsp;<span>{$giang_vien['email']}</span>
-                                </a>
-                                <i name='{$giang_vien['ho_ten']}' value='{$giang_vien['id_giang_vien']}' class='fa-solid fa-x delete-lecturer-btn' style='font-size: 12px!important;'></i>
-                                </span><br>
-                            ";
-            }
-        }
-        ?>
+        
     </div>
     <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">
         Danh sách học viên
@@ -403,6 +388,7 @@
     $(document).ready(function() {
         reloadSchedule();
         reloadStudentList();
+        reloadLecturerList();
         let isCheckedAllStudentTable = false;
         $(`.checkbox-all-students-table`).click(function() {
             if (!isCheckedAllStudentTable) {
@@ -411,7 +397,6 @@
                 $(`.students-table tbody .student-checkbox`).prop(`checked`, false);
             }
             isCheckedAllStudentTable = !isCheckedAllStudentTable;
-
         })
         let isCheckedAllScheduleTable = false;
         $(`.checkbox-all-schedule-table`).click(function() {

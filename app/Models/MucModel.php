@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Exception;
 use mysqli;
+
 include 'DatabaseConnect.php';
 
-class MucModel extends Model
+class MucModel
 {
     public $id_muc;
     public $ten_muc;
@@ -17,7 +19,6 @@ class MucModel extends Model
 
     public function __construct()
     {
-
     }
 
     public function getMucById($mucId)
@@ -79,6 +80,42 @@ class MucModel extends Model
         $this->conn->close();
         return $mucs;
     }
+    public function getMucByIdLopHoc($id_lop_hoc)
+    {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM muc WHERE id_lop_hoc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bind_param("i", $id_lop_hoc);
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $folders = array();
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                // $row = $result->fetch_assoc();
+                $muc = new MucModel();
+                $muc->id_muc = $row['id_muc'];
+                $muc->ten_muc = $row['ten_muc'];
+                $muc->id_lop_hoc = $row['id_lop_hoc'];
+                $muc->id_muc_cha = $row['id_muc_cha'];
+                
+                $folders[] = $muc;
+            }
+            $stmt->close();
+            $this->conn->close();
+            return $folders;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return [];
+        }
+    }
 
     public function executeCustomQuery($sql)
     {
@@ -110,11 +147,12 @@ class MucModel extends Model
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sii", $muc->ten_muc, $muc->id_lop_hoc, $muc->id_muc_cha);
 
-        if ($stmt->execute()) {
+        try {
+            $stmt->execute();
             $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Mục mới được tạo thành công'];
+        } catch (Exception $e) {
             $stmt->close();
             $this->conn->close();
             return ['state' => false, 'message' => $stmt->error];
@@ -167,8 +205,5 @@ class MucModel extends Model
 
     public function __destruct()
     {
-
     }
 }
-
-?>
