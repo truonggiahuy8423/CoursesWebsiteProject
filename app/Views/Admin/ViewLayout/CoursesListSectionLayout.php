@@ -35,7 +35,7 @@
                     $dsgv = "";
                     $y = 0;
                     foreach ($courses[$i]['lecturers'] as $lecturer) {
-                        $dsgv = $dsgv . ($y != 0 ? ', ' : '') . '<a href="' . base_url() . '/profile/lecturerS?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
+                        $dsgv = $dsgv . ($y != 0 ? ', ' : '') . '<a href="' . base_url() . '/profile/lecturer?id=' . $lecturer["id_giang_vien"] . '">' . $lecturer["ho_ten"] . '</a>';
                         $y++;
                     }
                     $status = kiem_tra_tinh_trang($courses[$i]['ngay_bat_dau'], $courses[$i]['ngay_ket_thuc']);
@@ -203,8 +203,9 @@
             $(document).on('click', '.class-div', function() {
                 window.location.href = `<?php echo base_url(); ?>/courses/information?courseid=${$(this).parent().attr('courseid')}`;
             });
-
-
+            $(document).on('click', '.delete-checkbox', function(event) {
+                event.stopPropagation();
+            });
             let loadingState = false;
 
             $(`.add-class-btn`).click(function() {
@@ -427,6 +428,7 @@
                             </div>
                     `
                             );
+
                         }
                     }
                     // 

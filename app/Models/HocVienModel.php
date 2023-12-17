@@ -1,9 +1,12 @@
 <?php
 namespace App\Models;
+use DateTime;
+include 'DatabaseConnect.php';
+use CodeIgniter\Model;
+use Exception;
+use mysqli;
 include 'DatabaseConnect.php';
 
-use CodeIgniter\Model;
-use mysqli;
 class HocVienModel
 {
     public $id_hoc_vien;
@@ -15,9 +18,35 @@ class HocVienModel
     private $conn;
     function __construct(){}
 
+    // function getHocVienById($id_hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $sql = "SELECT * FROM hoc_vien WHERE id_hoc_vien = $id_hoc_vien";
+    //     $result = $this->conn->query($sql);
+
+    //     if ($result->num_rows > 0) {
+    //         $row = $result->fetch_assoc();
+    //         $hoc_vien = new HocVienModel();
+    //         $this->id_hoc_vien = $row["id_hoc_vien"];
+    //         $this->ho_ten = $row["ho_ten"];
+    //         $this->ngay_sinh = $row["ngay_sinh"];
+    //         $this->gioi_tinh = $row["gioi_tinh"];
+    //         $this->email = $row["email"];
+    //         $this->conn->close();
+    //         return $hoc_vien;
+    //     }
+    //     $this->conn->close();
+    //     return null;
+    // }
+
     function getHocVienById($id_hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
@@ -35,9 +64,22 @@ class HocVienModel
             $this->conn->close();
             return $this;
         }
-        else{
-            $this->conn->close();
-            return null;
+
+        $this->conn->close();
+        return null;
+    }
+
+
+    public static function compareStudentsById($a, $b) {
+        $idA = is_array($a) ? $a['id_hoc_vien'] : $a->id_hoc_vien;
+        $idB = is_array($b) ? $b['id_hoc_vien'] : $b->id_hoc_vien;
+
+        if ($idA > $idB) {
+            return 1;
+        } else if ($idA < $idB) {
+            return -1;
+        } else {
+            return 0;
         }
     }
 
@@ -63,6 +105,7 @@ class HocVienModel
                 $hoc_viens[] = $hoc_vien;
             }
         }
+        usort($hoc_viens, [$this, 'compareStudentsById']);
         $this->conn->close();
         return $hoc_viens;
     }
@@ -86,72 +129,169 @@ class HocVienModel
         return $rows;
     }
 
+    // function insertHocVien($hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
+    //     }
+    //     if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
+    //         $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
+    //         $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
+    //         $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
+    //         $email = $this->conn->real_escape_string($hoc_vien->email);
+
+    //         $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
+            
+    //         $stmt = $this->conn->prepare($sql);
+    //         $stmt->bind_param("ssss", $ho_ten, $ngay_sinh, $gioi_tinh, $email);
+
+    //         if ($stmt->execute()) {
+    //             $insertedId = $this->conn->insert_id;
+    //             $stmt->close();
+    //             $this->conn->close();
+    //             return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+    //         } else {
+    //             $error_message = $this->conn->error;
+    //             $stmt->close();
+    //             $this->conn->close();
+    //             return ['state' => false, 'message' => $error_message];
+    //         }
+    //     } else {
+    //         return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
+    //     }
+    // }
+
     function insertHocVien($hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+            return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
         }
+        if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
 
-        $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
-        $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
-        $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
-        $email = $this->conn->real_escape_string($hoc_vien->email);
+            $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES (?, ?, ?, ?);";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssss", $hoc_vien->ho_ten, $hoc_vien->ngay_sinh, $hoc_vien->gioi_tinh, $hoc_vien->email);
 
-        $sql = "INSERT INTO hoc_vien (ho_ten, ngay_sinh, gioi_tinh, email) VALUES ('$ho_ten', '$ngay_sinh', '$gioi_tinh', '$email')";
-        if ($this->conn->query($sql) === TRUE) {
-            $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
+            if ($stmt->execute()) {
+                $insertedId = $this->conn->insert_id;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => true, 'message' => 'Insert thành công', 'auto_increment_id' => $insertedId];
+            } else {
+                $error_message = $this->conn->error;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => false, 'message' => $error_message];
+            }
         } else {
-            $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
         }
     }
 
-    function deleteHocVien($hoc_vien)
+    // function deleteHocVien($id_hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $id_hoc_vien = $this->conn->real_escape_string($id_hoc_vien);
+    //     $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = ?";
+    //     try {
+    //         $this->conn->query($sql);
+    //         $this->conn->close();
+    //         return ['state' => true, 'message' => 'Delete thành công'];
+    //     } catch (Exception $e) {
+    //         $this->conn->close();
+    //         return ['state' => false, 'message' => $e->getMessage()];
+    //     }
+    // }
+
+    function deleteHocVien($id_hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $id_hoc_vien = $this->conn->real_escape_string($hoc_vien->id_hoc_vien);
-        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = $id_hoc_vien";
+        $id_hoc_vien = $this->conn->real_escape_string($id_hoc_vien);
 
-        if ($this->conn->query($sql) === TRUE) {
+        $sql = "DELETE FROM hoc_vien WHERE id_hoc_vien = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_hoc_vien); 
+        if ($stmt->execute()) {
+            $stmt->close();
             $this->conn->close();
             return ['state' => true, 'message' => 'Delete thành công'];
         } else {
+            $error_message = $this->conn->error;
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
-        }
+            return ['state' => false, 'message' => $error_message];
+        }  
     }
+
+
+    // function updateHocVien($hoc_vien)
+    // {
+    //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+    //     if ($this->conn->connect_error) {
+    //         die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+    //     }
+
+    //     $id_hoc_vien = $this->conn->real_escape_string($hoc_vien->id_hoc_vien);
+    //     $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
+    //     $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
+    //     $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
+    //     $email = $this->conn->real_escape_string($hoc_vien->email);
+
+    //     $sql = "UPDATE hoc_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_hoc_vien = $id_hoc_vien";
+
+    //     if ($this->conn->query($sql) === TRUE) {
+    //         $this->conn->close();
+    //         return ['state' => true, 'message' => 'Update thành công'];
+    //     } else {
+    //         $this->conn->close();
+    //         return ['state' => false, 'message' => $this->conn->error];
+    //     }
+    // }
 
     function updateHocVien($hoc_vien)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+            return ['state' => false, 'message' => 'Kết nối đến cơ sở dữ liệu thất bại: ' . $this->conn->connect_error];
         }
+        if (isset($hoc_vien->ho_ten) && isset($hoc_vien->ngay_sinh) && isset($hoc_vien->gioi_tinh) && isset($hoc_vien->email)) {
 
-        $id_hoc_vien = $this->conn->real_escape_string($hoc_vien->id_hoc_vien);
-        $ho_ten = $this->conn->real_escape_string($hoc_vien->ho_ten);
-        $ngay_sinh = $this->conn->real_escape_string($hoc_vien->ngay_sinh);
-        $gioi_tinh = $this->conn->real_escape_string($hoc_vien->gioi_tinh);
-        $email = $this->conn->real_escape_string($hoc_vien->email);
+            $sql = "UPDATE hoc_vien SET ho_ten = ?, ngay_sinh = ?, gioi_tinh = ?, email = ? WHERE id_hoc_vien = ?";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssssi", $hoc_vien->ho_ten, $hoc_vien->ngay_sinh, $hoc_vien->gioi_tinh, $hoc_vien->email, $hoc_vien->id_hoc_vien);
 
-        $sql = "UPDATE hoc_vien SET ho_ten = '$ho_ten', ngay_sinh = '$ngay_sinh', gioi_tinh = '$gioi_tinh', email = '$email' WHERE id_hoc_vien = $id_hoc_vien";
-
-        if ($this->conn->query($sql) === TRUE) {
-            $this->conn->close();
-            return ['state' => true, 'message' => 'Update thành công'];
+            if ($stmt->execute()) {
+                $updatedId = $this->conn->insert_id;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => true, 'message' => 'Update thành công', 'auto_increment_id' => $updatedId];
+            } else {
+                $error_message = $this->conn->error;
+                $stmt->close();
+                $this->conn->close();
+                return ['state' => false, 'message' => $error_message];
+            }
         } else {
-            $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => 'Dữ liệu đầu vào không hợp lệ'];
         }
     }
+
 }
     
+
 
 
 

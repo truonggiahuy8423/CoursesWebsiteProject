@@ -41,7 +41,7 @@ class UserModel {
     
         if ($result && $result->num_rows > 0) {
             $user = $result->fetch_assoc();
-    
+            
             $this->id_user = $user['id_user'];
             $this->anh_dai_dien = $user['anh_dai_dien'];
             $this->tai_khoan = $user['tai_khoan'];
