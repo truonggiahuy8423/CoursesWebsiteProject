@@ -1973,7 +1973,7 @@ class CoursesController extends BaseController
             $result = $model->executeCustomQuery(
                 'SELECT giang_vien.ho_ten, users.anh_dai_dien
                 FROM users
-                INNER JOIN giangvien ON users.id_giang_vien = giangvien.id_giang_vien
+                INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
                 WHERE users.id_user = ' . session()->get("id_user")
             );
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
@@ -2133,7 +2133,7 @@ $datatrave = $buoidautien->queryDatabase($sqlio);
             return $this->response->setJSON($datatrave);
         }
         
-}
+
 
 
 
@@ -2377,5 +2377,6 @@ $datatrave = $buoidautien->queryDatabase($sqlio);
 
     }
 
-}
 
+
+}
