@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Controllers\Admin;
-
+use Illuminate\Http\Request;
 use App\Controllers\BaseController;
 use App\Controllers\LoginController;
 use App\Models\BaiNopModel;
 use App\Models\BaiTapModel;
 use App\Models\BuoiHocModel;
 use App\Models\CaModel;
+use App\Models\LopModels;
 use App\Models\chi_tiet_bai_nopModel;
 use App\Models\ClassModel;
 use App\Models\diem_danhModel;
@@ -29,6 +30,7 @@ use App\Models\vi_tri_tep_tinModel;
 use CodeIgniter\Files\File;
 use PHPUnit\Util\Json;
 use DateTime;
+
 
 class CoursesController extends BaseController
 {
@@ -1866,6 +1868,275 @@ class CoursesController extends BaseController
         }
         return $this->response->setJSON($processedResult);
     }
+
+
+    public function attendance()
+    {   
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        // navbar
+        $model = new UserModel();
+        $navbar_data = array();
+        $id_lop_hoc = null;
+        if (isset($_GET)) {
+            $id_lop_hoc = $_GET['courseid'];
+        }
+        else {
+            return redirect()->to('/courses');
+        }
+
+        $model = new LopModel();
+        $course = $model->executeCustomQuery(
+            " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
+            FROM lop_hoc 
+            INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
+            LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
+            WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+            GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
+        );
+        $isExist = count($course) > 0 ? true : false;
+        if (!$isExist) {
+            return view("CommonViewCell\ClassNotFound");
+        }
+        if (session()->get('role') == 1) { // Admin
+            $result = $model->executeCustomQuery(
+                'SELECT ad.ho_ten, users.anh_dai_dien
+                FROM users
+                INNER JOIN ad ON users.id_ad = ad.id_ad
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Adminstrator';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+
+
+            
+            $tatCaBuoiHoc['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+        
+        // endnabar
+        // leftmenu
+        $model = new LopModel();
+        // $result = $model->executeCustomQuery('');
+        $left_menu_data = array();
+        $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+        $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+        $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+        $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+        $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+        $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+        $tatCaBuoiHoc['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+        // endleftmenu
+        if (isset($_GET['courseid'])) {
+            $courseId = $_GET['courseid'];}
+
+        $hocvien_tg=new diem_danhModel();
+        $buoihoc=new BuoiHocModel();
+        $sql=new diem_danhModel();
+        $idBuoiHoc=new diem_danhModel();
+        
+        $tatCaBuoiHoc['tatCaBuoiHoc'] = $buoihoc->getAllBuoiHocByLopHocId($courseId);
+        if (is_array($tatCaBuoiHoc['tatCaBuoiHoc'])) {
+            foreach ($tatCaBuoiHoc['tatCaBuoiHoc'] as $buoiHoc) {
+                // Kiểm tra xem thuộc tính id_buoi_hoc có tồn tại trong từng đối tượng không
+                if (is_object($buoiHoc) && property_exists($buoiHoc, 'id_buoi_hoc')) {
+                    $idBuoiHoc = $buoiHoc->id_buoi_hoc;
+                    // Sử dụng $idBuoiHoc ở đây hoặc thực hiện các xử lý khác
+                    $sql = "SELECT dd.*, hv.* 
+                    FROM diem_danh dd
+                    INNER JOIN hoc_vien hv ON dd.id_hoc_vien = hv.id_hoc_vien
+                    WHERE dd.id_buoi_hoc = $idBuoiHoc;
+                    ";
+                    $tatCaBuoiHoc['hv_tg'] = $hocvien_tg->queryDatabase($sql);
+                    $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                    $tatCaBuoiHoc['class_name'] = $left_menu_data["class_name"];
+                    return view('SchedulePage', $tatCaBuoiHoc);
+                   
+                }else
+                {
+
+                    return view('SchedulePageNone');
+                    
+                }
+
+            }
+        }
+
+
+        //testcoed
+
+
+
+
+        }
+        else if (session()->get('role') == 2) { // Giang vien
+            $result = $model->executeCustomQuery(
+                'SELECT giang_vien.ho_ten, users.anh_dai_dien
+                FROM users
+                INNER JOIN giangvien ON users.id_giang_vien = giangvien.id_giang_vien
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Adminstrator';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+
+
+            
+            $tatCaBuoiHoc['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+        
+        // endnabar
+        // leftmenu
+        $model = new LopModel();
+        // $result = $model->executeCustomQuery('');
+        $left_menu_data = array();
+        $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+        $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+        $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+        $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+        $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+        $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+        $tatCaBuoiHoc['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+        // endleftmenu
+        if (isset($_GET['courseid'])) {
+            $courseId = $_GET['courseid'];}
+
+        $hocvien_tg=new diem_danhModel();
+        $buoihoc=new BuoiHocModel();
+        $sql=new diem_danhModel();
+        $idBuoiHoc=new diem_danhModel();
+        
+        $tatCaBuoiHoc['tatCaBuoiHoc'] = $buoihoc->getAllBuoiHocByLopHocId($courseId);
+        if (is_array($tatCaBuoiHoc['tatCaBuoiHoc'])) {
+            foreach ($tatCaBuoiHoc['tatCaBuoiHoc'] as $buoiHoc) {
+                // Kiểm tra xem thuộc tính id_buoi_hoc có tồn tại trong từng đối tượng không
+                if (is_object($buoiHoc) && property_exists($buoiHoc, 'id_buoi_hoc')) {
+                    $idBuoiHoc = $buoiHoc->id_buoi_hoc;
+                    // Sử dụng $idBuoiHoc ở đây hoặc thực hiện các xử lý khác
+                   
+                }
+            }
+        }
+
+
+        //testcoed
+
+
+
+        $sql = "SELECT dd.*, hv.* 
+        FROM diem_danh dd
+        INNER JOIN hoc_vien hv ON dd.id_hoc_vien = hv.id_hoc_vien
+        WHERE dd.id_buoi_hoc = $idBuoiHoc;
+        ";
+        $tatCaBuoiHoc['hv_tg'] = $hocvien_tg->queryDatabase($sql);
+        $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+        $tatCaBuoiHoc['class_name'] = $left_menu_data["class_name"];
+        return view('SchedulePage', $tatCaBuoiHoc);
+
+        }       else if (session()->get('role') == 3) { // Hoc vien
+            return view('SchedulePageNone');
+
+     }
+        
+        
+        }
+
+
+        public function getAttByIDBuoi(){
+        $hocvien_tgbybuoi=new diem_danhModel();
+        $sqlbyid=new diem_danhModel();
+            // echo json_encode($this->request->getJSON());
+        $Buoihocbyid= json_decode(json_encode($this->request->getJSON()), true);
+        $idofBuoihoc = $Buoihocbyid["idBuoiHoc"];
+
+        if (!isset($idofBuoihoc) || empty($idofBuoihoc)) {
+            // If $idofBuoihoc is not set or empty, return an empty result
+            return $this->response->setJSON([]);
+                } else {
+            // If $idofBuoihoc is available, proceed with the SQL query
+            $sqlbyid = "SELECT dd.*, hv.*, bh.*, DAYOFWEEK(bh.ngay),c.*
+                        FROM diem_danh dd
+                        INNER JOIN hoc_vien hv ON dd.id_hoc_vien = hv.id_hoc_vien
+                        INNER JOIN buoi_hoc bh ON dd.id_buoi_hoc = bh.id_buoi_hoc
+                        INNER JOIN ca c ON c.id_ca = bh.id_ca
+                        WHERE dd.id_buoi_hoc = $idofBuoihoc;";
+        
+            $ResAtten = $hocvien_tgbybuoi->queryDatabase($sqlbyid);
+            return $this->response->setJSON($ResAtten);
+        }
+
+        }
+
+
+        public function CheckingAtt()
+        {
+            // $AttenCheckin[]=new diem_danhModel();
+            $ConfirmAtten=new diem_danhModel();
+            $RQget= json_decode(json_encode($this->request->getJSON()), true);
+            $MangD=new diem_danhModel();
+            $sql=new diem_danhModel();            
+            $capnhatbuoihoc=new BuoiHocModel();
+            $idBuoi=$RQget[0]["type"];
+            $sql="UPDATE buoi_hoc SET trang_thai = 1 WHERE id_buoi_hoc = $idBuoi";
+            $AttenCheckin = []; // Khởi tạo mảng rỗng để chứa các đối tượng diem_danhModel
+
+            foreach ($RQget as $Getdata) {
+                $newDiemDanh = new diem_danhModel(); // Tạo một đối tượng diem_danhModel mới
+                
+                // Gán giá trị từ mảng $Getdata vào từng thuộc tính của đối tượng diem_danhModel
+                $newDiemDanh->id_hoc_vien = $Getdata["id"];
+                $newDiemDanh->id_buoi_hoc = $Getdata["type"];
+                $newDiemDanh->co_mat = $Getdata["comat"];
+                $newDiemDanh->ghi_chu = $Getdata["ghichu"];
+                $formattedData = [
+                    'id_hoc_vien' => $newDiemDanh->id_hoc_vien,
+                    'id_buoi_hoc' => $newDiemDanh->id_buoi_hoc,
+                    'co_mat'      => $newDiemDanh->co_mat,
+                    'ghi_chu'      => $newDiemDanh->ghi_chu
+                    
+                ];
+
+                $AttenCheckin[] = $formattedData;
+            }
+
+            $ConfirmAtten->updatediem_danhnModel($AttenCheckin);
+
+            return $this->response->setJSON($AttenCheckin);
+            
+
+
+
+
+        }
+
+        public function Getbuoihocdautien(){
+            $buoidautien=new diem_danhModel();
+            $ID= json_decode(json_encode($this->request->getJSON()), true);
+            $getIDbuoi=new BuoiHocModel();
+            $buoi=new BuoiHocModel();
+            $sqlio=new diem_danhModel();
+            $sqlp=new BuoiHocModel();
+            $subquery = "SELECT id_buoi_hoc
+            FROM buoi_hoc
+            WHERE id_lop_hoc =  $ID 
+            ORDER BY ngay ASC
+            LIMIT 1";
+            $getIDbuoi=$buoi->executeCustomQuery($subquery);
+            $IDok= $getIDbuoi[0]["id_buoi_hoc"];
+// Truy vấn chính sử dụng subquery
+$sqlio = "SELECT dd.*, hv.*, bh.* FROM diem_danh dd
+         INNER JOIN hoc_vien hv ON dd.id_hoc_vien = hv.id_hoc_vien
+         INNER JOIN buoi_hoc bh ON dd.id_buoi_hoc = bh.id_buoi_hoc
+         WHERE dd.id_buoi_hoc =  $IDok";
+
+// Thực hiện truy vấn SQL
+$datatrave = $buoidautien->queryDatabase($sqlio);
+            return $this->response->setJSON($datatrave);
+        }
+        
+}
+
+
+
     function postNewFolder() {
         if (!session()->has('id_user')) {
             return redirect()->to('/');

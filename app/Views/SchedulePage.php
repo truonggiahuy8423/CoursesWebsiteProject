@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,769 +9,615 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?php base_url()?>/assets/schedule.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" />
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="<?php echo base_url(); ?>/assets/jquery.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/style.css">
+
+    <link rel="stylesheet" type="text/css" href="<?= base_url('assets/toast.css') ?>">
+    <script src="<?php echo base_url('assets/script.js'); ?>"></script>
 </head>
 
 <body>
+
+    <div id="toast"></div>
+
+    <?php echo $navbar ?>
     <div class="desktop-4">
         <div class="component-29-parent">
-            <div class="group-item"></div>
-            <div class="subject">Lập trình .NET - 008.008401</div>
-            <div class="group-inner"></div>
-            <div class="subject1">Lập trình .NET - 008.008401</div>
-            <img class="back-icon" alt="" src="<?php base_url()?>/assets/component/back_icon.png" id="back_icon" />
+            <div class="group-item">
+            <div class="subject"><h1><?php echo $class_name ?></h1></div>
+            </div>
+            <div class="Leftmenu">
+            <?php echo $leftmenu;?>
+            </div>
+            
 
-            <div class="attendance">Thành viên: 15</div>
-            <div class="status">
-                <span>Trạng thái: </span>
-                <span style="color: limegreen;">Đang diễn ra</span>
-            </div>
-            <div class="class-info" id="class_info">
-                <div class="rectangle-div"></div>
-                <div class="thng-tin-lp">Thông tin lớp học</div>
-            </div>
-            <div class="check-attend" id="check_attend">
-                <div class="group-child3"></div>
-                <div class="im-danh">Điểm danh</div>
-            </div>
-            <div class="class-resource" id="class_resource">
-                <div class="group-child2"></div>
-                <div class="ti-nguyn-lp">Tài nguyên lớp học</div>
-            </div>
-            <div class="chat" id="chat">
-                <div class="rectangle-div"></div>
-                <div class="knh-chat">Kênh chat</div>
-            </div>
-            <div class="group-child4"></div>
+<div class="group-child4"> 
             <div class="lch-hc">Lịch học</div>
-            
-            <div class="rectangle-parent1">
-                <div class="instance-child"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 20/10/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent2">
-                <div class="instance-child"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 24/10/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent3">
-                <div class="instance-child"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 27/10/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent4">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container3">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 17/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent5">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 24/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent6">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container3">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 21/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent7">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container3">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 14/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent8">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container3">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 10/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent9">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 07/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent10">
-                <div class="instance-child7"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 03/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent11">
-                <div class="instance-child"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 31/10/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.101</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent12">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 22/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent13">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 26/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent14">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 29/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent15">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 19/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent16">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 16/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent17">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 12/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent18">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container17">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 09/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent19">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container17">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 05/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent20">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container17">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 02/04/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent21">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 13/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent22">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 16/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent23">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 20/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent24">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 12/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent25">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 19/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent26">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 15/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent27">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container17">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 08/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent28">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 05/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent29">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 01/03/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent30">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 27/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent31">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 23/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent32">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 05/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent33">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 09/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent34">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 12/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent35">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 02/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent36">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 09/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent37">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 06/02/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent38">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 30/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent39">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 26/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent40">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 23/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent41">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 19/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent42">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 16/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent43">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 28/11/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent44">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 01/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent45">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 05/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent46">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 26/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent47">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 02/01/24</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent48">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 29/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent49">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 22/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent50">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 19/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent51">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 15/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent52">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container2">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 3 12/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <div class="rectangle-parent53">
-                <div class="instance-child1"></div>
-                <div class="th-6-201024-container">
-                    <p class="thnh-ph-th">
-                        <b>Thứ 6 08/12/23</b>
-                    </p>
-                    <p class="thnh-ph-th">P.102</p>
-                    <p class="thnh-ph-th">07:00 - 11:00</p>
-                </div>
-            </div>
-            <button class="save-button" id="save_btn">
-                <div class="save-button-background"></div>
-                <div class="save">Lưu thông tin</div>
-            </button>
-            <button class="cancel-button" id="cancel_btn">
-                <div class="cancel-button-background"></div>
-                <div class="cancel">Hủy bỏ</div>
-            </button>
-            <div class="bui-hc-th">
-                Buổi học: Thứ 6 03/11/2023 P.101 07:00 - 11:00 - 2809232092
-            </div>
-            <div class="thng-tin-im">Thông tin điểm danh</div>
-            <div class="group-parent">
-                <div class="rectangle-parent54">
-                    <div class="group-child5"></div>
-                    <div class="group-child6"></div>
-                    <div class="group-child7"></div>
-                    <div class="group-child8"></div>
-                    <div class="div">00080423</div>
-                    <div class="trng-gia-huy">Trương Gia Huy</div>
-                    <div class="group-child9"></div>
-                    <div class="group-child10"></div>
-                    <div class="group-child11"></div>
-                    <div class="group-child12"></div>
-                    <div class="div1">02918383</div>
-                    <div class="trn-i-quang">Trần Đại Quang</div>
-                    <div class="group-child13"></div>
-                    <div class="group-child14"></div>
-                    <div class="group-child15"></div>
-                    <div class="group-child16"></div>
-                    <div class="div2">00289128</div>
-                    <div class="chu-vn-c">Chu Văn Đức</div>
-                    <div class="ghi-ch-input">
-                        <div class="ghi-ch-input-child"></div>
-                    </div>
-                    <div class="group-child17"></div>
-                    <div class="b-bnh-c">Bị bệnh, có phép</div>
-                    <div class="group-child18"></div>
-                    <div class="group-child19"></div>
-                    <div class="group-child20"></div>
-                    <div class="div3">02193234</div>
-                    <div class="l-th-trc">Lê Thị Trúc</div>
-                    <div class="group-child21"></div>
-                    <div class="group-child22"></div>
-                    <div class="group-child23"></div>
-                    <div class="group-child24"></div>
-                    <div class="div4">03123421</div>
-                    <div class="l-c-vinh">Lê Đức Vinh</div>
-                    <div class="group-child25"></div>
-                    <div class="group-child26"></div>
-                    <div class="group-child27"></div>
-                    <div class="group-child28"></div>
-                    <div class="div5">06532873</div>
-                    <div class="nguyn-tn-pht">Nguyễn Tấn Phát</div>
-                    <div class="group-child29"></div>
-                    <div class="group-child30"></div>
-                    <div class="group-child31"></div>
-                    <div class="group-child32"></div>
-                    <div class="div6">02918321</div>
-                    <div class="trn-cng-vinh">Trần Công Vinh</div>
-                    <div class="group-child33"></div>
-                    <div class="group-child34"></div>
-                    <div class="group-child35"></div>
-                    <div class="group-child36"></div>
-                    <div class="div7">00081023</div>
-                    <div class="v-th-thu">Võ Thị Thu Hòa</div>
-                    <div class="group-child37"></div>
-                    <div class="group-child38"></div>
-                    <div class="group-child39"></div>
-                    <div class="group-child40"></div>
-                    <div class="div8">00087823</div>
-                    <div class="nguyn-hong-sn">Nguyễn Hoàng Sơn</div>
-                    <div class="group-child41"></div>
-                    <div class="group-child42"></div>
-                    <div class="group-child43"></div>
-                    <div class="group-child44"></div>
-                    <div class="div9">00172912</div>
-                    <div class="nguyn-duy-khnh">Nguyễn Duy Khánh</div>
-                    <div class="group-child45"></div>
-                    <div class="group-child46"></div>
-                    <div class="group-child47"></div>
-                    <div class="group-child48"></div>
-                    <div class="div10">00232471</div>
-                    <div class="l-minh-khoa">Lê Minh Khoa</div>
-                    <div class="group-child49"></div>
-                    <div class="group-child50"></div>
-                    <div class="group-child51"></div>
-                    <div class="group-child52"></div>
-                    <div class="div11">01209324</div>
-                    <div class="phng-thanh">Phùng Thanh Độ</div>
-                    <div class="group-child53"></div>
-                    <div class="group-child54"></div>
-                    <div class="group-child55"></div>
-                    <div class="group-child56"></div>
-                    <div class="div12">00438123</div>
-                    <div class="trn-m-duyn">Trần Mỹ Duyên</div>
-                    <div class="group-child57"></div>
-                    <div class="group-child58"></div>
-                    <div class="group-child59"></div>
-                    <div class="group-child60"></div>
-                    <div class="div13">10284293</div>
-                    <div class="trn-thanh-tho">Trần Thanh Thảo</div>
-                    <div class="group-child61"></div>
-                    <div class="group-child62"></div>
-                    <div class="group-child63"></div>
-                    <div class="group-child64"></div>
-                    <div class="div14">02188231</div>
-                    <div class="nguyn-hong-c">Nguyễn Hoàng Đức</div>
-                    <div class="rectangle-parent55">
-                        <div class="group-child65"></div>
-                        <div class="group-child66"></div>
-                        <div class="group-child67"></div>
-                        <div class="group-child68"></div>
-                        <div class="m-hc-vin">Mã học viên</div>
-                        <div class="h-tn">Họ tên</div>
-                        <div class="im-danh1">Điểm danh</div>
-                        <div class="ghi-ch">Ghi chú</div>
-                    </div>
-                    <img class="checked-icon" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
+            <div class='container-pr1' >
+            <?php foreach ($tatCaBuoiHoc as $buoiHoc) : ?>
+    <div  class='rectangle-parent1' data-buoihoc='<?= $buoiHoc->id_buoi_hoc ?>'>
+        <div class='th-6-201024-container'>
+            <p class='thnh-ph-th'>
+                <b class='datetime'>
+                    Thứ <?= $buoiHoc->thu ?> <?= date('d/m/y', strtotime($buoiHoc->ngay)) ?>
+                </b>
+            </p>
+            <p class='thnh-ph'><?= $buoiHoc->id_phong ?></p>
+            <p class='thnh'><?= substr($buoiHoc->thoi_gian_bat_dau, 0, 5) ?>-<?= substr($buoiHoc->thoi_gian_ket_thuc, 0, 5) ?></p>
+        </div>
+    </div>
+<?php endforeach; ?>
+    </div>
 
-                    <img class="checked-icon1" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
+    <div class="group-parent">
+    <div class="thng-tin-im">Thông tin điểm danh</div>
+            <div id="container"></div>
+            <div class="button-container">
+        <button class="save-button"  style="display: none;" id="save_btn">
+            <div class="save-button-background"></div>
+            <div class="save">Lưu thông tin</div>
+        </button>
+        <button class="cancel-button"  style="display: none;"id="cancel_btn">
+            <div class="cancel-button-background"></div>
+            <div class="cancel">Hủy bỏ</div>
+        </button>
+        </div>  
 
-                    <img class="checked-icon2" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
+            <button class="show-buttons" id="show_btn">Chỉnh sửa</button>
+                <!-- b -->
 
-                    <img class="checked-icon3" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon4" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon5" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon6" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon7" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon8" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon9" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon10" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon11" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <img class="checked-icon12" alt="" src="<?php base_url()?>/assets/component/Vector.png" />
-
-                    <div class="unchecked">
-                        <div class="unchecked-child"></div>
-                    </div>
-                    <div class="unchecked1">
-                        <div class="unchecked-child"></div>
-                    </div>
-                </div>
-                <div class="ghi-ch-input1">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input2">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input3">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input4">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input5">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input6">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input7">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input8">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input9">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input10">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input11">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input12">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input13">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-                <div class="ghi-ch-input14">
-                    <div class="ghi-ch-input-child"></div>
-                </div>
-            </div>
-            
+        <div class="container-tg">
+            <div class="MaHV">
+            <div class="Hvien"> Mã học viên</div>
+        </div>
+        <div class="HoVTen">
+            <div class="Hotena"> Họ tên</div>
+        </div>
+        <div class="Aten">
+            <div class="diemanh">Điểm danh</div> 
+        </div>
+        <div class="ghichu">
+            <div class="note">Ghi chú</div>
         </div>
 
+
+        </div>
+
+    <!-- a -->
+ 
+        </div>
+
+
+
+
+
+
+       
+
+      
+                
+
+      
+
+
+
+
+
+
+
+
+
+            
+        </div>
+        
+
     </div>
+    <!-- xử lý dữ liệu -->
+    <?php
+//     $idBuoiHocFromURL = isset($_GET['idbuoihoc']) ? $_GET['idbuoihoc'] : null;
+
+// // Kiểm tra xem giá trị idbuoihoc có tồn tại và hợp lệ hay không
+// if ($idBuoiHocFromURL !== null) {
+//     // Cập nhật lại id_buoi_hoc trong mảng $hv_tg từ giá trị trong URL
+//     foreach ($hv_tg as &$hvtg) {
+//         if ($hvtg['id_buoi_hoc'] == $idBuoiHocFromURL) {
+//             $hvtg['id_buoi_hoc'] = $idBuoiHocFromURL;
+//         }
+//     }
+//     unset($hvtg); // Hủy tham chiếu cuối cùng của mảng
+// }
+
+
+?>
+
+    <!-- js bắt đầu từ đây -->
+    <script>
+             let globalCheckbox= []; 
+             globalCheckbox.id = 'myGlobalCheckboxArray'
+             let checkbox;
+             let inputText;
+// ajax
+$(document).ready(function() {
+
+
+
+
+    
+    $('.rectangle-parent1').click(function(e) {
+        globalCheckbox.splice(0, globalCheckbox.length);
+        
+        // Lấy giá trị của data-buoihoc từ thuộc tính data của div
+        let idBuoiHoc = $(this).data('buoihoc');
+        console.log(idBuoiHoc);
+        // Tạo đối tượng dữ liệu để gửi đi
+        let dataToSend = {
+            idBuoiHoc: idBuoiHoc
+        };
+        console.log(dataToSend);
+
+        
+
+        // Gửi request AJAX
+        $.ajax({
+            url: "<?php echo base_url() ?>Admin/CoursesController/getAttByIDBuoi",
+            method: "POST",
+            contentType: 'application/json',
+            dataType: "json",
+            data: JSON.stringify(dataToSend), // Chuyển đổi dữ liệu sang chuỗi JSON
+            success: function(response) {
+                // Xử lý phản hồi từ server
+                let ArrListAtten = response;
+                let newElement = `
+    
+        <div class="MaHV">
+            <div class="Hvien"> Mã học viên</div>
+        </div>
+        <div class="HoVTen">
+            <div class="Hotena"> Họ tên</div>
+        </div>
+        <div class="Aten">
+            <div class="diemanh">Điểm danh</div> 
+        </div>
+        <div class="ghichu">
+            <div class="note">Ghi chú</div>
+        </div>
+`;
+            //     console.log(ArrListAtten);
+            //     <div class="thng-tin-im">Thông tin điểm danh</div>
+            
+            // <div class="bui-hc-th">
+            //     Buổi học: Thứ 6 03/11/2023 P.101 07:00 - 11:00 - 2809232092
+            // </div>
+                    const firstElement = ArrListAtten[0]; // Lấy phần tử đầu tiên của mảng
+
+                    const ngay = new Date(firstElement.ngay);
+                    const dayOfWeek = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][ngay.getDay()];
+                    const ngayFormatted = `${ngay.getDate()}/${ngay.getMonth() + 1}/${ngay.getFullYear()}`;
+                    const gioBD = firstElement.thoi_gian_bat_dau;
+                    const gioKT = firstElement.thoi_gian_ket_thuc;
+                    const phong = `P.${firstElement.id_phong}`;
+                    const id = `-${firstElement.id_buoi_hoc}`;
+
+                    const htmlString = `<div class="bui-hc-th">
+                                        Buổi học: ${dayOfWeek} ${ngayFormatted} ${phong} ${gioBD} - ${gioKT} ${id}
+                                    </div>`;
+                                    document.getElementById('container').innerHTML = htmlString;
+
+                    console.log(htmlString);
+
+                // Xóa nội dung cũ của container-tg trước khi thêm danh sách mới
+
+                // Kiểm tra xem có phần tử con nào có class là container-tg không
+                var lammoi = $('.group-child4 .container-tg');
+                if (lammoi.length > 0) {
+                lammoi.remove(); // Loại bỏ thẻ div ra khỏi DOM và xóa nó khỏi bộ nhớ
+                }
+                // Nếu tồn tại phần tử container-tg, loại bỏ nó
+
+                $('.container-tg').empty();
+                console.log(ArrListAtten)
+                // Tạo container-tg mới và thêm danh sách học viên vào
+                let containerTG = $('<div>').addClass('container-tg');
+                ArrListAtten.forEach(function(hocvien) {
+                    let idBuoiHoc = hocvien.id_buoi_hoc;
+                    let idSinhVien = hocvien.id_hoc_vien;
+                    let hoVaTen = hocvien.ho_ten;
+                    let ghiChu = hocvien.ghi_chu;
+                    let coMat = hocvien.co_mat === '1'; // Kiểm tra nếu có mặt
+                    let strId = idSinhVien.toString();
+                    let paddedId = '0000' + strId;
+                    let displayedId = paddedId.slice(-5);
+                    let groupChild5 = $('<div>').addClass('group-child5');
+                    let groupChild6 = $('<div>').addClass('group-child6');
+                    let groupChild7 = $('<div>').addClass('group-child7');
+                    let groupChild8 = $('<div>').addClass('group-child8');
+
+                    let divIdSinhVien = $('<div>').text(displayedId).addClass('div');
+                    let divHoVaTen = $('<div>').text(hoVaTen).addClass('trng-gia-huy');
+
+                    let checkbox = $('<input>').attr({
+                        type: 'checkbox',
+                        id: idSinhVien,
+                        idbuoihoc: idBuoiHoc,
+                        checked: coMat // Thiết lập trạng thái checked dựa trên co_mat
+                    });
+
+                    let inputText = $('<input>').attr({
+                        type: 'text',
+                        placeholder: '',
+                        id:idSinhVien,
+                        idbuoihoc: idBuoiHoc,
+                    }).val(ghiChu); // Hiển thị ghi chú trong input text
+                   
+                    groupChild8.append(inputText);
+                    groupChild7.append(checkbox);
+                    groupChild5.append(divIdSinhVien);
+                    groupChild6.append(divHoVaTen);
+
+                    globalCheckbox.push(checkbox);
+                    globalCheckbox.push(inputText);
+                    containerTG.append(groupChild5, groupChild6, groupChild7, groupChild8);
+                   
+                });
+                var container = $('.group-child4');
+                container.append(containerTG);
+                $('.container-tg').prepend(newElement);
+                
+                // globalCheckbox.forEach(function(checkbox) {
+                // checkbox.prop('disabled', true);
+                // inputText.prop('disabled',true)
+                // });
+
+                globalCheckbox.forEach(function(element) {
+                    element.prop('disabled', true);
+                });
+
+                console.log(globalCheckbox);
+
+  // Disable checkbox khi lấy được
+
+                $('.container-tg').append(containerTG);
+                console.log(containerTG);
+
+                // Thêm sự kiện change để theo dõi sự thay đổi trạng thái của checkbox
+
+            },
+            error: function(xhr, status, error) {
+                // Xử lý lỗi nếu có
+                console.error(status + ': ' + error);
+            }
+
+        });
+        setTimeout(() => {
+                        console.log('First event completed');
+                    }, 2000);
+                    // $('.showButtons').trigger('click');
+                
+                    $('show-buttons').trigger('click');
+    }
+
+    );
+});
+              
+
+
+
+//tạo checkbox
+document.addEventListener("DOMContentLoaded", function() {
+    const showButtons = document.getElementById('show_btn');
+    const buttonContainer = document.querySelector('.button-container');
+    const cancelButton = document.getElementById('cancel_btn');
+    const saveButton = document.getElementById('save_btn');
+
+    function enableCheckboxes() {
+        globalCheckbox.forEach(function(element) {
+                    element.prop('disabled', false);
+                });
+    }
+
+    showButtons.onclick=function() {
+        saveButton.style.display = 'block';
+        cancelButton.style.display = 'block';
+        showButtons.style.display = 'none';
+        console.log('đã click');
+        console.log(globalCheckbox);
+        enableCheckboxes();
+    
+    };
+
+
+    function ConfirmCheckbox()
+    {
+        globalCheckbox.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Gán thuộc tính khi checkbox được chọn
+                this.setAttribute('data-state', '1');
+                console.log('Checkbox được chọn');
+            } else {
+                // Gán thuộc tính khi checkbox không được chọn
+                this.removeAttribute('data-state');
+                console.log('Checkbox không được chọn');
+            }
+        });
+    });
+
+    }
+
+
+
+    cancelButton.addEventListener('click', function() {
+        saveButton.style.display = 'none';
+        cancelButton.style.display = 'none';
+        showButtons.style.display = 'block';
+        globalCheckbox.forEach(function(element) {
+            element.prop('checked', element.prop('defaultChecked'));
+            element.prop('value', element.prop('defaultValue'));
+                    element.prop('disabled', true);
+                });
+    });
+
+
+
+    saveButton.addEventListener('click',function(){
+        // let checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+        
+// Thay đổi animation đã tick và thêm thuộc tính checked cho các checkbox đã chọn
+saveButton.style.display = 'none';
+        cancelButton.style.display = 'none';
+        showButtons.style.display = 'block';
+globalCheckbox.forEach(function(element) {
+                    element.prop('disabled', true);
+                });
+
+        
+        let attributesArray = [];
+
+// Duyệt qua từng cặp đối tượng checkbox và inputText trong globalCheckbox
+for (let i = 0; i < globalCheckbox.length; i += 2) {
+    let checkbox = globalCheckbox[i];
+    let inputText = globalCheckbox[i + 1];
+
+    let idValue = checkbox.prop('id');
+    let typeValue = checkbox.attr('idbuoihoc');
+    let comat;
+    let ghichu = inputText.prop('value');
+
+    if (checkbox.prop('checked')) {
+        comat = '1';
+    } else {
+        comat = '0';
+    }
+
+    // Tạo đối tượng chứa các thuộc tính của checkbox và inputText tương ứng và push vào mảng attributesArray
+    let checkboxAttributes = {
+        id: idValue,
+        type: typeValue,
+        comat: comat,
+        ghichu: ghichu
+    };
+
+    attributesArray.push(checkboxAttributes);
+}
+
+console.log(attributesArray); 
+if (globalCheckbox.length > 0) { // Kiểm tra xem mảng có phần tử không
+    let firstCheckboxId = globalCheckbox[0].attr('idbuoihoc'); // Lấy id của phần tử đầu tiên trong mảng
+
+    // Gán id của phần tử đầu tiên cho mảng globalCheckbox
+    globalCheckbox.id = firstCheckboxId;
+
+    console.log(globalCheckbox); // In ra mảng globalCheckbox sau khi gán id
+} else {
+    console.log("Mảng globalCheckbox không có phần tử."); // Nếu mảng không có phần tử
+}
+    
+    
+    let datachecked=attributesArray;
+    console.log(datachecked);
+    let jsonts=JSON.stringify(datachecked)
+    console.log(jsonts);
+
+
+// xử lý chuỗi
+$.ajax({
+    url: "<?php echo base_url() ?>Admin/CoursesController/CheckingAtt",
+    method: "POST",
+    contentType: 'application/json',
+    dataType: "json",
+    data: jsonts, // Chuyển đổi dữ liệu sang chuỗi JSON
+    success: function(response) {
+        console.log(response);
+        globalCheckbox.length = 0;
+        // Xử lý phản hồi thành công từ máy chủ
+    },
+    error:function(response) {
+        console.log(response);
+    }
+});
+
+
+    // gửi về response
+    })
+
+   
+} )
+    
+
+
+
+
+
+    
+
+
+
+        // let  globalCheckbox = globalCheckbox; // Thay thế phần này bằng mảng chứa các checkbox cần kiểm tra
+        console.log(globalCheckbox);
+
+globalCheckbox.forEach(function(checkbox) {
+    console.log(checkbox); // In ra từng phần tử checkbox
+});
+
+
+
+window.addEventListener("load", function() {
+    let currentURL = window.location.href;
+
+// Tạo một đối tượng URL để trích xuất các tham số
+let urlObject = new URL(currentURL);
+
+// Lấy giá trị của tham số 'id' từ URL
+let id = urlObject.searchParams.get('courseid');
+
+console.log(id); // In ra ID từ URL 
+$.ajax({
+    url: "<?php echo base_url() ?>Admin/CoursesController/Getbuoihocdautien",
+    method: "POST",
+    contentType: 'application/json',
+    dataType: "json",
+    data: JSON.stringify(id), // Chuyển đổi dữ liệu sang chuỗi JSON
+    success: function(response) {
+                // Xử lý phản hồi từ server
+                let ArrListAtten = response;
+                let newElement = `
+    
+        <div class="MaHV">
+            <div class="Hvien"> Mã học viên</div>
+        </div>
+        <div class="HoVTen">
+            <div class="Hotena"> Họ tên</div>
+        </div>
+        <div class="Aten">
+            <div class="diemanh">Điểm danh</div> 
+        </div>
+        <div class="ghichu">
+            <div class="note">Ghi chú</div>
+        </div>
+`;
+            //     console.log(ArrListAtten);
+            //     <div class="thng-tin-im">Thông tin điểm danh</div>
+            
+            // <div class="bui-hc-th">
+            //     Buổi học: Thứ 6 03/11/2023 P.101 07:00 - 11:00 - 2809232092
+            // </div>
+                    const firstElement = ArrListAtten[0]; // Lấy phần tử đầu tiên của mảng
+
+                    const ngay = new Date(firstElement.ngay);
+                    const dayOfWeek = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][ngay.getDay()];
+                    const ngayFormatted = `${ngay.getDate()}/${ngay.getMonth() + 1}/${ngay.getFullYear()}`;
+                    const gioBD = firstElement.thoi_gian_bat_dau;
+                    const gioKT = firstElement.thoi_gian_ket_thuc;
+                    const phong = `P.${firstElement.id_phong}`;
+                    const id = `-${firstElement.id_buoi_hoc}`;
+
+                    const htmlString = `<div class="bui-hc-th">
+                                        Buổi học: ${dayOfWeek} ${ngayFormatted} ${phong} ${gioBD} - ${gioKT} ${id}
+                                    </div>`;
+                                    document.getElementById('container').innerHTML = htmlString;
+
+                    console.log(htmlString);
+
+                // Xóa nội dung cũ của container-tg trước khi thêm danh sách mới
+
+                // Kiểm tra xem có phần tử con nào có class là container-tg không
+                var lammoi = $('.group-child4 .container-tg');
+                if (lammoi.length > 0) {
+                lammoi.remove(); // Loại bỏ thẻ div ra khỏi DOM và xóa nó khỏi bộ nhớ
+                }
+                // Nếu tồn tại phần tử container-tg, loại bỏ nó
+
+                $('.container-tg').empty();
+                console.log(ArrListAtten)
+                // Tạo container-tg mới và thêm danh sách học viên vào
+                let containerTG = $('<div>').addClass('container-tg');
+                ArrListAtten.forEach(function(hocvien) {
+                    let idBuoiHoc = hocvien.id_buoi_hoc;
+                    let idSinhVien = hocvien.id_hoc_vien;
+                    let hoVaTen = hocvien.ho_ten;
+                    let ghiChu = hocvien.ghi_chu;
+                    let coMat = hocvien.co_mat === '1'; // Kiểm tra nếu có mặt
+                    let strId = idSinhVien.toString();
+                    let paddedId = '0000' + strId;
+                    let displayedId = paddedId.slice(-5);
+                    let groupChild5 = $('<div>').addClass('group-child5');
+                    let groupChild6 = $('<div>').addClass('group-child6');
+                    let groupChild7 = $('<div>').addClass('group-child7');
+                    let groupChild8 = $('<div>').addClass('group-child8');
+
+                    let divIdSinhVien = $('<div>').text(displayedId).addClass('div');
+                    let divHoVaTen = $('<div>').text(hoVaTen).addClass('trng-gia-huy');
+
+                    let checkbox = $('<input>').attr({
+                        type: 'checkbox',
+                        id: idSinhVien,
+                        idbuoihoc: idBuoiHoc,
+                        checked: coMat // Thiết lập trạng thái checked dựa trên co_mat
+                    });
+
+                    let inputText = $('<input>').attr({
+                        type: 'text',
+                        placeholder: '',
+                        id:idSinhVien,
+                        idbuoihoc: idBuoiHoc,
+                    }).val(ghiChu); // Hiển thị ghi chú trong input text
+                   
+                    groupChild8.append(inputText);
+                    groupChild7.append(checkbox);
+                    groupChild5.append(divIdSinhVien);
+                    groupChild6.append(divHoVaTen);
+
+                    globalCheckbox.push(checkbox);
+                    globalCheckbox.push(inputText);
+                    containerTG.append(groupChild5, groupChild6, groupChild7, groupChild8);
+                   
+                });
+                var container = $('.group-child4');
+                container.append(containerTG);
+                $('.container-tg').prepend(newElement);
+                
+                // globalCheckbox.forEach(function(checkbox) {
+                // checkbox.prop('disabled', true);
+                // inputText.prop('disabled',true)
+                // });
+
+                globalCheckbox.forEach(function(element) {
+                    element.prop('disabled', true);
+                });
+
+                console.log(globalCheckbox);
+
+  // Disable checkbox khi lấy được
+
+                $('.container-tg').append(containerTG);
+                console.log(containerTG);
+
+                // Thêm sự kiện change để theo dõi sự thay đổi trạng thái của checkbox
+
+            },
+    error:function(response) {
+        console.log(response);
+    }
+});
+
+});
+
+
+
+
+
+</script>
+
 </body>
+
 
 </html>

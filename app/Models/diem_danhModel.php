@@ -3,6 +3,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
+include 'DatabaseConnect.php';
 class diem_danhModel
 {
     public $id_hoc_vien;
@@ -125,26 +126,37 @@ class diem_danhModel
         }
     }
 
-    function updatediem_danhnModel($user)
+
+
+    function updatediem_danhnModel($usersArray)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-
-        $id_hoc_vien = $this->conn->real_escape_string($user->id_hoc_vien);
-        $id_buoi_hoc = $this->conn->real_escape_string($user->id_buoi_hoc);
-        $ghi_chu = $this->conn->real_escape_string($user->ghi_chu);
-        $co_mat = $this->conn->real_escape_string($user->co_mat);
-
-        $sql = "UPDATE diem_danh SET id_hoc_vien  = '$id_hoc_vien', id_buoi_hoc = '$id_buoi_hoc', ghi_chu = '$ghi_chu', co_mat = '$co_mat' WHERE id_hoc_vien = $id_hoc_vien";
-
-        if ($this->conn->query($sql) === TRUE) {
-            $this->conn->close();
-            return ['state' => true, 'message' => ''];
-        } else {
-            $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+    
+        foreach ($usersArray as $user) {
+            $id_hoc_vien = $this->conn->real_escape_string($user['id_hoc_vien']);
+            $id_buoi_hoc = $this->conn->real_escape_string($user['id_buoi_hoc']);
+            $co_mat = $this->conn->real_escape_string($user['co_mat']);
+            $ghi_chu = $this->conn->real_escape_string($user['ghi_chu']);
+            $sql  = "UPDATE diem_danh 
+            SET 
+                co_mat = '$co_mat',
+                ghi_chu= '$ghi_chu'
+            WHERE id_hoc_vien = '$id_hoc_vien' 
+              AND id_buoi_hoc = '$id_buoi_hoc'";
+            
+            if ($this->conn->query($sql) !== TRUE) {
+                $this->conn->close();
+                return ['state' => false, 'message' => $this->conn->error];
+            }
         }
+    
+        $this->conn->close();
+        return ['state' => true, 'message' => ''];
     }
+
+
+
 }
