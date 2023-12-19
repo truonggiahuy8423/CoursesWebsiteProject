@@ -27,91 +27,64 @@
     <div id="toast"></div>
 
     <?php echo $navbar ?>
-    <div class="desktop-4">
-        <div class="component-29-parent">
-            <div class="group-item">
-                <div class="subject">
-                    <h1><?php echo $class_name ?></h1>
-                </div>
-            </div>
-            <div class="Leftmenu">
-                <?php echo $leftmenu; ?>
-            </div>
-
-
-            <div class="group-child4">
-                <div class="lch-hc">Lịch học</div>
-                <div class='container-pr1'>
-                    <?php foreach ($tatCaBuoiHoc as $buoiHoc) : ?>
-                        <div class='rectangle-parent1' data-buoihoc='<?= $buoiHoc->id_buoi_hoc ?>'>
-                            <div class='th-6-201024-container'>
-                                <p class='thnh-ph-th'>
-                                    <b class='datetime'>
-                                        Thứ <?= $buoiHoc->thu ?> <?= date('d/m/y', strtotime($buoiHoc->ngay)) ?>
-                                    </b>
-                                </p>
-                                <p class='thnh-ph'><?= $buoiHoc->id_phong ?></p>
-                                <p class='thnh'><?= substr($buoiHoc->thoi_gian_bat_dau, 0, 5) ?>-<?= substr($buoiHoc->thoi_gian_ket_thuc, 0, 5) ?></p>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="group-parent">
-                    <div class="thng-tin-im">Thông tin điểm danh</div>
-                    <div id="container"></div>
-                    <div class="button-container">
-                        <button class="save-button" style="display: none;" id="save_btn">
-                            <div class="save-button-background"></div>
-                            <div class="save">Lưu thông tin</div>
-                        </button>
-                        <button class="cancel-button" style="display: none;" id="cancel_btn">
-                            <div class="cancel-button-background"></div>
-                            <div class="cancel">Hủy bỏ</div>
-                        </button>
-                    </div>
-
-                    <button class="show-buttons" id="show_btn">Chỉnh sửa</button>
-                    <!-- b -->
-
-                    <div class="container-tg">
-                        <div class="MaHV">
-                            <div class="Hvien"> Mã học viên</div>
-                        </div>
-                        <div class="HoVTen">
-                            <div class="Hotena"> Họ tên</div>
-                        </div>
-                        <div class="Aten">
-                            <div class="diemanh">Điểm danh</div>
-                        </div>
-                        <div class="ghichu">
-                            <div class="note">Ghi chú</div>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-        <?php
-        //     $idBuoiHocFromURL = isset($_GET['idbuoihoc']) ? $_GET['idbuoihoc'] : null;
-
-        // // Kiểm tra xem giá trị idbuoihoc có tồn tại và hợp lệ hay không
-        // if ($idBuoiHocFromURL !== null) {
-        //     // Cập nhật lại id_buoi_hoc trong mảng $hv_tg từ giá trị trong URL
-        //     foreach ($hv_tg as &$hvtg) {
-        //         if ($hvtg['id_buoi_hoc'] == $idBuoiHocFromURL) {
-        //             $hvtg['id_buoi_hoc'] = $idBuoiHocFromURL;
-        //         }
-        //     }
-        //     unset($hvtg); // Hủy tham chiếu cuối cùng của mảng
-        // }
-
-
-        ?>
+    <div class="header-container">
+        <h1><?php echo $class_name ?></h1>
     </div>
+    <div class="grid-layout">
+        <?php echo $leftmenu; ?>
+        <div class="content-section">
+            <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Lịch học</h3>
+            <div class='container-pr1' >
+                <?php foreach ($tatCaBuoiHoc as $buoiHoc) : ?>
+                    <div class='rectangle-parent1' data-buoihoc='<?= $buoiHoc->id_buoi_hoc ?>'>
+                        <div class='th-6-201024-container'>
+                            <p class='thnh-ph-th'>
+                                <b class='datetime'>
+                                    Thứ <?= $buoiHoc->thu ?> <?= date('d/m/y', strtotime($buoiHoc->ngay)) ?>
+                                </b>
+                            </p>
+                            <p class='thnh-ph'><?= $buoiHoc->id_phong ?></p>
+                            <p class='thnh'><?= substr($buoiHoc->thoi_gian_bat_dau, 0, 5) ?>-<?= substr($buoiHoc->thoi_gian_ket_thuc, 0, 5) ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Thông tin điểm danh</h3>
+            <h3 id="container" style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;"></h3>
+            <div class="group-parent">
+
+                <div class="button-container">
+                    <button class="save-button" style="display: none;" id="save_btn">
+                        <div class="save-button-background"></div>
+                        <div class="save">Lưu thông tin</div>
+                    </button>
+                    <button class="cancel-button" style="display: none;" id="cancel_btn">
+                        <div class="cancel-button-background"></div>
+                        <div class="cancel">Hủy bỏ</div>
+                    </button>
+                </div>
+
+                <button class="show-buttons" id="show_btn">Chỉnh sửa</button>
+                <!-- b -->
+
+                <div class="container-tg">
+                    <div class="MaHV">
+                        <div class="Hvien"> Mã học viên</div>
+                    </div>
+                    <div class="HoVTen">
+                        <div class="Hotena"> Họ tên</div>
+                    </div>
+                    <div class="Aten">
+                        <div class="diemanh">Điểm danh</div>
+                    </div>
+                    <div class="ghichu">
+                        <div class="note">Ghi chú</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- js bắt đầu từ đây -->
     <script>
         let globalCheckbox = [];
