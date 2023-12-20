@@ -34,7 +34,7 @@
         <?php echo $leftmenu; ?>
         <div class="content-section">
             <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Lịch học</h3>
-            <div class='container-pr1' >
+            <div class='container-pr1'>
                 <?php foreach ($tatCaBuoiHoc as $buoiHoc) : ?>
                     <div class='rectangle-parent1' data-buoihoc='<?= $buoiHoc->id_buoi_hoc ?>'>
                         <div class='th-6-201024-container'>
@@ -63,10 +63,10 @@
                         <div class="cancel">Hủy bỏ</div>
                     </button>
                 </div>
-
-                <button class="show-buttons" id="show_btn">Chỉnh sửa</button>
-                <!-- b -->
-
+                <div class="btn-ctn d-flex justify-content-end pe-5">
+                    <button class="update-btn highlight-button" id="show_btn">Điều chỉnh<i class="fa-solid fa-pen highlight-icon"></i></button>
+                </div>
+                <br>
                 <div class="container-tg">
                     <div class="MaHV">
                         <div class="Hvien"> Mã học viên</div>
