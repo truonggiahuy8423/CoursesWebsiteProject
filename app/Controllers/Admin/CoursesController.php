@@ -1897,7 +1897,8 @@ class CoursesController extends BaseController
         );
         $isExist = count($course) > 0 ? true : false;
         if (!$isExist) {
-            return view("CommonViewCell\ClassNotFound");
+            //return view("CommonViewCell\ClassNotFound");
+            return view("CommonViewCell\ExceptionPage", ["message" => "Lớp học không tồn tại"]);
         }
         if (session()->get('role') == 1) { // Admin
             $result = $model->executeCustomQuery(
