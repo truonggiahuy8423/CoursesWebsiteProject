@@ -187,7 +187,7 @@ class CoursesController extends BaseController
         for ($i = 0; $i < count($danh_sach_hoc_vien); $i++) {
             $sbv = $model->executeCustomQuery(
                 "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc
-                WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc} AND diem_danh.id_hoc_vien = {$danh_sach_hoc_vien[$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+                WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc} AND diem_danh.id_hoc_vien = {$danh_sach_hoc_vien[$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 2 AND diem_danh.co_mat = 0;"
             )[0]["so_buoi_vang"];
             $danh_sach_hoc_vien[$i]["so_buoi_vang"] = $sbv;
         }
@@ -199,15 +199,17 @@ class CoursesController extends BaseController
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-        session()->get('id_user');
+        $id = session()->get('id_user');
         $model = new UserModel();
         date_default_timezone_set('Asia/Ho_Chi_Minh');
 
         // Lấy thời gian hiện tại
         $current_time = date('Y-m-d H:i:s');
-        $model->executeCustomDDL(
-            "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}'"
+        $result = $model->executeCustomDDL(
+            "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}' where users.id_user = $id"
         );
+        return $this->response->setJSON($result);
+
     }
     
     public function getFile2()
@@ -1897,7 +1899,7 @@ class CoursesController extends BaseController
         );
         $isExist = count($course) > 0 ? true : false;
         if (!$isExist) {
-            return view("CommonViewCell\ClassNotFound");
+            return view("CommonViewCell\ExceptionPage", ["message" => "Lớp học không tồn tại"]);
         }
         if (session()->get('role') == 1) { // Admin
             $result = $model->executeCustomQuery(
@@ -2076,7 +2078,13 @@ class CoursesController extends BaseController
             $sql=new diem_danhModel();            
             $capnhatbuoihoc=new BuoiHocModel();
             $idBuoi=$RQget[0]["type"];
-            $sql="UPDATE buoi_hoc SET trang_thai = 1 WHERE id_buoi_hoc = $idBuoi";
+            $sql="UPDATE buoi_hoc SET trang_thai = 2 WHERE id_buoi_hoc = $idBuoi";
+            $rs = $capnhatbuoihoc->executeCustomDDL($sql);
+            // return $this->response->setJSON(["state" => true, "message" => $idBuoi]);
+
+            if (!$rs["state"]) {
+                return $this->response->setJSON($rs);
+            }
             $AttenCheckin = []; // Khởi tạo mảng rỗng để chứa các đối tượng diem_danhModel
 
             foreach ($RQget as $Getdata) {
@@ -2101,11 +2109,6 @@ class CoursesController extends BaseController
             $ConfirmAtten->updatediem_danhnModel($AttenCheckin);
 
             return $this->response->setJSON($AttenCheckin);
-            
-
-
-
-
         }
 
         public function Getbuoihocdautien(){

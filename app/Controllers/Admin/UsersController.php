@@ -37,6 +37,7 @@ class UsersController extends BaseController
         }
         
         $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+        $main_layout_data['mainsection'] = view('Admin\ViewLayout\UsersListSectionLayout', $navbar_data);
         return view('Admin\ViewLayout\MainLayout', $main_layout_data);
     }
 }

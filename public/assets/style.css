@@ -352,8 +352,12 @@ img {
     /* background-color: #ff0000; */
     /* box-shadow: 0 0 4px #a6a6a6!important; */
 }
-
-
+.students-list-section {
+    margin-bottom: 50px;
+}
+.class__list {
+    min-height: 500px;
+}
 
 .class-div:active {
     background-color: #cdcdcd;
@@ -1868,4 +1872,22 @@ input[type="file"] {
 }
 .add-file-icon::before {
     color: #0077e7;
+}
+.table-responsive {
+    max-height: 500px; 
+    overflow: auto; 
+}
+
+.button-container {
+    display: flex;
+    margin-left: auto;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.table-container, thead, th {
+    position: sticky;
+    top: 0;
+    background-color: #343a40; /* Dark background color */
+    color: white;
 }

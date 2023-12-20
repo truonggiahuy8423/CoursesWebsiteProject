@@ -21,7 +21,7 @@
         $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
         $offset = ($currentPage - 1) * $recordsPerPage;
         $students = $model->executeCustomQuery(
-            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien LIMIT $recordsPerPage OFFSET $offset"
+            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien order by hoc_vien.id_hoc_vien ASC LIMIT $recordsPerPage OFFSET $offset "
         );
         $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
         $totalPages = ceil($totalStudents / $recordsPerPage);
@@ -38,7 +38,7 @@
     </div>
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
-            <thead>
+            <thead style="top: -1px">
                 <tr>
                     <th class="text-center text-white bg-dark">Mã học viên</th>
                     <th class="text-center text-white bg-dark">Họ tên</th>
@@ -87,24 +87,6 @@
 </html>
 
 <style>
-    .table-responsive {
-        max-height: 500px; 
-        overflow: auto; 
-    }
-
-    .button-container {
-        display: flex;
-        margin-left: auto;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .table-container, thead, th {
-        position: sticky;
-        top: 0;
-        background-color: #343a40; /* Dark background color */
-        color: white;
-    }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
