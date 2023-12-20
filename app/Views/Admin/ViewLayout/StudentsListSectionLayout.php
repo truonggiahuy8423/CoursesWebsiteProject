@@ -41,7 +41,7 @@
         <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
             <div class="input-group">
                 <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
-                <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon" style=""></i></button>
+                <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
             </div>
         </div>
 

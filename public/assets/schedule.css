@@ -29,7 +29,7 @@
 
 .rectangle-parent1 {
   width: 100px;
-  height: 36px;
+  height: 40%;
   border: 0.1px groove rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   cursor: pointer;
@@ -332,16 +332,15 @@
   background-color: white;
   margin-top: 100px;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
+  height: auto;
+
   text-align: center;
   font-size: var(--font-size-5xs);
   color: var(--color-rgba(0, 0, 0, 0.5));
   font-family: var(--font-inter);
   margin-top: 20px;
   margin-left: 16px;
-  width: 1101.9px;
+margin-left: 27px;
   height: 100px;
   box-sizing: border-box;
   display: flex;
@@ -1739,7 +1738,7 @@
 .group-parent {
   margin-top: 20px;
   margin-left: 16px;
-  width: 1150px;
+
   height: fit-content;
   box-sizing: border-box;
   text-align: left;
@@ -2098,8 +2097,9 @@ input[type="checkbox"]:checked+label::before {
 }
 
 .button-container {
+  justify-content: flex-end;
   display: flex;
-  margin-left: 900px;
+  margin-right: 27px;
   margin-bottom: 0px;
   margin-top: 0px;
   /* Đặt khoảng cách 20px phía dưới */

@@ -34,7 +34,7 @@
         <?php echo $leftmenu; ?>
         <div class="content-section">
             <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Lịch học</h3>
-            <div class='container-pr1'>
+            <div class="container-pr1" style="height: auto;">
                 <?php foreach ($tatCaBuoiHoc as $buoiHoc) : ?>
                     <div class='rectangle-parent1' data-buoihoc='<?= $buoiHoc->id_buoi_hoc ?>'>
                         <div class='th-6-201024-container'>
@@ -52,7 +52,6 @@
             <h3 style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;">Thông tin điểm danh</h3>
             <h3 id="container" style="margin-right: 14px; margin-top: 17px; margin-left: 27px; display: flex; align-items: center; justify-content: space-between;"></h3>
             <div class="group-parent">
-
                 <div class="button-container">
                     <button class="save-button" style="display: none;" id="save_btn">
                         <div class="save-button-background"></div>
