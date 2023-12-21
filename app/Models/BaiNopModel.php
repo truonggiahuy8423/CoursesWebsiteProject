@@ -8,13 +8,7 @@ use Exception;
 include 'DatabaseConnect.php';
 class BaiNopModel {
 
-    puaiNopById($baiNopId) {
-        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
-        if ($this->conn->connect_error) {
-            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
-        }
-        $sql = "SELECT * FROM bai_nop WHERE id_bai_nop = ?";
-        blic $id_bai_nop;
+    public $id_bai_nop;
     public $thoi_gian_nop;
     public $id_bai_tap;
     public $id_hoc_vien;
@@ -25,7 +19,13 @@ class BaiNopModel {
         
     }
 
-    public function getB
+    public function getBaiNopById($baiNopId) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM bai_nop WHERE id_bai_nop = ?";
+        
         $stmt = $this->conn->prepare($sql);
     
         $stmt->bind_param("i", $baiNopId);
