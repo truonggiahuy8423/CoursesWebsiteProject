@@ -28,14 +28,16 @@
         <div class="p-4 card m-2 mt-3 shadow-inset" style="margin-top: 8px!important;">
             <div class="teacher__list row mb-4">
                 <?php
-                for ($i = 0; $i < count($teachers); $i++) {
-                    echo "
-                                <div class='col-6 mb-3 teacherCard' teacherid='{$teachers[$i]["id_giang_vien"]}'>
-                                    <div class='p-3 card shadow-sm'>
-                                        <div class='card-body'>
-                                            <h3 class='card-title fs-4'><b>{$teachers[$i]["ho_ten"]}</b> - {$teachers[$i]["id_giang_vien"]}</h3>
-                                            <div class='my-5'></div>
-                                            <p class='card-subtitle fs-5'><b>Email:</b> {$teachers[$i]["email"]}</p>
+                    for ($i = 0; $i < count($teachers); $i++) {
+                        echo "
+                                    <div class='col-6 mb-3 teacherCard' teacherid='{$teachers[$i]["id_giang_vien"]}'>
+                                        <div class='p-3 card shadow-sm'>
+                                            <div class='card-body'>
+                                                <h3 class='card-title fs-4'><b>{$teachers[$i]["ho_ten"]}</b> - {$teachers[$i]["id_giang_vien"]}</h3>
+                                                <div class='my-5'></div>
+                                                <p class='card-subtitle fs-5'><b>Email:</b> {$teachers[$i]["email"]}</p>
+                                            </div>
+                                            <input type='checkbox' class='delete-checkbox' value='{$teachers[$i]["id_giang_vien"]}'>
                                         </div>
                                     </div>  
                                 ";
