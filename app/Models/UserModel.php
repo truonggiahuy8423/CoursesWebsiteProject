@@ -129,6 +129,76 @@ class UserModel {
         $this->conn->close();
         return $users;
     }
+    public function getUserByStudentId($studentId) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM users WHERE id_hoc_vien = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+    
+        $stmt->bind_param("s", $studentId);
+    
+        $stmt->execute();
+    
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+    
+            $this->id_user = $user['id_user'];
+            $this->anh_dai_dien = $user['anh_dai_dien'];
+            $this->tai_khoan = $user['tai_khoan'];
+            $this->mat_khau = $user['mat_khau'];
+            $this->thoi_gian_dang_nhap_gan_nhat = $user['thoi_gian_dang_nhap_gan_nhat'];
+            $this->id_ad = $user['id_ad'];
+            $this->id_giang_vien = $user['id_giang_vien'];
+            $this->id_hoc_vien = $user['id_hoc_vien'];
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
+    }
+    public function getUserByLecturerId($lecturerId) {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+        $sql = "SELECT * FROM users WHERE id_giang_vien = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+    
+        $stmt->bind_param("s", $lecturerId);
+    
+        $stmt->execute();
+    
+        $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+    
+            $this->id_user = $user['id_user'];
+            $this->anh_dai_dien = $user['anh_dai_dien'];
+            $this->tai_khoan = $user['tai_khoan'];
+            $this->mat_khau = $user['mat_khau'];
+            $this->thoi_gian_dang_nhap_gan_nhat = $user['thoi_gian_dang_nhap_gan_nhat'];
+            $this->id_ad = $user['id_ad'];
+            $this->id_giang_vien = $user['id_giang_vien'];
+            $this->id_hoc_vien = $user['id_hoc_vien'];
+            $stmt->close();
+            $this->conn->close();
+            return $this;
+        } else {
+            $stmt->close();
+            $this->conn->close();
+            return null;
+        }
+    }
     function executeCustomDDL($sql) {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {

@@ -69,11 +69,19 @@
         <div class="logo card p-4 m-2 shadow-sm">
             <div class="row">
                 <div class="col-2">
-                    <img class="logo img-responsive img-thumbnail rounded-circle" src="<?php base_url()?>/assets/img/avatar_blank.jpg" alt="Logo">
+
+                    <img class="logo img-responsive img-thumbnail rounded-circle" src="<?php 
+                        if ($avatar_data == null) {
+                            echo base_url()."/assets/img/avatar_blank.jpg";
+                        } else {
+                            $base64Image = base64_encode($avatar_data);
+                            echo "data:image/png;base64," . $base64Image;
+                        }
+                    ?>" alt="Logo">
                 </div>
                 <div class="col-4">
                     <div class="card-body">
-                        <div class="card-title text text-uppercase fs-3 fw-bold"><?php echo isset($user->ho_ten) ? $user->ho_ten: 'Error' ?></div>
+                        <div class="card-title text text-uppercase fs-3 fw-bold"><?php echo isset($user->ho_ten) ? $user->ho_ten.($role ? "(Giảng viên)" : "(Học viên)") : 'Error' ?></div>
                         <div class="card-subtitle mb-2 text-muted fs-4">ID: <span class="mssv"><?php echo isset($id) ? $id : 'Error' ?></span></div>
                     </div>
                 </div>
@@ -97,7 +105,7 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-6">
-                                <div class="card-title fs-4 fw-bold">Các khóa học đã tham gia</div>
+                                <div class="card-title fs-4 fw-bold"><?php echo $role ? "Các khóa học giảng viên giảng dạy" : "Các khóa học đã tham gia";?></div>
                             </div>
                             <div class="col-6">
                                 <div class=" d-flex justify-content-end">
