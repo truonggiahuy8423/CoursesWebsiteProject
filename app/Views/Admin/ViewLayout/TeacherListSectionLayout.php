@@ -6,8 +6,7 @@
     <div class="class-container">
         <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
             <input style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm giảng viên">
-            <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
-            <button class="add-teacher-btn highlight-button">
+            <button class="add-teacher-btn ms-3 highlight-button">
                 <i class="fa-solid fa-plus add-class-icon highlight-icon"></i>
             </button>
             <button class="delete-teacher-btn highlight-button">
@@ -38,11 +37,9 @@
                                             <div class='my-5'></div>
                                             <p class='card-subtitle fs-5'><b>Email:</b> {$teachers[$i]["email"]}</p>
                                         </div>
-                                        <input type='checkbox' class='delete-checkbox' value='{$teachers[$i]["id_giang_vien"]}'>
-                                    </div>
-                                </div>  
-                            ";
-                }
+                                    </div>  
+                                ";
+                    }
                 ?>
             </div>
 
@@ -254,7 +251,7 @@
             }
         });
 
-        $('.teacherCard').click(function() {
+        $('.teacher__list').on('click', '.teacherCard',function() {
             if (deleteCheck) {
                 if ($(this).children().children('.delete-checkbox').prop('checked')) {
                     $(this).children().children('.delete-checkbox').prop('checked', false);
@@ -431,6 +428,203 @@
                     }
                 });
             }
+        })
+        // $('.teacherCard').click(function() {
+        //     if (deleteCheck) {
+        //         if ($(this).children().children('.delete-checkbox').prop('checked')) {
+        //             $(this).children().children('.delete-checkbox').prop('checked', false);
+        //         } else {
+        //             $(this).children().children('.delete-checkbox').prop('checked', true);
+        //         }
+        //     } else {
+        //         console.log('update-teacher');
+        //         loadingEffect(true);
+        //         console.log($(this).attr("teacherid"));
+        //         var teacherID = $(this).attr("teacherid");
+        //         $.ajax({
+        //             url: '<?php echo base_url(); ?>/Admin/TeachersController/getUpdateForm',
+        //             method: 'GET',
+        //             data: {
+        //                 teacherID: teacherID
+        //             },
+        //             success: function(response) {
+        //                 loadingEffect(false);
+        //                 $('body').append(response);
+
+        //                 $('.update-teacher-form__cancel-btn').click(function() {
+        //                     $('.form-container').remove();
+        //                 });
+
+        //                 $('.update-teacher-form__save-btn').click(function() {
+        //                     console.log('update-teacher-form__save-btn');
+        //                     loadingEffect(true);
+        //                     var fullName = $('.update-teacher-form__fullname').val();
+        //                     var dob = $('.update-teacher-form__dob').val();
+        //                     var sex = $('.update-teacher-form__sex option:selected').val();
+        //                     var email = $('.update-teacher-form__email').val();
+
+        //                     var obj = {
+        //                         id_giang_vien: teacherID,
+        //                         ho_ten: fullName,
+        //                         ngay_sinh: dob,
+        //                         gioi_tinh: sex,
+        //                         email: email,
+        //                     }
+
+        //                     var jsonData = JSON.stringify(obj);
+
+        //                     $.ajax({
+        //                         url: '<?php echo base_url(); ?>/Admin/TeachersController/updateTeacher',
+        //                         method: 'POST',
+        //                         contentType: 'application/json',
+        //                         data: jsonData,
+        //                         success: function(response) {
+        //                             if (response.state) {
+        //                                 loadingEffect(false);
+        //                                 $(`[teacherid = ${obj.id_giang_vien}]`).html('');
+        //                                 $(`[teacherid = ${obj.id_giang_vien}]`).append(`
+        //                                                 <div class='p-3 card shadow-sm'>
+        //                                                     <div class='card-body'>
+        //                                                         <h3 class='card-title fs-4'><b>${obj.ho_ten}</b> - ${obj.id_giang_vien}</h3>
+        //                                                         <div class='my-5'></div>
+        //                                                         <p class='card-subtitle fs-5'><b>Email:</b> ${obj.email}</p>
+        //                                                     </div>
+        //                                                     <input type='checkbox' class='delete-checkbox' value='${obj.id_giang_vien}'>
+        //                                                 </div>`);
+
+        //                                 // Thêm lớp học đang có vào danh sách giảng dạy
+        //                                 var list_id_lop_hoc = {};
+        //                                 $('.addClassTable .addClasses:checked').each(function() {
+        //                                     list_id_lop_hoc[$(this).val() + ""] = $(this).parent().parent().find('td').eq(0).text();
+        //                                 })
+        //                                 if (Object.keys(list_id_lop_hoc).length > 0) {
+        //                                     var objPc = {
+        //                                         id_giang_vien: teacherID,
+        //                                         list_id_lop_hoc: list_id_lop_hoc
+        //                                     }
+        //                                     var jsonDataPC = JSON.stringify(objPc);
+        //                                     console.log(objPc);
+        //                                     console.log(jsonDataPC);
+        //                                     $.ajax({
+        //                                         url: '<?php echo base_url(); ?>/Admin/TeachersController/addClassesIntoListOfTeachingCourses',
+        //                                         method: 'POST',
+        //                                         contentType: 'application/json',
+        //                                         data: jsonDataPC,
+        //                                         success: function(response) {
+        //                                             for (var [course, processState] of Object.entries(response)) {
+        //                                                 if (processState.state) {
+        //                                                     toast({
+        //                                                         title: "Thành công!",
+        //                                                         message: `Thêm lớp ${course} vào danh sách giảng dạy thành công`,
+        //                                                         type: "success",
+        //                                                         duration: 100000
+        //                                                     });
+        //                                                 } else {
+        //                                                     toast({
+        //                                                         title: "Thất bại!",
+        //                                                         message: `Thêm lớp ${course} vào danh sách giảng dạy thành công thất bại(${processState.message}).`,
+        //                                                         type: "error",
+        //                                                         duration: 100000
+        //                                                     });
+        //                                                 }
+        //                                             }
+        //                                         },
+        //                                         error: function(xhr, status, error) {
+        //                                             console.error('Error:', status, error);
+        //                                         }
+        //                                     });
+        //                                 }
+
+        //                                 // Xóa lớp học khỏi danh sách giảng dạy
+        //                                 var list_id_delete_lop_hoc = {}
+
+        //                                 $('.deleteClassTable .deleteTeachingCourse:checked').each(function() {
+        //                                     list_id_delete_lop_hoc[$(this).val() + ""] = $(this).parent().parent().find('td').eq(0).text();
+        //                                 })
+
+        //                                 if (Object.keys(list_id_delete_lop_hoc).length > 0) {
+        //                                     var objDeletePc = {
+        //                                         id_giang_vien: teacherID,
+        //                                         list_id_lop_hoc: list_id_delete_lop_hoc
+        //                                     }
+
+        //                                     var jsonDataDeletePC = JSON.stringify(objDeletePc);
+        //                                     // console.log(objDeletePc);
+        //                                     // console.log(jsonDataDeletePC);
+        //                                     $.ajax({
+        //                                         url: '<?php echo base_url(); ?>/Admin/TeachersController/deleteClassesFromListOfTeachingCourses',
+        //                                         method: 'POST',
+        //                                         dataType: 'json',
+        //                                         data: jsonDataDeletePC,
+        //                                         success: function(response) {
+        //                                             loadingEffect(false);
+        //                                             for (var [course, processState] of Object.entries(response)) {
+        //                                                 if (processState.state) {
+        //                                                     toast({
+        //                                                         title: "Thành công!",
+        //                                                         message: `Xóa ${course} khỏi danh sách giảng dạy thành công!`,
+        //                                                         type: "success",
+        //                                                         duration: 100000
+        //                                                     });
+        //                                                 } else {
+        //                                                     toast({
+        //                                                         title: `Xóa ${course} thất bại!`,
+        //                                                         message: `(${processState.message}).`,
+        //                                                         type: "error",
+        //                                                         duration: 100000
+        //                                                     });
+        //                                                 }
+        //                                             }
+        //                                         },
+        //                                         error: function(xhr, status, error) {
+        //                                             loadingEffect(false);
+        //                                             console.error('Lỗi yêu cầu:', status, error);
+        //                                         }
+        //                                     });
+        //                                 }
+        //                                 toast({
+        //                                     title: "Thành công!",
+        //                                     message: `Cập nhật giáo viên thành công`,
+        //                                     type: "success",
+        //                                     duration: 5000
+        //                                 });
+        //                                 $('.form-container').remove();
+        //                             }
+        //                         },
+        //                         error: function(xhr, status, error) {
+        //                             console.error('Error:', status, error);
+        //                         }
+        //                     });
+        //                 });
+        //             },
+        //             error: function(xhr, status, error) {
+        //                 loadingEffect(false);
+        //                 console.error('Lỗi yêu cầu:', status, error);
+        //             },
+        //             complete: function() {
+        //                 loadingEffect(false);
+        //             }
+        //         });
+        //     }
+        // });
+
+        $('.search-input').keyup(function(){
+            var input = $(this).val();
+            $.ajax({
+                url: '<?php echo base_url(); ?>/Admin/TeachersController/liveSearch',
+                method: 'POST',
+                data: {
+                    input: input
+                },
+                success: function(response) {
+                    $('.teacher__list').html('');
+                    $('.teacher__list').append(response);
+                },
+                error: function(xhr, status, error) {
+                    loadingEffect(false);
+                    console.error('Lỗi yêu cầu:', status, error);
+                }
+            });
         })
     });
     $(document).on('click', '.update-teacher-form__profile-btn', function() {
