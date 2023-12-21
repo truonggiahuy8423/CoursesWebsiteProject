@@ -26,6 +26,8 @@ use App\Models\MucModel;
 use App\Models\phan_cong_giang_vienModel;
 use App\Models\PhongModel;
 use App\Models\ThongBaoModel;
+use App\Models\TinNhanRiengModel;
+use App\Models\TinNhanChungModel;
 use App\Models\UserModel;
 use App\Models\vi_tri_tep_tinModel;
 use CodeIgniter\Files\File;
@@ -627,7 +629,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
+            $navbar_data['chatBox'] = $this->getChatBox();
             $courses = $model->executeCustomQuery(
                 "SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc
                 FROM lop_hoc 
@@ -655,6 +657,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Giảng viên';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             // courses
             $courses = $model->executeCustomQuery(
@@ -705,6 +708,39 @@ class CoursesController extends BaseController
 
 
         // return view('ClassPage');
+    }
+
+    public function getChatBox(){
+        $tinNhanRiengModel = new TinNhanRiengModel();
+        $chat_box = $tinNhanRiengModel->queryDatabase(
+            'SELECT DISTINCT user_nhan
+            FROM tin_nhan_rieng
+            WHERE user_gui = ' . session()->get("id_user"));
+
+        for($i = 0; $i < count($chat_box); $i++){
+            $user_nhan = strval($chat_box[$i]["user_nhan"]);
+            $chat_box[$i]['lastestTime'] = $tinNhanRiengModel->queryDatabase(
+                'SELECT thoi_gian, anh
+                FROM tin_nhan_rieng
+                WHERE user_gui IN ('.$user_nhan .','.session()->get("id_user").')
+                AND user_nhan IN ('.$user_nhan .','.session()->get("id_user").')
+                ORDER BY thoi_gian DESC
+                LIMIT 1');
+            $chat_box[$i]['hoTen'] = $tinNhanRiengModel->queryDatabase(
+                'SELECT
+                    CASE
+                        WHEN u.id_giang_vien IS NOT NULL THEN gv.ho_ten
+                        WHEN u.id_ad IS NOT NULL THEN ad.ho_ten
+                        WHEN u.id_hoc_vien IS NOT NULL THEN hv.ho_ten
+                    END AS ho_ten
+                FROM
+                    users u
+                LEFT JOIN giang_vien gv ON u.id_giang_vien = gv.id_giang_vien
+                LEFT JOIN ad ON u.id_ad = ad.id_ad
+                LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
+                WHERE u.id_user = ' . $user_nhan);
+        }
+        return $chat_box;
     }
     public function getAssignmentInformation() {
         if (!session()->has('id_user')) {
@@ -986,6 +1022,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
 
             $model = new LopModel();
@@ -1130,6 +1167,7 @@ class CoursesController extends BaseController
                 $navbar_data['username'] = "{$result[0]['ho_ten']}";
                 $navbar_data['role'] = 'Học viên';
                 $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
                 $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
         
 
@@ -1313,9 +1351,7 @@ class CoursesController extends BaseController
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
-
-
-
+            $navbar_data['chatBox'] = $this->getChatBox();
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             $model = new LopModel();
             // $result = $model->executeCustomQuery('');
@@ -1357,6 +1393,7 @@ class CoursesController extends BaseController
                 $navbar_data['username'] = "{$result[0]['ho_ten']}";
                 $navbar_data['role'] = 'Giảng viên';
                 $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
                 $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
                 $model = new LopModel();
                 // $result = $model->executeCustomQuery('');
@@ -1932,6 +1969,176 @@ class CoursesController extends BaseController
         return $this->response->setJSON($processedResult);
     }
 
+    public function courseChat(){
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+
+        $model = new UserModel();
+        $navbar_data = array();
+        $chatData = array();
+        $id_lop_hoc = null;
+        if (isset($_GET)) {
+            $id_lop_hoc = $_GET['courseid'];
+        } else {
+             return redirect()->to('/courses');
+        }
+
+        $model = new LopModel();
+        $course = $model->executeCustomQuery(
+            " SELECT lop_hoc.id_lop_hoc,  DATE_FORMAT(lop_hoc.ngay_bat_dau, '%d/%m/%Y') as ngay_bat_dau,  DATE_FORMAT(lop_hoc.ngay_ket_thuc, '%d/%m/%Y') as ngay_ket_thuc, mon_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc, COUNT(hoc_vien_tham_gia.id_hoc_vien) as so_luong_hoc_vien 
+            FROM lop_hoc 
+            INNER JOIN mon_hoc ON lop_hoc.id_mon_hoc = mon_hoc.id_mon_hoc 
+            LEFT JOIN hoc_vien_tham_gia ON lop_hoc.id_lop_hoc = hoc_vien_tham_gia.id_lop_hoc  
+            WHERE lop_hoc.id_lop_hoc = {$id_lop_hoc}
+            GROUP BY lop_hoc.id_lop_hoc, lop_hoc.ngay_bat_dau, lop_hoc.ngay_ket_thuc, lop_hoc.id_mon_hoc, mon_hoc.ten_mon_hoc;"
+        );
+        $isExist = count($course) > 0 ? true : false;
+        if (!$isExist) {
+            return view("CommonViewCell\ExceptionPage", ["message" => "Lớp học không tồn tại"]);
+        }
+        if (session()->get('role') == 1) { // Admin
+            $result = $model->executeCustomQuery(
+                'SELECT ad.ho_ten, users.anh_dai_dien
+                FROM users
+                INNER JOIN ad ON users.id_ad = ad.id_ad
+                WHERE users.id_user = ' . session()->get("id_user")
+            );
+            $navbar_data['username'] = "{$result[0]['ho_ten']}";
+            $navbar_data['role'] = 'Adminstrator';
+            $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+            $navbar_data['chatBox'] = $this->getChatBox();
+            $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+
+            $model = new LopModel();
+            // $result = $model->executeCustomQuery('');
+            $left_menu_data = array();
+            $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+            $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+            $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+            $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+            $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+            $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+            $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+
+            $main_layout_data['class_name'] = $left_menu_data["class_name"];
+            $main_layout_data['contentsection'] = view('CourseChatSectionLayout');
+            return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+        } else if (session()->get('role') == 2) { // Giang vien
+            // Kiểm tra xem giảng viên hay học viên có được truy cập vào lớp này hay không
+            $id_giang_vien = session()->get('id_role');
+            $model = new phan_cong_giang_vienModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM phan_cong_giang_vien WHERE phan_cong_giang_vien.id_giang_vien = {$id_giang_vien} AND phan_cong_giang_vien.id_lop_hoc = {$id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ClassNotFound");
+            } else {
+                $result = $model->executeCustomQuery(
+                    'SELECT giang_vien.ho_ten, giang_vien.id_giang_vien, users.anh_dai_dien
+                    FROM users
+                    INNER JOIN giang_vien ON users.id_giang_vien = giang_vien.id_giang_vien
+                    WHERE users.id_user = ' . session()->get("id_user")
+                );
+                $navbar_data['username'] = "{$result[0]['ho_ten']}";
+                $navbar_data['role'] = 'Giảng viên';
+                $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
+                $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+
+                $model = new LopModel();
+                // $result = $model->executeCustomQuery('');
+                $left_menu_data = array();
+                $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+                $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+                $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+                $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+                $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+                $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+
+                // $chatData[] = $this->getChatCourse();
+                $main_layout_data['class_name'] = $left_menu_data["class_name"];
+                $main_layout_data['contentsection'] = view('CourseChatSectionLayout',$this->getChatCourse());
+                return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+            }
+
+            // Not yet
+        } else if (session()->get('role') == 3) { // Hoc vien
+            $id_hoc_vien = session()->get('id_role');
+            $model = new hoc_vien_tham_giaModel();
+            $result = $model->executeCustomQuery(
+                "SELECT * FROM hoc_vien_tham_gia WHERE hoc_vien_tham_gia.id_hoc_vien = {$id_hoc_vien} AND hoc_vien_tham_gia.id_lop_hoc = {$id_lop_hoc}"
+            );
+            if (count($result) == 0) {
+                return view("CommonViewCell\ClassNotFound");
+            } else {
+                $result = $model->executeCustomQuery(
+                    'SELECT hoc_vien.ho_ten, hoc_vien.hoc_vien, users.anh_dai_dien
+                    FROM users
+                    INNER JOIN hoc_vien ON users.id_hoc_vien = hoc_vien.id_hoc_vien
+                    WHERE users.id_user = ' . session()->get("id_user")
+                );
+                $navbar_data['username'] = "{$result[0]['ho_ten']}";
+                $navbar_data['role'] = 'Học viên';
+                $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
+                $navbar_data['chatBox'] = $this->getChatBox();
+                $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
+
+                $model = new LopModel();
+                // $result = $model->executeCustomQuery('');
+                $left_menu_data = array();
+                $course_id_mon_hoc = str_pad($course[0]["id_mon_hoc"], 3, "0", STR_PAD_LEFT);
+                $course_id_lop_hoc = str_pad($course[0]["id_lop_hoc"], 6, "0", STR_PAD_LEFT);
+                $left_menu_data["class_name"] = $course[0]["ten_mon_hoc"] . " " . $course_id_mon_hoc . "." . $course_id_lop_hoc;
+                $left_menu_data["student_quantity"] = $course[0]["so_luong_hoc_vien"];
+                $left_menu_data["state"] = $this->kiem_tra_tinh_trang($course[0]["ngay_bat_dau"], $course[0]["ngay_ket_thuc"]);
+                $left_menu_data["id_lop_hoc"] = $course[0]["id_lop_hoc"];
+                $main_layout_data['leftmenu'] = view('Admin\ViewCell\LeftMenuInCourseDetail', $left_menu_data);
+
+                // $chatData[] = $this->getChatCourse();
+                $main_layout_data['class_name'] = $left_menu_data["class_name"];
+                $main_layout_data['contentsection'] = view('CourseChatSectionLayout',$this->getChatCourse());
+                return view('Admin\ViewLayout\CourseDetailLayout', $main_layout_data);
+            }
+        }
+    }
+
+    public function getChatCourse(){
+        $tinNhanChungModel = new TinNhanChungModel();
+        $chat_course["kenh_nhan"] = $_GET["courseid"];
+        $chat_course["user_main"] = session()->get('id_user');
+        $kenh_nhan = strval($chat_course["kenh_nhan"]);
+        $user_gui = "";
+        $chat_course["tin_nhans"] = $tinNhanChungModel->queryDatabase(
+            'SELECT noi_dung, thoi_gian, user_gui, anh
+            FROM tin_nhan_chung
+            WHERE kenh_nhan IN ('.$kenh_nhan .')
+            ORDER BY thoi_gian');
+        $n = count($chat_course["tin_nhans"]);
+
+        for($i = 0; $i < $n-1; $i++){
+            $user_gui = $user_gui . strval($chat_course["tin_nhans"][$i]["user_gui"]) . ",";
+        }
+        $user_gui = $n > 0 ? $user_gui . strval($chat_course["tin_nhans"][$n-1]["user_gui"]) : $user_gui;
+
+        $chat_course['hoTen'] = $tinNhanChungModel->queryDatabase(
+            'SELECT
+                id_user,
+                CASE
+                    WHEN u.id_giang_vien IS NOT NULL THEN gv.ho_ten
+                    WHEN u.id_ad IS NOT NULL THEN ad.ho_ten
+                    WHEN u.id_hoc_vien IS NOT NULL THEN hv.ho_ten
+                END AS ho_ten
+            FROM
+                users u
+            LEFT JOIN giang_vien gv ON u.id_giang_vien = gv.id_giang_vien
+            LEFT JOIN ad ON u.id_ad = ad.id_ad
+            LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
+            WHERE u.id_user IN (' . $user_gui . ')');
+        return $chat_course;
+    }
+}
 
     public function attendance()
     {   
