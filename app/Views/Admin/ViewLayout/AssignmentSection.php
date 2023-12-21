@@ -1,3 +1,2 @@
-<?php 
-    echo "hello".$id_assignment;
-?>
+<div class="content-section">
+</div>

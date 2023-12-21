@@ -4,7 +4,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use mysqli;
 include 'DatabaseConnect.php';
-use Exeption;
+use Exception;
 class LinkModel
 {
     public $id_duong_link;
@@ -120,26 +120,26 @@ class LinkModel
         $this->conn->close();
         return $rows;
     }
-
-    function insertLink($duong_link)
+    public function insertLink($dlink)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
+        $sql = "INSERT INTO duong_link(link, ngay_dang, id_giang_vien, id_muc, tieu_de) VALUES (?, ?, ?, ?, ?)";
 
-        $link = $this->conn->real_escape_string($duong_link->link);
-        $ngay_dang = $this->conn->real_escape_string($duong_link->ngay_dang);
-        $id_giang_vien = $this->conn->real_escape_string($duong_link->id_giang_vien);
-        $id_muc = $this->conn->real_escape_string($duong_link->id_muc);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssiis", $dlink->link, $dlink->ngay_dang, $dlink->id_giang_vien, $dlink->id_muc, $dlink->tieu_de);
 
-        $sql = "INSERT INTO duong_link  (link , ngay_dang, id_giang_vien, id_muc ) VALUES ('$link', '$ngay_dang', '$id_giang_vien', '$id_muc')";
-        if ($this->conn->query($sql) === TRUE) {
+        try {
+            $stmt->execute();
+            $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Đường dẫn được thêm thành công'];
+        } catch (Exception $e) {
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
@@ -150,15 +150,29 @@ class LinkModel
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $id_duong_link = $this->conn->real_escape_string($duong_link->id);
-        $sql = "DELETE FROM hoc_vien WHERE id_duong_link  = $id_duong_link";
+        $id_duong_link = $this->conn->real_escape_string($duong_link->id_duong_link);
+        $id_muc = $this->conn->real_escape_string($duong_link->id_muc);
+        $sql = "DELETE FROM duong_link WHERE id_duong_link  = ? AND id_muc = ?";
 
-        if ($this->conn->query($sql) === TRUE) {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $id_duong_link, $id_muc);
+
+        try {
+            $stmt->execute();
+            $deletedRows = $stmt->affected_rows;
+
+            $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+
+            if ($deletedRows > 0) {
+                return ['state' => true, 'message' => "Đã xóa đường dẫn thành công"];
+            } else {
+                return ['state' => false, 'message' => 'Không có đường dẫn nào bị xóa'];
+            }
+        } catch (Exception $e) {
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 

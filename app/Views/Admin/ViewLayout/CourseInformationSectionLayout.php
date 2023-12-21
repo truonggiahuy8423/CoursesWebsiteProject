@@ -397,7 +397,6 @@
                 $(`.students-table tbody .student-checkbox`).prop(`checked`, false);
             }
             isCheckedAllStudentTable = !isCheckedAllStudentTable;
-
         })
         let isCheckedAllScheduleTable = false;
         $(`.checkbox-all-schedule-table`).click(function() {

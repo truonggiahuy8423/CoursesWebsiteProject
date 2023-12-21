@@ -211,7 +211,7 @@
             $(`.add-class-btn`).click(function() {
                 console.log('OK');
                 loadingEffect(true);
-
+                
                 // Use jQuery.ajax for the AJAX request
                 $.ajax({
                     url: '<?php echo base_url(); ?>/Admin/CoursesController/getInsertClassForm',

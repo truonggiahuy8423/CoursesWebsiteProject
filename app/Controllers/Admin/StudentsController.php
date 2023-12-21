@@ -14,7 +14,8 @@ use DateTime;
 
 class StudentsController extends BaseController
 {
-    public static function compareStudentsById($a, $b) {
+    public static function compareStudentsById($a, $b)
+    {
         $idA = is_array($a) ? $a['id_hoc_vien'] : $a->id_hoc_vien;
         $idB = is_array($b) ? $b['id_hoc_vien'] : $b->id_hoc_vien;
 
@@ -26,16 +27,18 @@ class StudentsController extends BaseController
             return 0;
         }
     }
-    public function getListOfStudents() {
+    public function getListOfStudents()
+    {
         $model = new UserModel();
         $students = $model->executeCustomQuery(
-            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien");
+            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien"
+        );
         usort($students, [$this, 'compareStudentsById']);
         return $this->response->setJSON($students);
     }
     public function index(): string
     {
-        
+
         // Verify login status
         if (!session()->has('id_user')) {
             return redirect()->to('/');
@@ -54,28 +57,24 @@ class StudentsController extends BaseController
                 'SELECT ad.ho_ten, users.anh_dai_dien
                 FROM users
                 INNER JOIN ad ON users.id_ad = ad.id_ad
-                WHERE users.id_user = '.session()->get("id_user")
+                WHERE users.id_user = ' . session()->get("id_user")
             );
             $navbar_data['username'] = "{$result[0]['ho_ten']}";
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
 
-            $students = $model->executeCustomQuery(
-                "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien");
-            usort($students, [$this, 'compareStudentsById']);
-            $students_list_section_layout_data['students'] = $students;
+            // $students = $model->executeCustomQuery(
+            //     "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien");
+            // usort($students, [$this, 'compareStudentsById']);
+            // $students_list_section_layout_data['students'] = $students;
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             $main_layout_data['mainsection'] = view('Admin\ViewLayout\StudentsListSectionLayout', $students_list_section_layout_data);
             return view('Admin\ViewLayout\MainLayout', $main_layout_data);
+        } else if (session()->get('role') == 2) { // Giang vien
+
+        } else if (session()->get('role') == 3) { // Hoc vien
+
         }
-        else if (session()->get('role') == 2) { // Giang vien
- 
-        }
-        else if (session()->get('role') == 3) { // Hoc vien
- 
-        }
-        
-       
     }
 
     public function information()
@@ -179,7 +178,7 @@ class StudentsController extends BaseController
     //         return redirect()->to('/');
     //     }
     //     $data = json_decode(json_encode($this->request->getJSON()), true);
-        
+
     //     $students = $data["students"];
     //     $response = array();
     //     for ($i = 0; $i < count($students); $i++) {
@@ -195,13 +194,13 @@ class StudentsController extends BaseController
     //     if (!session()->has('id_user')) {
     //         return redirect()->to('/');
     //     }
-    
+
     //     $model = new HocVienModel();
     //     $response = $model->deleteHocVien($id);
-    
+
     //     return $this->response->setJSON(['result' => $response]);
     // }
-    
+
 
     public function insertStudent()
     {
@@ -222,7 +221,7 @@ class StudentsController extends BaseController
         return $this->response->setJSON($model->insertHocVien($student));
     }
 
-    public function storeStudent() 
+    public function storeStudent()
     {
         $student = new HocVienModel();
         $data = [
@@ -232,9 +231,8 @@ class StudentsController extends BaseController
             'email' => $this->request->getPost('email')
         ];
         $student->save($data);
-        $data = ['status'=>'Student Inserted Successfully'];
+        $data = ['status' => 'Student Inserted Successfully'];
         return $this->response->setJSON($data);
-
     }
 
     public function updateStudent()
@@ -245,7 +243,7 @@ class StudentsController extends BaseController
 
         if ($this->request->isAJAX()) {
             $data = $this->request->getJSON();
-            
+
             $model = new HocVienModel();
             $result = $model->updateHocVien($data);
 
@@ -258,19 +256,29 @@ class StudentsController extends BaseController
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-    
+
         if ($this->request->isAJAX()) {
             $data = $this->request->getJSON();
-            
+
             $model = new HocVienModel();
             $result = $model->deleteHocVien($data->id_hoc_vien);
 
             return $this->response->setJSON($result);
         }
     }
+
+    // Assuming you are using CodeIgniter
+    public function searchStudents()
+    {
+        // Get the search term from the request
+        $searchTerm = $this->input->get('search');
+
+        // Use $searchTerm in your database query to filter students
+        // Example query using CodeIgniter's Query Builder:
+        $this->db->like('ho_ten', $searchTerm);
+        $results = $this->db->get('hoc_vien')->result_array();
+
+        // Return the search results as JSON
+        return $this->response->setJSON($results);
+    }
 }
-
-
-
-
-

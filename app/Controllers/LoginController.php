@@ -54,8 +54,8 @@ class LoginController extends BaseController
         $user = $model->getUserByAccount("{$account}");
         // Login validation
         if ($user == null || $user->mat_khau != $password) { // Login failed
-            echo $user->id_user;
-            echo $password;
+            // echo $user->id_user;
+            // echo $password;
             $data['login_failed'] = "Tài khoản hoặc mật khẩu không đúng";
             return view('LoginPage', $data);
         } else { // Login successfully
@@ -66,7 +66,7 @@ class LoginController extends BaseController
                 $session->start();
                 $session->set('id_user', $user->id_user);
                 $session->set('role', 1);
-                $session->set('id_role', 1);
+                $session->set('id_role', $user->id_ad);
 
                 //return view('LoginPage');
 
@@ -78,7 +78,7 @@ class LoginController extends BaseController
                 $session->start();
                 $session->set('id_user', $user->id_user);
                 $session->set('role', 2);
-                $session->set('id_role', 1);
+                $session->set('id_role', $user->id_giang_vien);
                 //return view('LoginPage');
 
                 //f (isset($_SESSION['id_user']))
@@ -89,7 +89,7 @@ class LoginController extends BaseController
                 $session->start();
                 $session->set('id_user', $user->id_user);
                 $session->set('role', 3);
-                $session->set('id_role', 1);
+                $session->set('id_role', $user->id_hoc_vien);
                 //return view('LoginPage');
 
                 //f (isset($_SESSION['id_user']))

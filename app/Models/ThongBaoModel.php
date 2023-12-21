@@ -4,7 +4,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use mysqli;
 include 'DatabaseConnect.php';
-
+use Exception;
 class ThongBaoModel
 {
     public $id_thong_bao;
@@ -123,44 +123,61 @@ class ThongBaoModel
         return $rows;
     }
 
-    function insertThongBao($thong_bao)
+
+    public function insertThongBao($tb)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
+        $sql = "INSERT INTO thong_bao (noi_dung , ngay_dang, id_giang_vien, id_muc, tieu_de) VALUES (?, ?, ?, ?, ?)";
 
-        $noi_dung = $this->conn->real_escape_string($thong_bao->noi_dung);
-        $ngay_dang = $this->conn->real_escape_string($thong_bao->ngay_dang);
-        $id_giang_vien = $this->conn->real_escape_string($thong_bao->id_giang_vien);
-        $id_muc = $this->conn->real_escape_string($thong_bao->id_muc);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssiis", $tb->noi_dung, $tb->ngay_dang, $tb->id_giang_vien, $tb->id_muc, $tb->tieu_de);
 
-        $sql = "INSERT INTO thong_bao (noi_dung , ngay_dang, id_giang_vien, id_muc) VALUES ('$noi_dung', '$ngay_dang', '$id_giang_vien', '$id_muc')";
-        if ($this->conn->query($sql) === TRUE) {
+        try {
+            $stmt->execute();
+            $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Insert thành công'];
-        } else {
+            return ['state' => true, 'message' => 'Thông báo được thêm thành công'];
+        } catch (Exception $e) {
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
-    function deleteThongBao($thong_bao)
+    function deleteThongBao($tb)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $id_thong_bao = $this->conn->real_escape_string($thong_bao->id_thong_bao);
-        $sql = "DELETE FROM thong_bao WHERE id_thong_bao = $id_thong_bao";
+        $id_thong_bao = $this->conn->real_escape_string($tb->id_thong_bao);
+        $id_muc = $this->conn->real_escape_string($tb->id_muc);
 
-        if ($this->conn->query($sql) === TRUE) {
+        $sql = "DELETE FROM thong_bao WHERE id_thong_bao = ? AND id_muc = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $id_thong_bao, $id_muc);
+
+        try {
+            $stmt->execute();
+            $deletedRows = $stmt->affected_rows;
+
+            $stmt->close();
             $this->conn->close();
-            return ['state' => true, 'message' => 'Delete thành công'];
-        } else {
+
+            if ($deletedRows > 0) {
+                return ['state' => true, 'message' => "Đã xóa thông báo thành công"];
+            } else {
+                return ['state' => false, 'message' => 'Không có thông báo nào bị xóa'];
+            }
+        } catch (Exception $e) {
+            $stmt->close();
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $stmt->error];
         }
     }
 
