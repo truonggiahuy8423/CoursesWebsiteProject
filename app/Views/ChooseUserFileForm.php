@@ -60,7 +60,10 @@
                     uploadingNoti("Chưa có tệp nào được chọn", false);
                     return;
                 } else {
-                    var file = fileInput.files[0];
+                    // var file = fileInput.files[0];
+                    var file = fileList[0];
+
+                    console.log(file);
                     if (file.size / (1024 * 1024) > 50) {
                         uploadingNoti("Độ lớn file không vượt quá 50MB", false);
                         return;

@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Controllers\BaseController;
 use App\Controllers\LoginController;
+use App\Models\AdModel;
 use App\Models\BaiNopModel;
 use App\Models\BaiTapModel;
 use App\Models\BuoiHocModel;
@@ -211,7 +212,7 @@ class CoursesController extends BaseController
         return $this->response->setJSON($result);
 
     }
-    
+ 
     public function getFile2()
     {
         if (!session()->has('id_user')) {
@@ -315,6 +316,66 @@ class CoursesController extends BaseController
         }
         // Check xem file cần get có được đăng vào lớp hay không
 
+    }
+    public function insertUser() {
+        $file = $this->request->getFile('file');
+        $account = $this->request->getPost('account');
+        $password = $this->request->getPost('password');
+        $role = $this->request->getPost('role');
+        $id_role = $this->request->getPost('id_role');
+        $fileContent = null;
+        if ($file != null) {
+            $fileContent = (file_get_contents($file->getTempName()));
+        }
+        // return $this->response->setJSON(["state" => false, "message" => "$fileContent"]);
+
+
+        $user = new UserModel();
+        $user->tai_khoan = $account;
+        $user->anh_dai_dien = $fileContent;
+        $user->mat_khau = $password;
+        if ($role == 0) {
+            $user->id_ad = $id_role;
+            $user->id_giang_vien = null;
+            $user->id_hoc_vien = null;
+        } else if ($role == 1) {
+            $user->id_giang_vien = $id_role;
+            $user->id_hoc_vien = null;
+            $user->id_ad = null;
+        } else if ($role == 2) {
+            $user->id_hoc_vien = $id_role;
+            $user->id_ad = null;
+            $user->id_giang_vien = null;
+        } else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra"]);
+        }
+        $user->thoi_gian_dang_nhap_gan_nhat = null;
+
+        return $this->response->setJSON($user->insertUser($user));
+    }
+    public function getListOfAdmins() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new AdModel();
+        $rs = $model->getAllAd();
+        return $this->response->setJSON($rs);
+    }
+    public function getListOfLecturers() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new GiangVienModel();
+        $rs = $model->getAllGiangViens();
+        return $this->response->setJSON($rs);
+    }
+    public function getListOfStudents() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new HocVienModel();
+        $rs = $model->getAllHocViens();
+        return $this->response->setJSON($rs);
     }
     public function getFile()
     {

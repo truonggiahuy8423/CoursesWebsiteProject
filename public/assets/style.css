@@ -1891,3 +1891,98 @@ input[type="file"] {
     background-color: #343a40; /* Dark background color */
     color: white;
 }
+.active-icon {
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+    border-radius: 10px;
+    background-color: #52ec4d;
+    margin-bottom: 1px;
+    margin-right: 4px;
+}
+.user-table td {
+    vertical-align: middle;
+}
+
+.grid-2-column {
+    display: grid;
+    grid-template-columns: 260px 1fr 2fr;
+}
+
+.user-form__input-container {
+    margin-top: 20px;
+}
+
+.center-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.uploaded-ava {
+    height: 140px;
+    width: 140px;
+    border-radius: 100px;
+}
+.uploaded-ava-container {
+    position: relative!important;
+}
+.img-input {
+    position: absolute!important;
+    bottom: 0px;
+    right: 0px;
+    z-index: 10;
+    margin: 0px;
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.69);
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.user-form__input-container span {
+    font-size: 14px;
+}
+.role-cbb {
+    font-size: 15px;
+    height: 29.2px;
+    width: 170px;
+}
+.insert-user-form {
+    min-width: 800px!important;
+}
+
+.upload-avatar-btn-container {
+    position: absolute;
+    top: 200px;
+    left: 260px;
+}
+.insert-user-form {
+    position: relative;
+}
+
+.hidden-password {
+    display: inline;
+}
+
+.visible-password {
+    display: none;
+}
+.password-cell .visible-password {
+    display: none;
+}
+
+.password-cell:hover .visible-password {
+    display: inline;
+}
+
+.password-cell:hover .hidden-password {
+    display: none;
+}
+.password-cell {
+    cursor: pointer;
+}
+
