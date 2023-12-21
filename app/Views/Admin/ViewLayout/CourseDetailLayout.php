@@ -38,59 +38,6 @@
     // $(document).on('click', '.class-div', function() {
     //         });
     /////////////////////////////
-    //Chat Section Script
-    $(document).on('click', '.sendBtn_course', function() {
-        var noi_dung_tin_nhan = $('.inputChat_course').val();
-        var chatboxID = $(this).attr('chatBoxID');
-        $('.inputChat_course').val('');
-        var obj = {
-            noi_dung: noi_dung_tin_nhan,
-            kenh_nhan: chatboxID,
-        }
-        var jsonData = JSON.stringify(obj);
-        console.log(noi_dung_tin_nhan);
-        console.log(jsonData);
-        if(noi_dung_tin_nhan.length != 0){
-            $.ajax({
-                url: '<?php echo base_url(); ?>/TinNhanController/sendTinNhanChung',
-                method: 'POST',
-                contentType: 'application/json',
-                data: jsonData,
-                success: function(response) {
-                    if(response.state) {
-                        $('.inboxContent_course').append(`
-                        <div class="col-7 offset-5 mb-1">
-                            <div class="card">
-                                <p class="p-1">${obj.noi_dung}</p>
-                            </div>
-                        </div>`);
-                    }
-                    $('.inbox__body_course').scrollTop($('.inboxContent_course').height());
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', status, error);
-                }
-            });
-        }
-        // setInterval(function(){
-        //     var chatboxID = $('.sendBtn_course').attr('chatBoxID');
-        //     $.ajax({
-        //         url: '<?php echo base_url(); ?>/TinNhanController/getChatContentCourse',
-        //         method: 'GET',
-        //         data:{
-        //             chatid_course: chatboxID
-        //         },
-        //         success: function(response) {
-        //             $('.inbox__body_course').html('');
-        //             $('.inbox__body_course').append(response);
-        //             $('.inbox__body_course').scrollTop($('.inboxContent_course').height());
-        //         },
-        //         error: function(xhr, status, error) {
-        //             console.error('Error:', status, error);
-        //         }
-        //     });
-        // },1000);
-    });
 </script>
 <style>
    
