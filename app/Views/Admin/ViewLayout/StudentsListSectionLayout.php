@@ -14,21 +14,20 @@
 
     use App\Models\HocVienModel;
 
-    $model = new HocVienModel();
-
     if (!session()->has('id_user')) {
         return redirect()->to('/');
     }
-    // Pagination settings
-    $recordsPerPage = 20;
-    $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
-    $offset = ($currentPage - 1) * $recordsPerPage;
-    $students = $model->executeCustomQuery(
-        "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien order by hoc_vien.id_hoc_vien ASC LIMIT $recordsPerPage OFFSET $offset "
-    );
-    $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
-    $totalPages = ceil($totalStudents / $recordsPerPage);
+        // Pagination settings
+        $recordsPerPage = 20; 
+        $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        $offset = ($currentPage - 1) * $recordsPerPage;
+        $students = $model->executeCustomQuery(
+            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien order by hoc_vien.id_hoc_vien ASC LIMIT $recordsPerPage OFFSET $offset "
+        );
+        $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
+        $totalPages = ceil($totalStudents / $recordsPerPage);
 
+    $model = new HocVienModel();
 
     // Pagination settings
     $recordsPerPage = 20;
@@ -44,28 +43,33 @@
     echo view('Admin\ViewCell\UpdateStudentForm');
     ?>
 
-    <div class="students-list-section">
-        <div>
-            <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
-        </div>
-
-        <div style="height: 30px; margin-bottom: 8px;" class="class__search me-2 d-flex justify-content-end" >
-
-            <!-- <div class="input-group"> -->
-                <input autocomplete="off" id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
-
-                <!-- <input id="searchInput" autocomplete="new" style="border-radius: 0; height: 30px; width: 450px!important; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2"> -->
+<div class="students-list-section">
+    <div>
+        <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
+    </div>
+  <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
+            <div class="input-group">
+                <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
                 <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
-                <button type="button" class="btn btn-success add-student-btn" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
-
-            <!-- </div> -->
+            </div>
         </div>
-        <!-- <div class="button-container d-flex justify-content-end pe-5">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
-        </div> -->
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead style="top: -1px">
+    <div class="button-container d-flex justify-content-end pe-5">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead style="top: -1px">
+                <tr>
+                    <th class="text-center text-white bg-dark">Mã học viên</th>
+                    <th class="text-center text-white bg-dark">Họ tên</th>
+                    <th class="text-center text-white bg-dark">Giới tính</th>
+                    <th class="text-center text-white bg-dark">Ngày sinh</th>
+                    <th class="text-center text-white bg-dark">Email</th>
+                    <th class="text-center text-white bg-dark"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($students as $student): ?>
                     <tr>
                         <th class="text-center text-white bg-dark">Mã học viên</th>
                         <th class="text-center text-white bg-dark">Họ tên</th>
@@ -109,74 +113,76 @@
             </ul>
         </nav>
     </div>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script>
-        function xoa(id) {
-            var confirmation = confirm("Bạn có chắc chắn muốn xóa học viên " + id);
-            if (confirmation) {
-                $.ajax({
-                    url: '<?php echo base_url(); ?>/Admin/StudentsController/deleteStudent',
-                    method: 'POST',
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        id_hoc_vien: id
-                    }),
-                    success: function(response) {
-
-                        //$('#row_' + id).remove();
-                        toast({
-                            title: 'Thành công',
-                            message: 'Xóa học viên thành công',
-                            type: 'success',
-                            duration: 5000
-                        });
-
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Delete error:', status, error);
-                        toast({
-                            title: 'Thất bại',
-                            message: 'Có lỗi xảy ra, vui lòng liên hệ quản trị viên',
-                            type: 'error',
-                            duration: 5000
-                        });
-                    }
-                });
-            }
-        }
-
-        $(document).ready(function() {
-            $('#searchButton').on('click', function() {
-                var searchTerm = $('#searchInput').val();
-
-                $.ajax({
-                    url: '<?php echo base_url(); ?>/Admin/StudentsController/searchStudents',
-                    method: 'GET',
-                    data: {
-                        search: searchTerm
-                    },
-                    success: function(response) {
-                        // Update the student list with the search results
-                        // ...
-
-                        // Example: Assuming your response is an array of student names
-                        var studentList = $('#studentList'); // Update with your actual table ID
-                        studentList.empty();
-
-                        response.forEach(function(student) {
-                            studentList.append('<tr><td>' + student.name + '</td></tr>');
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Search error:', status, error);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 
 </html>
+
+<style>
+
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    function xoa(id) {
+        var confirmation = confirm("Bạn có chắc chắn muốn xóa học viên " + id);
+        if (confirmation) {
+            $.ajax({
+                url: '<?php echo base_url(); ?>/Admin/StudentsController/deleteStudent',
+                method: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify({
+                    id_hoc_vien: id
+                }),
+                success: function(response) {
+
+                    //$('#row_' + id).remove();
+                    toast({
+                        title: 'Thành công',
+                        message: 'Xóa học viên thành công',
+                        type: 'success',
+                        duration: 5000
+                    });
+
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Delete error:', status, error);
+                    toast({
+                        title: 'Thất bại',
+                        message: 'Có lỗi xảy ra, vui lòng liên hệ quản trị viên',
+                        type: 'error',
+                        duration: 5000
+                    });
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $('#searchButton').on('click', function () {
+            var searchTerm = $('#searchInput').val();
+
+            $.ajax({
+                url: '<?php echo base_url(); ?>/Admin/StudentsController/searchStudents',
+                method: 'GET',
+                data: { search: searchTerm },
+                success: function(response) {
+                    // Update the student list with the search results
+                    // ...
+
+                    // Example: Assuming your response is an array of student names
+                    var studentList = $('#studentList'); // Update with your actual table ID
+                    studentList.empty();
+
+                    response.forEach(function(student) {
+                        studentList.append('<tr><td>' + student.name + '</td></tr>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Search error:', status, error);
+                }
+            });
+        });
+    });
+</script>
