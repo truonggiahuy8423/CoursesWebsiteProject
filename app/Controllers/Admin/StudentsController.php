@@ -63,11 +63,10 @@ class StudentsController extends BaseController
             $navbar_data['role'] = 'Adminstrator';
             $navbar_data['avatar_data'] = "{$result[0]['anh_dai_dien']}";
 
-            $students = $model->executeCustomQuery(
-                "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien"
-            );
-            usort($students, [$this, 'compareStudentsById']);
-            $students_list_section_layout_data['students'] = $students;
+            // $students = $model->executeCustomQuery(
+            //     "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien");
+            // usort($students, [$this, 'compareStudentsById']);
+            // $students_list_section_layout_data['students'] = $students;
             $main_layout_data['navbar'] = view('Admin\ViewCell\NavBar', $navbar_data);
             $main_layout_data['mainsection'] = view('Admin\ViewLayout\StudentsListSectionLayout', $students_list_section_layout_data);
             return view('Admin\ViewLayout\MainLayout', $main_layout_data);

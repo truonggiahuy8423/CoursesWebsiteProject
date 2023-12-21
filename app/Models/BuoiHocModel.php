@@ -204,12 +204,15 @@ class BuoiHocModel {
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
+        $stmt = $this->conn->prepare($sql);
         try {
-            $this->conn->query($sql);
+            $stmt->execute();
+            $stmt->close();
             $this->conn->close();
             return ['state' => true, 'message' => 'Cập nhật thành công'];
         } catch (Exception $e) {
             // Nếu có lỗi, xử lý lỗi
+            $stmt->close();
             $this->conn->close();
             return ['state' => false, 'message' => $e->getMessage()];
         }        

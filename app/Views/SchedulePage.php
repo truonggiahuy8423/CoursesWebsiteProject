@@ -251,6 +251,7 @@
                 }
 
             );
+            $(`.rectangle-parent1:first`).click();
         });
 
 
@@ -415,145 +416,147 @@
 
 
         window.addEventListener("load", function() {
-            let currentURL = window.location.href;
+            // let currentURL = window.location.href;
 
-            // Tạo một đối tượng URL để trích xuất các tham số
-            let urlObject = new URL(currentURL);
+            // // Tạo một đối tượng URL để trích xuất các tham số
+            // let urlObject = new URL(currentURL);
 
-            // Lấy giá trị của tham số 'id' từ URL
-            let id = urlObject.searchParams.get('courseid');
+            // // Lấy giá trị của tham số 'id' từ URL
+            // let id = urlObject.searchParams.get('courseid');
 
-            console.log(id); // In ra ID từ URL 
-            $.ajax({
-                url: "<?php echo base_url() ?>Admin/CoursesController/Getbuoihocdautien",
-                method: "POST",
-                contentType: 'application/json',
-                dataType: "json",
-                data: JSON.stringify(id), // Chuyển đổi dữ liệu sang chuỗi JSON
-                success: function(response) {
-                    // Xử lý phản hồi từ server
-                    let ArrListAtten = response;
-                    let newElement = `
+            // console.log(id); // In ra ID từ URL 
+            // $.ajax({
+            //     url: "<?php echo base_url() ?>Admin/CoursesController/Getbuoihocdautien",
+            //     method: "POST",
+            //     contentType: 'application/json',
+            //     dataType: "json",
+            //     data: JSON.stringify(id), // Chuyển đổi dữ liệu sang chuỗi JSON
+            //     success: function(response) {
+            //         // Xử lý phản hồi từ server
+            //         let ArrListAtten = response;
+            //         let newElement = `
     
-                            <div class="MaHV">
-                                <div class="Hvien"> Mã học viên</div>
-                            </div>
-                            <div class="HoVTen">
-                                <div class="Hotena"> Họ tên</div>
-                            </div>
-                            <div class="Aten">
-                                <div class="diemanh">Điểm danh</div> 
-                            </div>
-                            <div class="ghichu">
-                                <div class="note">Ghi chú</div>
-                            </div>
-                        `;
-                    //     console.log(ArrListAtten);
-                    //     <div class="thng-tin-im">Thông tin điểm danh</div>
+            //                 <div class="MaHV">
+            //                     <div class="Hvien"> Mã học viên</div>
+            //                 </div>
+            //                 <div class="HoVTen">
+            //                     <div class="Hotena"> Họ tên</div>
+            //                 </div>
+            //                 <div class="Aten">
+            //                     <div class="diemanh">Điểm danh</div> 
+            //                 </div>
+            //                 <div class="ghichu">
+            //                     <div class="note">Ghi chú</div>
+            //                 </div>
+            //             `;
+            //         //     console.log(ArrListAtten);
+            //         //     <div class="thng-tin-im">Thông tin điểm danh</div>
 
-                    // <div class="bui-hc-th">
-                    //     Buổi học: Thứ 6 03/11/2023 P.101 07:00 - 11:00 - 2809232092
-                    // </div>
-                    const firstElement = ArrListAtten[0]; // Lấy phần tử đầu tiên của mảng
+            //         // <div class="bui-hc-th">
+            //         //     Buổi học: Thứ 6 03/11/2023 P.101 07:00 - 11:00 - 2809232092
+            //         // </div>
+            //         const firstElement = ArrListAtten[0]; // Lấy phần tử đầu tiên của mảng
 
-                    const ngay = new Date(firstElement.ngay);
-                    const dayOfWeek = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][ngay.getDay()];
-                    const ngayFormatted = `${ngay.getDate()}/${ngay.getMonth() + 1}/${ngay.getFullYear()}`;
-                    const gioBD = firstElement.thoi_gian_bat_dau;
-                    const gioKT = firstElement.thoi_gian_ket_thuc;
-                    const phong = `P.${firstElement.id_phong}`;
-                    const id = `-${firstElement.id_buoi_hoc}`;
+            //         const ngay = new Date(firstElement.ngay);
+            //         const dayOfWeek = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][ngay.getDay()];
+            //         const ngayFormatted = `${ngay.getDate()}/${ngay.getMonth() + 1}/${ngay.getFullYear()}`;
+            //         const gioBD = firstElement.thoi_gian_bat_dau;
+            //         const gioKT = firstElement.thoi_gian_ket_thuc;
+            //         const phong = `P.${firstElement.id_phong}`;
+            //         const id = `-${firstElement.id_buoi_hoc}`;
 
-                    const htmlString = `<div class="bui-hc-th">
-                                        Buổi học: ${dayOfWeek} ${ngayFormatted} ${phong} ${gioBD} - ${gioKT} ${id}
-                                    </div>`;
-                    document.getElementById('container').innerHTML = htmlString;
+            //         const htmlString = `<div class="bui-hc-th">
+            //                             Buổi học: ${dayOfWeek} ${ngayFormatted} ${phong} ${gioBD} - ${gioKT} ${id}
+            //                         </div>`;
+            //         document.getElementById('container').innerHTML = htmlString;
 
-                    console.log(htmlString);
+            //         console.log(htmlString);
 
-                    // Xóa nội dung cũ của container-tg trước khi thêm danh sách mới
+            //         // Xóa nội dung cũ của container-tg trước khi thêm danh sách mới
 
-                    // Kiểm tra xem có phần tử con nào có class là container-tg không
-                    var lammoi = $('.group-child4 .container-tg');
-                    if (lammoi.length > 0) {
-                        lammoi.remove(); // Loại bỏ thẻ div ra khỏi DOM và xóa nó khỏi bộ nhớ
-                    }
-                    // Nếu tồn tại phần tử container-tg, loại bỏ nó
+            //         // Kiểm tra xem có phần tử con nào có class là container-tg không
+            //         var lammoi = $('.group-child4 .container-tg');
+            //         if (lammoi.length > 0) {
+            //             lammoi.remove(); // Loại bỏ thẻ div ra khỏi DOM và xóa nó khỏi bộ nhớ
+            //         }
+            //         // Nếu tồn tại phần tử container-tg, loại bỏ nó
 
-                    $('.container-tg').empty();
-                    console.log(ArrListAtten)
-                    // Tạo container-tg mới và thêm danh sách học viên vào
-                    let containerTG = $('<div>').addClass('container-tg');
-                    ArrListAtten.forEach(function(hocvien) {
-                        let idBuoiHoc = hocvien.id_buoi_hoc;
-                        let idSinhVien = hocvien.id_hoc_vien;
-                        let hoVaTen = hocvien.ho_ten;
-                        let ghiChu = hocvien.ghi_chu;
-                        let coMat = hocvien.co_mat === '1'; // Kiểm tra nếu có mặt
-                        let strId = idSinhVien.toString();
-                        let paddedId = '0000' + strId;
-                        let displayedId = paddedId.slice(-5);
-                        let groupChild5 = $('<div>').addClass('group-child5');
-                        let groupChild6 = $('<div>').addClass('group-child6');
-                        let groupChild7 = $('<div>').addClass('group-child7');
-                        let groupChild8 = $('<div>').addClass('group-child8');
+            //         $('.container-tg').empty();
+            //         console.log(ArrListAtten)
+            //         // Tạo container-tg mới và thêm danh sách học viên vào
+            //         let containerTG = $('<div>').addClass('container-tg');
+            //         ArrListAtten.forEach(function(hocvien) {
+            //             let idBuoiHoc = hocvien.id_buoi_hoc;
+            //             let idSinhVien = hocvien.id_hoc_vien;
+            //             let hoVaTen = hocvien.ho_ten;
+            //             let ghiChu = hocvien.ghi_chu;
+            //             let coMat = hocvien.co_mat === '1'; // Kiểm tra nếu có mặt
+            //             let strId = idSinhVien.toString();
+            //             let paddedId = '0000' + strId;
+            //             let displayedId = paddedId.slice(-5);
+            //             let groupChild5 = $('<div>').addClass('group-child5');
+            //             let groupChild6 = $('<div>').addClass('group-child6');
+            //             let groupChild7 = $('<div>').addClass('group-child7');
+            //             let groupChild8 = $('<div>').addClass('group-child8');
 
-                        let divIdSinhVien = $('<div>').text(displayedId).addClass('div');
-                        let divHoVaTen = $('<div>').text(hoVaTen).addClass('trng-gia-huy');
+            //             let divIdSinhVien = $('<div>').text(displayedId).addClass('div');
+            //             let divHoVaTen = $('<div>').text(hoVaTen).addClass('trng-gia-huy');
 
-                        let checkbox = $('<input>').attr({
-                            type: 'checkbox',
-                            id: idSinhVien,
-                            idbuoihoc: idBuoiHoc,
-                            checked: coMat // Thiết lập trạng thái checked dựa trên co_mat
-                        });
+            //             let checkbox = $('<input>').attr({
+            //                 type: 'checkbox',
+            //                 id: idSinhVien,
+            //                 idbuoihoc: idBuoiHoc,
+            //                 checked: coMat // Thiết lập trạng thái checked dựa trên co_mat
+            //             });
 
-                        let inputText = $('<input>').attr({
-                            type: 'text',
-                            placeholder: '',
-                            id: idSinhVien,
-                            idbuoihoc: idBuoiHoc,
-                        }).val(ghiChu); // Hiển thị ghi chú trong input text
+            //             let inputText = $('<input>').attr({
+            //                 type: 'text',
+            //                 placeholder: '',
+            //                 id: idSinhVien,
+            //                 idbuoihoc: idBuoiHoc,
+            //             }).val(ghiChu); // Hiển thị ghi chú trong input text
 
-                        groupChild8.append(inputText);
-                        groupChild7.append(checkbox);
-                        groupChild5.append(divIdSinhVien);
-                        groupChild6.append(divHoVaTen);
+            //             groupChild8.append(inputText);
+            //             groupChild7.append(checkbox);
+            //             groupChild5.append(divIdSinhVien);
+            //             groupChild6.append(divHoVaTen);
 
-                        globalCheckbox.push(checkbox);
-                        globalCheckbox.push(inputText);
-                        containerTG.append(groupChild5, groupChild6, groupChild7, groupChild8);
+            //             globalCheckbox.push(checkbox);
+            //             globalCheckbox.push(inputText);
+            //             containerTG.append(groupChild5, groupChild6, groupChild7, groupChild8);
 
-                    });
-                    var container = $('.group-child4');
-                    container.append(containerTG);
-                    $('.container-tg').prepend(newElement);
+            //         });
+            //         var container = $('.group-child4');
+            //         container.append(containerTG);
+            //         $('.container-tg').prepend(newElement);
 
-                    // globalCheckbox.forEach(function(checkbox) {
-                    // checkbox.prop('disabled', true);
-                    // inputText.prop('disabled',true)
-                    // });
+            //         // globalCheckbox.forEach(function(checkbox) {
+            //         // checkbox.prop('disabled', true);
+            //         // inputText.prop('disabled',true)
+            //         // });
 
-                    globalCheckbox.forEach(function(element) {
-                        element.prop('disabled', true);
-                    });
+            //         globalCheckbox.forEach(function(element) {
+            //             element.prop('disabled', true);
+            //         });
 
-                    console.log(globalCheckbox);
+            //         console.log(globalCheckbox);
 
-                    // Disable checkbox khi lấy được
+            //         // Disable checkbox khi lấy được
 
-                    $('.container-tg').append(containerTG);
-                    console.log(containerTG);
+            //         $('.container-tg').append(containerTG);
+            //         console.log(containerTG);
 
-                    // Thêm sự kiện change để theo dõi sự thay đổi trạng thái của checkbox
+            //         // Thêm sự kiện change để theo dõi sự thay đổi trạng thái của checkbox
 
-                },
-                error: function(response) {
-                    console.log(response);
-                }
-            });
+            //     },
+            //     error: function(response) {
+            //         console.log(response);
+            //     }
+            // });
+
 
         });
+      
     </script>
 
 </body>

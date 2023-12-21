@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Controllers\BaseController;
 use App\Controllers\LoginController;
+use App\Models\AdModel;
 use App\Models\BaiNopModel;
 use App\Models\BaiTapModel;
 use App\Models\BuoiHocModel;
@@ -187,7 +188,7 @@ class CoursesController extends BaseController
         for ($i = 0; $i < count($danh_sach_hoc_vien); $i++) {
             $sbv = $model->executeCustomQuery(
                 "SELECT COUNT(buoi_hoc.id_buoi_hoc) as so_buoi_vang FROM buoi_hoc INNER JOIN diem_danh ON buoi_hoc.id_buoi_hoc = diem_danh.id_buoi_hoc
-                WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc} AND diem_danh.id_hoc_vien = {$danh_sach_hoc_vien[$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 1 AND diem_danh.co_mat = 1;"
+                WHERE buoi_hoc.id_lop_hoc = {$id_lop_hoc} AND diem_danh.id_hoc_vien = {$danh_sach_hoc_vien[$i]["id_hoc_vien"]} AND buoi_hoc.trang_thai = 2 AND diem_danh.co_mat = 0;"
             )[0]["so_buoi_vang"];
             $danh_sach_hoc_vien[$i]["so_buoi_vang"] = $sbv;
         }
@@ -199,17 +200,19 @@ class CoursesController extends BaseController
         if (!session()->has('id_user')) {
             return redirect()->to('/');
         }
-        session()->get('id_user');
+        $id = session()->get('id_user');
         $model = new UserModel();
         date_default_timezone_set('Asia/Ho_Chi_Minh');
 
         // Lấy thời gian hiện tại
         $current_time = date('Y-m-d H:i:s');
-        $model->executeCustomDDL(
-            "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}'"
+        $result = $model->executeCustomDDL(
+            "UPDATE users SET thoi_gian_dang_nhap_gan_nhat = '{$current_time}' where users.id_user = $id"
         );
+        return $this->response->setJSON($result);
+
     }
-    
+ 
     public function getFile2()
     {
         if (!session()->has('id_user')) {
@@ -313,6 +316,66 @@ class CoursesController extends BaseController
         }
         // Check xem file cần get có được đăng vào lớp hay không
 
+    }
+    public function insertUser() {
+        $file = $this->request->getFile('file');
+        $account = $this->request->getPost('account');
+        $password = $this->request->getPost('password');
+        $role = $this->request->getPost('role');
+        $id_role = $this->request->getPost('id_role');
+        $fileContent = null;
+        if ($file != null) {
+            $fileContent = (file_get_contents($file->getTempName()));
+        }
+        // return $this->response->setJSON(["state" => false, "message" => "$fileContent"]);
+
+
+        $user = new UserModel();
+        $user->tai_khoan = $account;
+        $user->anh_dai_dien = $fileContent;
+        $user->mat_khau = $password;
+        if ($role == 0) {
+            $user->id_ad = $id_role;
+            $user->id_giang_vien = null;
+            $user->id_hoc_vien = null;
+        } else if ($role == 1) {
+            $user->id_giang_vien = $id_role;
+            $user->id_hoc_vien = null;
+            $user->id_ad = null;
+        } else if ($role == 2) {
+            $user->id_hoc_vien = $id_role;
+            $user->id_ad = null;
+            $user->id_giang_vien = null;
+        } else {
+            return $this->response->setJSON(["state" => false, "message" => "Đã có lỗi xảy ra"]);
+        }
+        $user->thoi_gian_dang_nhap_gan_nhat = null;
+
+        return $this->response->setJSON($user->insertUser($user));
+    }
+    public function getListOfAdmins() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new AdModel();
+        $rs = $model->getAllAd();
+        return $this->response->setJSON($rs);
+    }
+    public function getListOfLecturers() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new GiangVienModel();
+        $rs = $model->getAllGiangViens();
+        return $this->response->setJSON($rs);
+    }
+    public function getListOfStudents() {
+        if (!session()->has('id_user')) {
+            return redirect()->to('/');
+        }
+        $model = new HocVienModel();
+        $rs = $model->getAllHocViens();
+        return $this->response->setJSON($rs);
     }
     public function getFile()
     {
@@ -1897,7 +1960,6 @@ class CoursesController extends BaseController
         );
         $isExist = count($course) > 0 ? true : false;
         if (!$isExist) {
-            //return view("CommonViewCell\ClassNotFound");
             return view("CommonViewCell\ExceptionPage", ["message" => "Lớp học không tồn tại"]);
         }
         if (session()->get('role') == 1) { // Admin
@@ -2077,7 +2139,13 @@ class CoursesController extends BaseController
             $sql=new diem_danhModel();            
             $capnhatbuoihoc=new BuoiHocModel();
             $idBuoi=$RQget[0]["type"];
-            $sql="UPDATE buoi_hoc SET trang_thai = 1 WHERE id_buoi_hoc = $idBuoi";
+            $sql="UPDATE buoi_hoc SET trang_thai = 2 WHERE id_buoi_hoc = $idBuoi";
+            $rs = $capnhatbuoihoc->executeCustomDDL($sql);
+            // return $this->response->setJSON(["state" => true, "message" => $idBuoi]);
+
+            if (!$rs["state"]) {
+                return $this->response->setJSON($rs);
+            }
             $AttenCheckin = []; // Khởi tạo mảng rỗng để chứa các đối tượng diem_danhModel
 
             foreach ($RQget as $Getdata) {
@@ -2102,11 +2170,6 @@ class CoursesController extends BaseController
             $ConfirmAtten->updatediem_danhnModel($AttenCheckin);
 
             return $this->response->setJSON($AttenCheckin);
-            
-
-
-
-
         }
 
         public function Getbuoihocdautien(){

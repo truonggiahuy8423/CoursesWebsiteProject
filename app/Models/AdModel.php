@@ -10,7 +10,7 @@ class AdModel extends Model
 {
     public $id_ad;
     public $ho_ten;
-
+    public $email;
     private $conn;
 
     public function __construct()
@@ -66,7 +66,7 @@ class AdModel extends Model
                 $ad = new AdModel();
                 $ad->id_ad = $row['id_ad'];
                 $ad->ho_ten = $row['ho_ten'];
-
+                $ad->email = $row['email'];
                 $ads[] = $ad;
             }
         }

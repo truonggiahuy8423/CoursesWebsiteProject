@@ -17,6 +17,15 @@
     if (!session()->has('id_user')) {
         return redirect()->to('/');
     }
+        // Pagination settings
+        $recordsPerPage = 20; 
+        $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        $offset = ($currentPage - 1) * $recordsPerPage;
+        $students = $model->executeCustomQuery(
+            "SELECT hoc_vien.id_hoc_vien, hoc_vien.ho_ten, hoc_vien.gioi_tinh, DATE_FORMAT(hoc_vien.ngay_sinh, '%d/%m/%Y') as ngay_sinh, hoc_vien.email FROM hoc_vien order by hoc_vien.id_hoc_vien ASC LIMIT $recordsPerPage OFFSET $offset "
+        );
+        $totalStudents = $model->executeCustomQuery("SELECT COUNT(*) as total FROM hoc_vien")[0]['total'];
+        $totalPages = ceil($totalStudents / $recordsPerPage);
 
     $model = new HocVienModel();
 
@@ -33,25 +42,34 @@
     echo view('Admin\ViewCell\InsertStudentForm');
     echo view('Admin\ViewCell\UpdateStudentForm');
     ?>
-    <div class="students-list-section">
-        <div>
-            <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
-        </div>
 
-        <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
+<div class="students-list-section">
+    <div>
+        <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
+    </div>
+  <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
             <div class="input-group">
                 <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
                 <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
             </div>
         </div>
-
-
-        <div class="button-container d-flex justify-content-end pe-5">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead>
+    <div class="button-container d-flex justify-content-end pe-5">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead style="top: -1px">
+                <tr>
+                    <th class="text-center text-white bg-dark">Mã học viên</th>
+                    <th class="text-center text-white bg-dark">Họ tên</th>
+                    <th class="text-center text-white bg-dark">Giới tính</th>
+                    <th class="text-center text-white bg-dark">Ngày sinh</th>
+                    <th class="text-center text-white bg-dark">Email</th>
+                    <th class="text-center text-white bg-dark"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($students as $student): ?>
                     <tr>
                         <th class="text-center text-white bg-dark">Mã học viên</th>
                         <th class="text-center text-white bg-dark">Họ tên</th>
@@ -100,27 +118,7 @@
 </html>
 
 <style>
-    .table-responsive {
-        max-height: 500px;
-        overflow: auto;
-    }
 
-    .button-container {
-        display: flex;
-        margin-left: auto;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .table-container,
-    thead,
-    th {
-        position: sticky;
-        top: 0;
-        background-color: #343a40;
-        /* Dark background color */
-        color: white;
-    }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>

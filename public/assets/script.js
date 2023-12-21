@@ -138,7 +138,7 @@ $(document).ready(function () {
       contentType: 'text', // Đặt kiểu dữ liệu của yêu cầu là JSON
       data: null,
       success: function (response) {
-        console.log("active");
+        console.log(response);
        }
     })
   }, 10000);
