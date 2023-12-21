@@ -2022,6 +2022,12 @@ input[type="file"] {
     margin-top: 12px;
     margin-bottom: 26px;
 }
+.add-student-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+}
 
 .students-table {
     margin-top: 12px;
