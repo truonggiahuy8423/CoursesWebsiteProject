@@ -268,18 +268,15 @@ class StudentsController extends BaseController
         }
     }
 
-    // Assuming you are using CodeIgniter
     public function searchStudents()
     {
-        // Get the search term from the request
-        $searchTerm = $this->input->get('search');
 
-        // Use $searchTerm in your database query to filter students
-        // Example query using CodeIgniter's Query Builder:
-        $this->db->like('ho_ten', $searchTerm);
-        $results = $this->db->get('hoc_vien')->result_array();
-
-        // Return the search results as JSON
+        $searchTerm = $this->request->getGet('search');
+    
+        $model = new HocVienModel();
+        $results = $model->like('ho_ten', $searchTerm)->get('hoc_vien')->result_array();
+    
         return $this->response->setJSON($results);
     }
+    
 }

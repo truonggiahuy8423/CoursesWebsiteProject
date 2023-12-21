@@ -38,16 +38,10 @@
             <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
         </div>
 
-        <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
-            <div class="input-group">
-                <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
-                <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
-            </div>
-        </div>
-
-
-        <div class="button-container d-flex justify-content-end pe-5">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
+        <div style="height: 30px; margin-bottom: 20px;" class="class__search me-2 d-flex justify-content-end">
+            <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
+            <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
+            <button class="btn highlight-button" style="height: 100%; width: 116px; font-size: 13px; border-radius: 5px; margin-left: 20px;" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm<i class="fa-solid fa-plus highlight-icon"></i></button>
         </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
@@ -161,24 +155,23 @@
         }
     }
 
-    $(document).ready(function () {
-        $('#searchButton').on('click', function () {
+    $(document).ready(function() {
+        $('#searchButton').on('click', function() {
             var searchTerm = $('#searchInput').val();
 
             $.ajax({
                 url: '<?php echo base_url(); ?>/Admin/StudentsController/searchStudents',
                 method: 'GET',
-                data: { search: searchTerm },
+                data: {
+                    search: searchTerm
+                },
                 success: function(response) {
-                    // Update the student list with the search results
-                    // ...
-
-                    // Example: Assuming your response is an array of student names
-                    var studentList = $('#studentList'); // Update with your actual table ID
+                    
+                    var studentList = $('#studentList');
                     studentList.empty();
 
                     response.forEach(function(student) {
-                        studentList.append('<tr><td>' + student.name + '</td></tr>');
+                        studentList.append('<tr><td>' + student.id_hoc_vien + '</td><td>' + student.ho_ten + '</td><td>' + (student.gioi_tinh == 1 ? 'Nam' : 'Nữ') + '</td><td>' + student.ngay_sinh + '</td><td>' + student.email + '</td><td class="text-center"><button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" data-bs-toggle="modal" data-bs-target="#SuaStudentForm" data-student-id="' + student.id_hoc_vien + '" onclick="sua(' + student.id_hoc_vien + ')">Sửa</button><button class="btn-link text-primary border-0 btn-sm" style="background-color: transparent;" onclick="xoa(' + student.id_hoc_vien + ')">Xóa</button></td></tr>');
                     });
                 },
                 error: function(xhr, status, error) {
