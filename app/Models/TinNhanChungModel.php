@@ -3,7 +3,10 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use mysqli;
-class tin_nhan_chungModel
+use Exception;
+include 'DatabaseConnect.php';
+
+class TinNhanChungModel
 {
     public $id_tin_nhan;
     public $noi_dung;
@@ -16,19 +19,19 @@ class tin_nhan_chungModel
     function __construct(){}
 
 
-    function gettin_nhan_chungById($classId)
+    function getTinNhanChungById($id_tin_nhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-
+        $id_tin_nhan = $this->conn->real_escape_string($id_tin_nhan);
         $sql = "SELECT * FROM tin_nhan_chung WHERE id_tin_nhan = $id_tin_nhan";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $user = new tin_nhan_chungModel();
+            $tinNhan = new TinNhanChungModel();
             $this->id_tin_nhan = $row["id_tin_nhan"];
             $this->noi_dung = $row["noi_dung"];
             $this->thoi_gian = $row["thoi_gian"];
@@ -36,13 +39,13 @@ class tin_nhan_chungModel
             $this->user_gui = $row["user_gui"];
             $this->kenh_nhan = $row["kenh_nhan"];
             $this->conn->close();
-            return $user;
+            return $tinNhan;
         }
         $this->conn->close();
         return null;
     }
 
-    function getAlltin_nhan_chung()
+    function getAllTinNhanChung()
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -51,22 +54,22 @@ class tin_nhan_chungModel
 
         $sql = "SELECT * FROM tin_nhan_chung";
         $result = $this->conn->query($sql);
-        $users = [];
+        $tinNhans = [];
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                $user = new tin_nhan_chungModel();
+                $tinNhan = new TinNhanChungModel();
                 $this->id_tin_nhan = $row["id_tin_nhan"];
                 $this->noi_dung = $row["noi_dung"];
                 $this->thoi_gian = $row["thoi_gian"];
                 $this->anh = $row["anh"];
                 $this->user_gui = $row["user_gui"];
                 $this->kenh_nhan = $row["kenh_nhan"];
-                $users[] = $user;
+                $tinNhans[] = $tinNhan;
             }
         }
         $this->conn->close();
-        return $users;
+        return $tinNhans;
     }
 
     function queryDatabase($sql)
@@ -75,11 +78,11 @@ class tin_nhan_chungModel
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-
+        // $sql = $this->conn->real_escape_string()
         $result = $this->conn->query($sql);
-        $rows = [];
+        $rows = array();
 
-        if ($result->num_rows > 0) {
+        if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $rows[] = $row;
             }
@@ -88,68 +91,72 @@ class tin_nhan_chungModel
         return $rows;
     }
 
-    function inserttin_nhan_chung($user)
+    function insertTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $noi_dung = $this->conn->real_escape_string($user->noi_dung);
-        $thoi_gian = $this->conn->real_escape_string($user->thoi_gian);
-        $anh = $this->conn->real_escape_string($user->anh);
-        $user_gui = $this->conn->real_escape_string($user->user_gui);
-        $kenh_nhan = $this->conn->real_escape_string($user->kenh_nhan);
-        $sql = "INSERT INTO tin_nhan_chung (noi_dung, thoi_gian, anh, user_gui, kenh_nhan) VALUES ('$noi_dung', '$thoi_gian', '$anh', '$user_gui', '$kenh_nhan')";
-        if ($this->conn->query($sql) === TRUE) {
+        $noi_dung = $this->conn->real_escape_string($tinNhan->noi_dung);
+        $thoi_gian = $this->conn->real_escape_string($tinNhan->thoi_gian);
+        // $anh = $this->conn->real_escape_string($tinNhan->anh);
+        $tinNhan_gui = $this->conn->real_escape_string($tinNhan->user_gui);
+        $kenh_nhan = $this->conn->real_escape_string($tinNhan->kenh_nhan);
+        $sql = "INSERT INTO tin_nhan_chung (noi_dung, thoi_gian, user_gui, kenh_nhan) VALUES ('$noi_dung', '$thoi_gian', '$tinNhan_gui', '$kenh_nhan')";
+        
+        try{
+            $this->conn->query($sql);
             $this->conn->close();
             return ['state' => true, 'message' => ''];
-        } else {
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 
-    function deletetin_nhan_chung($user)
+    function deleteTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
 
-        $id_tin_nhan = $this->conn->real_escape_string($user->id_tin_nhan);
+        $id_tin_nhan = $this->conn->real_escape_string($tinNhan->id_tin_nhan);
         $sql = "DELETE FROM tin_nhan_chung WHERE id_tin_nhan = $id_tin_nhan";
 
-        if ($this->conn->query($sql) === TRUE) {
+        try{
+            $this->conn->query($sql);
             $this->conn->close();
             return ['state' => true, 'message' => ''];
-        } else {
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 
-    function updatetin_nhan_chung($user)
+    function updateTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
+        $id_tin_nhan = $this->conn->real_escape_string($tinNhan->id_tin_nhan);
+        $noi_dung = $this->conn->real_escape_string($tinNhan->noi_dung);
+        $thoi_gian = $this->conn->real_escape_string($tinNhan->thoi_gian);
+        $anh = $this->conn->real_escape_string($tinNhan->anh);
+        $tinNhan_gui = $this->conn->real_escape_string($tinNhan->user_gui);
+        $kenh_nhan = $this->conn->real_escape_string($tinNhan->kenh_nhan);
 
-        $noi_dung = $this->conn->real_escape_string($user->noi_dung);
-        $thoi_gian = $this->conn->real_escape_string($user->thoi_gian);
-        $anh = $this->conn->real_escape_string($user->anh);
-        $user_gui = $this->conn->real_escape_string($user->user_gui);
-        $kenh_nhan = $this->conn->real_escape_string($user->kenh_nhan);
+        $sql = "UPDATE tin_nhan_chung SET noi_dung = '$noi_dung', thoi_gian = '$thoi_gian', anh = '$anh', user_gui = '$tinNhan_gui', kenh_nhan = '$kenh_nhan' WHERE id_tin_nhan = $id_tin_nhan";
 
-        $sql = "UPDATE tin_nhan_chung SET noi_dung = '$noi_dung', thoi_gian = '$thoi_gian', anh = '$anh', user_gui = '$user_gui', kenh_nhan = '$kenh_nhan' WHERE id_tin_nhan = $id_tin_nhan";
-
-        if ($this->conn->query($sql) === TRUE) {
+        try{
+            $this->conn->query($sql);
             $this->conn->close();
             return ['state' => true, 'message' => ''];
-        } else {
+        } catch(Exception $e) {
             $this->conn->close();
-            return ['state' => false, 'message' => $this->conn->error];
+            return ['state' => false, 'message' => $e->getMessage()];
         }
     }
 }
