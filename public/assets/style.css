@@ -259,7 +259,11 @@ img {
     background-color: rgb(184, 184, 184);
 }
 
-.inbox__body{
+.inbox_main{
+    height: 100%;
+}
+.inbox__body,
+.inbox__body_course{
     background-color: #eff1f3; 
     height: 100%;
     overflow-x: hidden;

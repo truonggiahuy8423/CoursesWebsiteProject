@@ -73,7 +73,7 @@ class ProfileController extends BaseController
                 LEFT JOIN ad ON u.id_ad = ad.id_ad
                 LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
                 WHERE u.id_user = ' . $user_nhan);
-        }   
+        }
         return $chat_box;
     }
 }

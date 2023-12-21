@@ -4,6 +4,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use mysqli;
 use Exception;
+include 'DatabaseConnect.php';
 
 class TinNhanChungModel
 {
@@ -77,11 +78,11 @@ class TinNhanChungModel
         if ($this->conn->connect_error) {
             die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
         }
-
+        // $sql = $this->conn->real_escape_string()
         $result = $this->conn->query($sql);
-        $rows = [];
+        $rows = array();
 
-        if ($result->num_rows > 0) {
+        if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $rows[] = $row;
             }
@@ -90,7 +91,7 @@ class TinNhanChungModel
         return $rows;
     }
 
-    function insertTinhNhanChung($tinNhan)
+    function insertTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -99,10 +100,10 @@ class TinNhanChungModel
 
         $noi_dung = $this->conn->real_escape_string($tinNhan->noi_dung);
         $thoi_gian = $this->conn->real_escape_string($tinNhan->thoi_gian);
-        $anh = $this->conn->real_escape_string($tinNhan->anh);
+        // $anh = $this->conn->real_escape_string($tinNhan->anh);
         $tinNhan_gui = $this->conn->real_escape_string($tinNhan->user_gui);
         $kenh_nhan = $this->conn->real_escape_string($tinNhan->kenh_nhan);
-        $sql = "INSERT INTO tin_nhan_chung (noi_dung, thoi_gian, anh, user_gui, kenh_nhan) VALUES ('$noi_dung', '$thoi_gian', '$anh', '$tinNhan_gui', '$kenh_nhan')";
+        $sql = "INSERT INTO tin_nhan_chung (noi_dung, thoi_gian, user_gui, kenh_nhan) VALUES ('$noi_dung', '$thoi_gian', '$tinNhan_gui', '$kenh_nhan')";
         
         try{
             $this->conn->query($sql);
@@ -114,7 +115,7 @@ class TinNhanChungModel
         }
     }
 
-    function deleteTinhNhanChung($tinNhan)
+    function deleteTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {
@@ -134,7 +135,7 @@ class TinNhanChungModel
         }
     }
 
-    function updateTinhNhanChung($tinNhan)
+    function updateTinNhanChung($tinNhan)
     {
         $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
         if ($this->conn->connect_error) {

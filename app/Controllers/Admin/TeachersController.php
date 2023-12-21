@@ -186,20 +186,48 @@ class TeachersController extends BaseController
                 AND user_nhan IN ('.$user_nhan .','.session()->get("id_user").')
                 ORDER BY thoi_gian DESC
                 LIMIT 1');
-        }   
-        $chat_box[$i]['hoTen'] = $tinNhanRiengModel->queryDatabase(
-            'SELECT
-                CASE
-                    WHEN u.id_giang_vien IS NOT NULL THEN gv.ho_ten
-                    WHEN u.id_ad IS NOT NULL THEN ad.ho_ten
-                    WHEN u.id_hoc_vien IS NOT NULL THEN hv.ho_ten
-                END AS ho_ten
-            FROM
-                users u
-            LEFT JOIN giang_vien gv ON u.id_giang_vien = gv.id_giang_vien
-            LEFT JOIN ad ON u.id_ad = ad.id_ad
-            LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
-            WHERE u.id_user = ' . $user_nhan);
+            $chat_box[$i]['hoTen'] = $tinNhanRiengModel->queryDatabase(
+                'SELECT
+                    CASE
+                        WHEN u.id_giang_vien IS NOT NULL THEN gv.ho_ten
+                        WHEN u.id_ad IS NOT NULL THEN ad.ho_ten
+                        WHEN u.id_hoc_vien IS NOT NULL THEN hv.ho_ten
+                    END AS ho_ten
+                FROM
+                    users u
+                LEFT JOIN giang_vien gv ON u.id_giang_vien = gv.id_giang_vien
+                LEFT JOIN ad ON u.id_ad = ad.id_ad
+                LEFT JOIN hoc_vien hv ON u.id_hoc_vien = hv.id_hoc_vien
+                WHERE u.id_user = ' . $user_nhan);
+        }
         return $chat_box;
+    }
+
+    public function liveSearch(){
+        $model = new GiangVienModel();  
+        $key = $_POST['input'];
+        // $teachers_list_section_layout_data = array();
+        $teachers = $model->executeCustomQuery(
+            "SELECT id_giang_vien, ho_ten, email 
+            FROM giang_vien
+            WHERE id_giang_vien LIKE ('{$key}%')
+            OR ho_ten LIKE ('{$key}%')
+            OR email LIKE ('{$key}%')");
+        $list = "";
+        for ($i = 0; $i < count($teachers); $i++) {
+            $list = $list . "
+                        <div class='col-6 mb-3 teacherCard' teacherid='{$teachers[$i]["id_giang_vien"]}'>
+                            <div class='p-3 card shadow-sm'>
+                                <div class='card-body'>
+                                    <h3 class='card-title fs-4'><b>{$teachers[$i]["ho_ten"]}</b> - {$teachers[$i]["id_giang_vien"]}</h3>
+                                    <div class='my-5'></div>
+                                    <p class='card-subtitle fs-5'><b>Email:</b> {$teachers[$i]["email"]}</p>
+                                </div>
+                                <input type='checkbox' class='delete-checkbox' value='{$teachers[$i]["id_giang_vien"]}'>
+                            </div>
+                        </div>  
+                    ";
+        }
+        return $list;
     }
 }
