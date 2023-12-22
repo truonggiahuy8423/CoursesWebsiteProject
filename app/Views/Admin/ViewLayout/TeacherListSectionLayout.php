@@ -6,7 +6,6 @@
     <div class="class-container">
         <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
             <input style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm giảng viên">
-            <button class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
             <button class="add-teacher-btn highlight-button">
                 <i class="fa-solid fa-plus add-class-icon highlight-icon"></i>
             </button>
@@ -51,6 +50,26 @@
 </div>
 <script>
     $(document).ready(function() {
+        $('.search-input').keyup(function(){
+            var input = $(this).val();
+            $.ajax({
+                url: '<?php echo base_url(); ?>/Admin/TeachersController/liveSearch',
+                method: 'POST',
+                data: {
+                    input: input
+                },
+                success: function(response) {
+                    $('.teacher__list').html('');
+                    $('.teacher__list').append(response);
+                },
+                error: function(xhr, status, error) {
+                    loadingEffect(false);
+                    console.error('Lỗi yêu cầu:', status, error);
+                }
+            });
+        })
+
+
         $('.add-teacher-btn').click(function() {
             console.log('add-teacher-btn');
             loadingEffect(true);
@@ -254,7 +273,7 @@
             }
         });
 
-        $('.teacherCard').click(function() {
+        $('.teacher__list').on('click', '.teacherCard', function() {
             if (deleteCheck) {
                 if ($(this).children().children('.delete-checkbox').prop('checked')) {
                     $(this).children().children('.delete-checkbox').prop('checked', false);

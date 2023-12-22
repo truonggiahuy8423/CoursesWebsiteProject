@@ -113,13 +113,7 @@
             });
             // uploadingEffect(true);
             // uploadingNoti("message", true)
-            $('#fileInput').change(function() {
-                // Lấy tên file đã chọn
-                var filename = this.files[0].name;
-
-                // Hiển thị tên file trong phần tử có id="filename-display" bằng jQuery
-                $('#filename-display').text(filename);
-            });
+            
         })
         $(document).on('click', '.file-item', function() {
             console.log('clicked');
@@ -130,7 +124,14 @@
             $(this).addClass(`hilight`);
             console.log($(this).attr('isChosen'));
         });
+        $(document).on('change', '#fileInput', function() {
+                // Lấy tên file đã chọn
+                var filename = this.files[0].name;
+                console.log("helllooooo");                // Hiển thị tên file trong phần tử có id="filename-display" bằng jQuery
+                console.log(filename);                // Hiển thị tên file trong phần tử có id="filename-display" bằng jQuery
 
+                $('#filename-display').text(filename);
+            });
 
         // let listOfFileItem = [];
 

@@ -18,6 +18,8 @@
         return redirect()->to('/');
     }
         // Pagination settings
+        $model = new HocVienModel();
+
         $recordsPerPage = 20; 
         $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
         $offset = ($currentPage - 1) * $recordsPerPage;
@@ -47,15 +49,16 @@
     <div>
         <h2 class="text-center mt-4 mb-4">Danh sách học viên</h2>
     </div>
-  <div style="height: 30px;" class="class__search me-2 d-flex justify-content-end">
-            <div class="input-group">
+  <div style="height: 30px; margin-bottom: 8px;" class="class__search me-2 d-flex justify-content-end">
+            
+                <input type="text" style="visibility: hidden;">
                 <input id="searchInput" style="border-radius: 0; height: 30px; width: 90px; z-index: 3" type="text" class="w-25 form-control search-input" placeholder="Tìm kiếm theo tên học viên" name="search" aria-label="Tìm kiếm" aria-describedby="basic-addon2">
                 <button id="searchButton" class="btn btn-info search-button highlight-button"><i class="fas fa-search icon-search highlight-icon"></i></button>
-            </div>
+                <button type="button" class="btn btn-success search-stu-btn" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
+
+
         </div>
-    <div class="button-container d-flex justify-content-end pe-5">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#themHocVienModal">Thêm</button>
-    </div>
+
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead style="top: -1px">
@@ -68,17 +71,7 @@
                     <th class="text-center text-white bg-dark"></th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($students as $student): ?>
-                    <tr>
-                        <th class="text-center text-white bg-dark">Mã học viên</th>
-                        <th class="text-center text-white bg-dark">Họ tên</th>
-                        <th class="text-center text-white bg-dark">Giới tính</th>
-                        <th class="text-center text-white bg-dark">Ngày sinh</th>
-                        <th class="text-center text-white bg-dark">Email</th>
-                        <th class="text-center text-white bg-dark"></th>
-                    </tr>
-                </thead>
+      
                 <tbody>
                     <?php foreach ($students as $student) : ?>
                         <tr>

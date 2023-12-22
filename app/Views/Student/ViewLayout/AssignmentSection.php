@@ -215,8 +215,10 @@
                             tt = "Đã quá hạn"
                         } else {
                             tt = "Chưa đến hạn"
+
                         }
-                        if (parseDateString(response['thoi_han_nop']) < parseDateString(getCurrentDateTimeString())) {
+                        let o = parseDateString(response['thoi_han_nop']) < parseDateString(getCurrentDateTimeString());
+                        if (o) {
                             hl = "Hết hiệu lực";
                         } else {
                             hl = "Còn hiệu lực";
@@ -231,12 +233,9 @@
                             $(`.assignment-infor-table tr`).eq(4).find(`td`).eq(1).css("background-color", "#d9edff");
                             $(`.submit-button-container`).remove();
 
-                            $(`.assignment-infor-table`).after(`
-                            <div class="submit-button-container">
-                                <button class="submit-btn highlight-button">Thêm bài nộp</button>
-                            </div>
-                            `);
                             $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).text(calculateTimeDifference(response['thoi_han'], getCurrentDateTimeString()));
+                            // $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).text("ok");
+
                             $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css('background-color', 'white');
                             if (parseDateString(response['thoi_han']) < parseDateString(getCurrentDateTimeString())) {
                                 $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css("color", "#ff0000");
@@ -244,28 +243,60 @@
                                 $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css("color", "#52ec4d");
                             }
                             $(`.assignment-infor-table tr`).eq(5).find(`td`).eq(1).html(``);
+                            if (!o) {
+                                $(`.assignment-infor-table`).after(`
+                            <div class="submit-button-container">
+                                <button class="submit-btn highlight-button">Thêm bài nộp</button>
+                            </div>
+                            `);
+                            $('.submit-btn').click(function() {
+                                    loadingEffect(true);
+                                    $.ajax({
+                                        url: `${window.location.protocol}//${window.location.hostname}/Admin/CoursesController/getSubmissionForm`,
+                                        method: 'GET',
+                                        dataType: "text",
+                                        success: function(response) {
+                                            loadingEffect(false);
+                                            $(`body`).append(response);
+                                        }
+                                    })
 
+                                });
+                            }
+                            
                         } else {
+                            $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).text(calculateTimeDifference(response['thoi_han'], getCurrentDateTimeString()));
+                            $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css('background-color', 'white');
+                            if (parseDateString(response['thoi_han']) < parseDateString(getCurrentDateTimeString())) {
+                                $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css("color", "#ff0000");
+                            } else {
+                                $(`.assignment-infor-table tr`).eq(3).find(`td`).eq(1).css("color", "#52ec4d");
+                            }
                             $(`.assignment-infor-table tr`).eq(4).find(`td`).eq(1).html("Bạn đã nộp " + calculateTimeDifference3(response.thoi_han, response.student_submit.thoi_gian_nop));
                             if (parseDateString(response.thoi_han) < parseDateString(response.student_submit.thoi_gian_nop)) {
                                 $(`.assignment-infor-table tr`).eq(4).find(`td`).eq(1).css("background-color", "#ff9494");
                             } else {
                                 $(`.assignment-infor-table tr`).eq(4).find(`td`).eq(1).css("background-color", "#c5ffce");
                             }
+
                             $(`.submit-button-container`).remove();
-                            $(`.assignment-infor-table`).after(`
-                            <div class="submit-button-container">
-                                <button class="cancel-submit-btn highlight-button">Hủy bài nộp</button>
-                                <button style="margin-left: 10px" class="modify-submit-btn highlight-button">Chỉnh sửa bài nộp</button>
-                            </div>
-                            `);
+
                             $(`.assignment-infor-table tr`).eq(5).find(`td`).eq(1).html(
                                 `<div style='display: flex; flex-direction: column; align-items: start; min-height: 60px; padding: 5px;'>
                                     ${createFileItems(response.student_submit.files)}
                                 </div>`
                             );
                             // $(`.assignment-infor-table tr`).eq(3).remove();
-
+                            if (!o) {
+                                $(`.assignment-infor-table`).after(`
+                            <div class="submit-button-container">
+                                <button class="cancel-submit-btn highlight-button">Hủy bài nộp</button>
+                                <button style="margin-left: 10px" class="modify-submit-btn highlight-button">Chỉnh sửa bài nộp</button>
+                            </div>
+                            `);
+                                
+                                console.log("ppi")
+                            }
                         }
                     }
                     loadingEffect(false);
@@ -273,19 +304,7 @@
                 }
             })
         }
-        $(document).on('click', '.submit-btn', function() {
-            loadingEffect(true);
-            $.ajax({
-                url: `${window.location.protocol}//${window.location.hostname}/Admin/CoursesController/getSubmissionForm`,
-                method: 'GET',
-                dataType: "text",
-                success: function(response) {
-                    loadingEffect(false);
-                    $(`body`).append(response);
-                }
-            })
 
-        });
         $(document).on('click', '.cancel-submit-btn', function() {
             if (confirm("Hủy bỏ bài nộp này?")) {
                 loadingEffect(true);

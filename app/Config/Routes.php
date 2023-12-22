@@ -19,7 +19,7 @@ $routes->get('/Admin/StudentsController/getStudentInfo/(:num)', 'Admin\StudentsC
 $routes->group('/courses', function ($routes) {
     $routes->add('information', 'Admin\CoursesController::information');
     $routes->add('attendance', 'Admin\CoursesController::attendance');
-    $routes->add('chat', 'Courses::chat');
+    $routes->add('chat', 'Admin\CoursesController::courseChat');
     $routes->add('resource', 'Admin\CoursesController::resource');
 });
 $routes->group('/students', function ($routes) {

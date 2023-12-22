@@ -41,17 +41,7 @@
                                 `
             );
             })
-        })
-        $(document).on('click', '.remove-chosen-file', function() {
-            $(this).parent().remove();
-        });
-        $(document).on('click', '.submit-assignment-form__cancel-btn', function() {
-            if (confirm("Hủy bỏ tạo bài nộp?")) {
-                $(`.form-container`).remove();
-            }
-            $(this).parent().remove();
-        });
-        $(document).on('click', '.submit-assignment-form__save-btn', function() {
+            $('.submit-assignment-form__save-btn').click(function() {
             loadingEffect(true);
             let urlParams = new URLSearchParams(window.location.search);
             let assignmentid = urlParams.get('assignmentid');
@@ -90,5 +80,16 @@
                 }
             }});
         });
+        })
+        $(document).on('click', '.remove-chosen-file', function() {
+            $(this).parent().remove();
+        });
+        $(document).on('click', '.submit-assignment-form__cancel-btn', function() {
+            if (confirm("Hủy bỏ tạo bài nộp?")) {
+                $(`.form-container`).remove();
+            }
+            $(this).parent().remove();
+        });
+      
     </script>
 </div>

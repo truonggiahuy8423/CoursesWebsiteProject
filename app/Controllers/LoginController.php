@@ -59,6 +59,8 @@ class LoginController extends BaseController
             $data['login_failed'] = "Tài khoản hoặc mật khẩu không đúng";
             return view('LoginPage', $data);
         } else { // Login successfully
+            // session()->destroy();
+
             echo "here2";
             if ($user->id_ad != null) {
                 echo "here3";

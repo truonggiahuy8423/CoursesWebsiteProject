@@ -382,7 +382,6 @@
                     data: jsonts, // Chuyển đổi dữ liệu sang chuỗi JSON
                     success: function(response) {
                         console.log(response);
-                        globalCheckbox.length = 0;
                         // Xử lý phản hồi thành công từ máy chủ
                     },
                     error: function(response) {

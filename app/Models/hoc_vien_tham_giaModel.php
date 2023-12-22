@@ -49,6 +49,25 @@ class hoc_vien_tham_giaModel
         $this->conn->close();
         return $phanCongs;
     }
+    function executeCustomQuery($sql)
+    {
+        $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);
+        if ($this->conn->connect_error) {
+            die("Kết nối đến cơ sở dữ liệu thất bại: " . $this->conn->connect_error);
+        }
+
+        $result = $this->conn->query($sql);
+        $rows = array();
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row;
+            }
+        }
+        $this->conn->close();
+        return $rows;
+    }
+
     // function getHocVienThamGiaByHocVienID($studentId)
     // {
     //     $this->conn = new mysqli($GLOBALS['servername'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['dbname']);

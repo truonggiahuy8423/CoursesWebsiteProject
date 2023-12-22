@@ -201,19 +201,6 @@ img {
     }
 }
 
-.message-pop-up {
-    position: absolute;
-    background-color: rgb(11, 41, 0);
-    width: 220px;
-    height: 300px;
-    top: 30px;
-    left: -137px;
-    border-radius: 10px;
-    visibility: hidden;
-    opacity: 0;
-    transition: 0.5s;
-
-}
 
 .notification-pop-up {
     position: absolute;
@@ -2283,3 +2270,42 @@ input[type="file"] {
     cursor: pointer;
 }
 
+.input-group {
+    display: flex;
+}
+
+.search-stu-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.inputChat_course {
+    margin-bottom: 40px!important;
+}
+.sendBtn_course {
+    height: 37px;
+}
+.message-pop-up, 
+.inbox {
+    position: fixed;
+    background-color: #eff1f3;
+    width: 300px;
+    height: calc(100% - 60px);
+    top: 55px;
+    right: -300px;
+    opacity: 0;
+    transition: 0.5s;
+}
+.inputChat {
+    height: 40px!important;
+}
+
+.inbox__body,
+.inbox__body_course{
+    background-color: #eff1f3; 
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
